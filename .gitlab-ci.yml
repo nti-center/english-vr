@@ -3,6 +3,8 @@ job1:
     - windows
   script: 
     - .\build.ps1
+  only:
+    - schedules
   artifacts:
     paths:
       - output.zip
