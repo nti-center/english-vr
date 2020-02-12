@@ -3,6 +3,7 @@ job1:
     - windows
   script: 
     - python main.py
+    - $xxx=123
   artifacts:
     paths:
       - output.txt
