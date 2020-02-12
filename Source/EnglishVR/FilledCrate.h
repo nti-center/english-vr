@@ -12,8 +12,17 @@ class ENGLISHVR_API AFilledCrate : public AActor
 {
 	GENERATED_BODY()
 
-    UPROPERTY(VisibleAnywhere)
-    UStaticMeshComponent* CrateMesh;
+    UPROPERTY(EditAnywhere, Category="Crate")
+    UStaticMeshComponent* Mesh;
+
+    UPROPERTY(EditAnywhere, Category = "Crate")
+    FVector BorderSize;
+
+    UPROPERTY(EditAnywhere, Category = "Fruit")
+    UStaticMesh* FruitMesh;
+
+    UPROPERTY(EditAnywhere, Category = "Fruit")
+    UBlueprint* FruitBP;    
 
 public:	
 	// Sets default values for this actor's properties
