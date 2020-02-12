@@ -11,7 +11,7 @@ UCLASS()
 class ENGLISHVR_API AActorAppleSpawner : public AActor
 {
 	GENERATED_BODY()
-
+        
     UPROPERTY(VisibleAnywhere)
     USceneComponent* SceneComponent;
 

@@ -49,8 +49,8 @@ void AActorAppleSpawner::BeginPlay()
     
     for (int i = 0; i < 100; i++) {   
         AActor *NewActor = World->SpawnActor<AActor>(GeneratedBP->GeneratedClass, GetActorLocation() + FVector(BoxExtent.X * 2 * i, 0, 0), GetActorRotation(), SpawnParams);
-        //if (!NewActor)
-        NewActor->GetActorBounds(false, Origin, BoxExtent);
+        if (NewActor)
+            NewActor->GetActorBounds(false, Origin, BoxExtent);
     }
 
     //UE_LOG(LogTemp, Warning, TEXT("Done"));
