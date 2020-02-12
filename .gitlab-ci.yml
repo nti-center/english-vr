@@ -1,0 +1,9 @@
+job1:
+  tags:
+    - windows
+  script: 
+    - python main.py
+  artifacts:
+    paths:
+      - output.txt
+    expire_in: 1 week
