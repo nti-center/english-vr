@@ -5,7 +5,7 @@ build_job:
     - .\build.ps1
   only:
     - schedules
-    - api
+    - web
   artifacts:
     paths:
       - __artifacts__\
