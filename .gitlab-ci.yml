@@ -5,6 +5,7 @@ build_job:
     - .\build.ps1
   only:
     - schedules
+    - merge_requests
     - web
   artifacts:
     paths:
