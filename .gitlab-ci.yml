@@ -1,4 +1,4 @@
-job1:
+build_job:
   tags:
     - windows
   script: 
@@ -7,5 +7,5 @@ job1:
     - schedules
   artifacts:
     paths:
-      - output.zip
+      - __artifacts__\
     expire_in: 1 month
