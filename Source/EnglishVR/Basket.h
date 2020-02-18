@@ -5,24 +5,12 @@
 #include "CoreMinimal.h"
 #include "Engine.h"
 #include "GameFramework/Actor.h"
-#include "CollectableItem.h"
+#include "Collectable.h"
 #include "Basket.generated.h"
 
-UCLASS()
+UCLASS(Abstract)
 class ENGLISHVR_API ABasket : public AActor {
-    GENERATED_BODY()
-
-    UPROPERTY(EditAnywhere)
-    UStaticMeshComponent* Mesh;
-
-    UPROPERTY(EditAnywhere)
-    USphereComponent* FillSphere;
-
-    //UPROPERTY(BlueprintReadWrite)
-    //TEnumAsByte<TreeType> Type;
-    
-    UPROPERTY(EditAnywhere)
-    TMap<FString, int32> CountItems;
+    GENERATED_BODY()    
 
     UFUNCTION()
     void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -32,7 +20,16 @@ class ENGLISHVR_API ABasket : public AActor {
 
 public:	
     // Sets default values for this actor's properties
-    ABasket();    
+    ABasket();
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    UStaticMeshComponent* Mesh;
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    USphereComponent* FillSphere;
+
+    UPROPERTY(EditAnywhere)
+    TMap<FString, int32> CountItems;
 
 protected:
     // Called when the game starts or when spawned
