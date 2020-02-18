@@ -1,9 +1,13 @@
-job1:
+build_job:
   tags:
     - windows
   script: 
-    - python main.py
+    - .\build.ps1
+  only:
+    - schedules
+    - merge_requests
+    - web
   artifacts:
     paths:
-      - output.txt
-    expire_in: 1 week
+      - __artifacts__\
+    expire_in: 1 month
