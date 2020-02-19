@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine.h"
 #include "GameFramework/Actor.h"
-#include "ActorWithMesh.h"
+//#include "ActorWithMesh.h"
 #include "FruitBox.generated.h"
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
