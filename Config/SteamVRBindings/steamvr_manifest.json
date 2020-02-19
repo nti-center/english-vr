@@ -88,6 +88,14 @@
 		{
 			"name": "/actions/main/in/LGripOculus",
 			"type": "boolean"
+		},
+		{
+			"name": "/actions/main/in/GrabLeft",
+			"type": "boolean"
+		},
+		{
+			"name": "/actions/main/in/GrabRight",
+			"type": "boolean"
 		}
 	],
 	"action_sets": [
@@ -207,6 +215,8 @@
 			"/actions/main/in/RSoundCapture": "RSoundCapture",
 			"/actions/main/in/RGipOculus": "RGipOculus",
 			"/actions/main/in/LGripOculus": "LGripOculus",
+			"/actions/main/in/GrabLeft": "GrabLeft",
+			"/actions/main/in/GrabRight": "GrabRight",
 			"/actions/main": "Main Game Actions"
 		}
 	]
