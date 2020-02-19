@@ -21,6 +21,28 @@
 							"output": "/actions/main/in/RSoundCapture"
 						}
 					}
+				},
+				{
+					"mode": "button",
+					"path": "/user/hand/right/input/grip",
+					"inputs":
+					{
+						"click":
+						{
+							"output": "/actions/main/in/RGipOculus"
+						}
+					}
+				},
+				{
+					"mode": "button",
+					"path": "/user/hand/left/input/grip",
+					"inputs":
+					{
+						"click":
+						{
+							"output": "/actions/main/in/LGripOculus"
+						}
+					}
 				}
 			],
 			"poses": [
