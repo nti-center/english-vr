@@ -45,11 +45,17 @@ void ABasket::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 
     //OtherActor->RootComponent->AttachToComponent(RootComponent, Attachmentrule
     //OtherActor->SetupAttachment(RootComponent);
-    FAttachmentTransformRules AttachmentTransformRules(EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, true);
-    OtherActor->AttachToActor(this, AttachmentTransformRules);
+
+    //FAttachmentTransformRules AttachmentTransformRules(EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, true);
+    //OtherActor->AttachToActor(this, AttachmentTransformRules);
+
+    //Mesh->SetSimulatePhysics(false);
+    //Mesh->SetSimulatePhysics(true);
+
+    //SimulatePhysia
     //OtherActor->GetRootComponent()->AttachToComponent(FillSphere, AttachmentTransformRules);
     //FillSphere->SetupAttachment()
-    UE_LOG(LogTemp, Warning, TEXT("Attached %d"), Mesh->GetAttachChildren().Num());
+    UE_LOG(LogTemp, Warning, TEXT("Attached %d"), Mesh->GetAttachChildren().Num());    
 
     FString Type = ICollectable::Execute_GetType(OtherActor);
     

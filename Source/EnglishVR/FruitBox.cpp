@@ -45,39 +45,45 @@ void UFruitBox::BeginPlay() {
     //Cast<AActorWithMesh>(FruitBP)->Mesh->SetStaticMesh(FruitMesh);
 
     UBlueprint* GeneratedBP = FruitBP;
-    
+    //GeneratedBP->Get
     UWorld* World = GetWorld();
-    //FActorSpawnParameters SpawnParams;
-    //SpawnParams.Owner = GetOwner();
-    //SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    FActorSpawnParameters SpawnParams;    
+    SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
     
-    FVector CrateBoxExtent = Box->Bounds.BoxExtent;
-    FVector CrateOrigin = Box->Bounds.Origin - CrateBoxExtent;
-    
-    FVector FruitBoxExtent = FruitMesh->GetBounds().BoxExtent;
-    
-    FVector MaxSize = CrateBoxExtent * 2;
+    FVector FruitBoxBE = Box->Bounds.BoxExtent;
+    FVector FruitBoxOrigin = Box->Bounds.Origin - FruitBoxBE;
 
-    UE_LOG(LogTemp, Warning, TEXT("%s"), *GetOwner()->GetActorRotation().ToString());
-    UE_LOG(LogTemp, Warning, TEXT("%s"), *Box->GetRelativeRotation().ToString());
-    UE_LOG(LogTemp, Warning, TEXT("%s"), *Box->GetOwner()->GetActorRotation().ToString());
-    ////UE_LOG(LogTemp, Warning, TEXT("%s"), *Box->rota);
-    UE_LOG(LogTemp, Warning, TEXT("-----------------"));
-    //Box->Rotat
+    FVector FruitBE = FruitMesh->GetBounds().BoxExtent;
+    FVector FruitOffset = FruitBE / 3.0f;
+    
+    FVector MaxSize = FruitBoxBE * 2;
+    FIntVector Count(MaxSize / (FruitBE * 2));
+    FVector OriginOffset = FruitBoxBE - FVector(Count) * FruitBE;
+
+    //UE_LOG(LogTemp, Warning, TEXT("Extent %s"), *Count.ToString());
+
     for (int i = 0;; i++) {
-        float CurrX = FruitBoxExtent.X + FruitBoxExtent.X * 2 * i;
-        if (CurrX > MaxSize.X) break;
+        float ROffsetX = FMath::RandRange(-FruitOffset.X, FruitOffset.X);
+        float CurrX = FruitBE.X + FruitBE.X * 2 * i;
+        if (CurrX + FruitBE.X + ROffsetX > MaxSize.X)
+            break;
     
         for (int j = 0;; j++) {
-            float CurrY = FruitBoxExtent.Y + FruitBoxExtent.Y * 2 * j;
-            if (CurrY > MaxSize.Y) break;
+            float ROffsetY = FMath::RandRange(-FruitOffset.Y, FruitOffset.Y);
+            float CurrY = FruitBE.Y + FruitBE.Y * 2 * j;
+            if (CurrY + FruitBE.Y + ROffsetY > MaxSize.Y)
+                break;
     
             for (int k = 0;; k++) {
-                float CurrZ = FruitBoxExtent.Z + FruitBoxExtent.Z * 2 * k;
-                if (CurrZ > MaxSize.Z) break;
+                float OffsetZ = FMath::RandRange(-FruitOffset.Z, FruitOffset.Z);
+                float CurrZ = FruitBE.Z + FruitBE.Z * 2 * k;
+                if (CurrZ + FruitBE.Z + OffsetZ > MaxSize.Z)
+                    break;
                 
-                
-                World->SpawnActor<AActor>(GeneratedBP->GeneratedClass, CrateOrigin + FVector(CurrX, CurrY, CurrZ), Box->GetRelativeRotation());
+                FRotator RRotator(FMath::RandRange(-40, 40), FMath::RandRange(-40, 40), FMath::RandRange(-40, 40));
+
+                World->SpawnActor<AActor>(GeneratedBP->GeneratedClass, FruitBoxOrigin + OriginOffset + FVector(CurrX + ROffsetX, CurrY + ROffsetY, CurrZ + OffsetZ),
+                    RRotator, SpawnParams);
             }
         }
     }
