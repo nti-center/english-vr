@@ -18,8 +18,28 @@ AMyCharacter::AMyCharacter()
 	PlayerMesh = GetMesh();
 	if (PlayerMesh)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("PlayerMesh"));
+		UE_LOG(LogTemp, Warning, TEXT("Player Mesh loaded"));
 		PlayerMesh->SetSkeletalMesh(AlternateMeshAsset);
+	}
+
+	static ConstructorHelpers::FObjectFinder<UDataTable> DataTableObject(TEXT("DataTable'/Game/CSV/MainDialog.MainDialog'"));
+	if (DataTableObject.Succeeded())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Data table loaded"));
+		DataTable = DataTableObject.Object;
+		isCheck = true;
+	}
+}
+
+void AMyCharacter::GoToMarket(TArray<ATargetPoint*> pathArray)
+{
+	//AActor* ActorTarget;
+
+	for (int32 i = pathArray.Num(); i > 0; i--)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("i = %d"), i);
+		//pathArray[i] = Cast<ATargetPoint>(ActorTarget);
+		//MoveToActor();
 	}
 }
 
@@ -27,6 +47,18 @@ AMyCharacter::AMyCharacter()
 void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	//for (TActorIterator<MotionControllerPawn> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	//{
+	//	_areaLightingController = Cast<MotionControllerPawn>(*ActorItr);
+	//	if (_areaLightingController)
+	//	{
+	//		LOG("APrimaryPlayerController: GetAreaLightingController(): controller found!");
+	//		return;
+	//	}
+	//}
+
+	GoToMarket(ToPath);
 	
 }
 
