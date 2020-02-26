@@ -29,17 +29,24 @@ AMyCharacter::AMyCharacter()
 		DataTable = DataTableObject.Object;
 		isCheck = true;
 	}
+
+	//ai = Cast<AAIController>(thisCharacter->GetController());
 }
 
-void AMyCharacter::GoToMarket(TArray<ATargetPoint*> pathArray)
+void AMyCharacter::GoToMarket(TArray<AActor*> pathArray, AAIController* _ai)
 {
-	//AActor* ActorTarget;
-
 	for (int32 i = pathArray.Num(); i > 0; i--)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("i = %d"), i);
-		//pathArray[i] = Cast<ATargetPoint>(ActorTarget);
-		//MoveToActor();
+		//UE_LOG(LogTemp, Warning, TEXT("i = %d"), i);
+		_ai->MoveToActor(pathArray[i]);
+	}
+}
+
+void AMyCharacter::PlayDialog(FString DialogName, UDataTable* table, UAudioComponent* _audio, bool check)
+{
+	if (check == true)
+	{
+
 	}
 }
 
@@ -58,7 +65,7 @@ void AMyCharacter::BeginPlay()
 	//	}
 	//}
 
-	GoToMarket(ToPath);
+//	GoToMarket(ToPath, ai);
 	
 }
 

@@ -7,6 +7,7 @@
 #include "Engine/DataTable.h"
 #include "AIController.h"
 #include "GameFramework/Character.h"
+#include "AudioDataTableStruct.h"
 #include "MyCharacter.generated.h"
 
 UCLASS()
@@ -30,9 +31,6 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	UAudioComponent* Audio;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	APawn* AMyPawn;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UDataTable* DataTable;
 
@@ -40,13 +38,24 @@ public:
 	bool isCheck = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<ATargetPoint*> ToPath;
+	ACharacter* thisCharacter;
+
+	UPROPERTY(BlueprintReadWrite)
+	AAIController* ai;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<AActor*> ToPath;
 
 	UPROPERTY(BlueprintReadWrite)
 	TArray<ATargetPoint*> OutPath;
 
+	FAudioDataTableStruct Struct;
+
 	UFUNCTION(BlueprintCallable)
-	static void GoToMarket(TArray<ATargetPoint*> pathArray);
+	static void GoToMarket(TArray<AActor*> pathArray, AAIController* _ai);
+
+	UFUNCTION(BlueprintCallable)
+	static void PlayDialog(FString DialogName, UDataTable* table, UAudioComponent* _audio, bool check);
 
 
 protected:
