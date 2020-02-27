@@ -59,13 +59,16 @@ public:
 	TArray<ATargetPoint*> OutPath;
 
 	UPROPERTY(BlueprintReadWrite)
-	EStatesEnum ComeState;
+	EStatesEnum EComeState;
 
 	UPROPERTY(BlueprintReadWrite)
-	EStatesEnum NegativeState;
+	EStatesEnum ENegativeState;
 
 	UPROPERTY(BlueprintReadWrite)
-	EStatesEnum PickupState;
+	EStatesEnum EPickupState;
+
+
+
 
 	UFUNCTION(BlueprintCallable)
 	static void GoToMarket(TArray<AActor*> _toPath, AAIController* _ai);
@@ -78,6 +81,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	static bool IsNotPlaying(UAudioComponent* _audio);
+
+
+
 
 
 protected:

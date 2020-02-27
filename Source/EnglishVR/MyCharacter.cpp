@@ -40,6 +40,22 @@ static FORCEINLINE ObjClass* LoadObjFromPath(const FName& Path)
 	return Cast<ObjClass>(StaticLoadObject(ObjClass::StaticClass(), NULL, *Path.ToString()));
 }
 
+bool AMyCharacter::IsState(EStatesEnum A, EStatesEnum B)
+{
+	if (A == B)
+		return true;
+	else
+		return false;
+}
+
+bool AMyCharacter::IsNotPlaying(UAudioComponent * _audio)
+{
+	if (_audio->IsPlaying())
+		return false;
+	else
+		return true;
+}
+
 void AMyCharacter::GoToMarket(TArray<AActor*> _toPath, AAIController* _ai)
 {
 	for (int32 i = _toPath.Num(); i > 0; i--)
@@ -78,21 +94,6 @@ void AMyCharacter::PlayDialog(FName DialogName, UDataTable* _dataTable, UAudioCo
 	}
 }
 
-bool AMyCharacter::IsState(EStatesEnum A, EStatesEnum B)
-{
-	if (A == B)
-		return true;
-	else
-		return false;
-}
-
-bool AMyCharacter::IsNotPlaying(UAudioComponent * _audio)
-{
-	if (_audio->IsPlaying())
-		return false;
-	else
-		return true;
-}
 
 // Called when the game starts or when spawned
 void AMyCharacter::BeginPlay()
@@ -100,25 +101,12 @@ void AMyCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	//	GoToMarket(ToPath, ai);
-	//  PlayDialog("greetings4",DataTable,Audio,isCheck);
 
 	//if (!ai)
 	//{
 	//	UE_LOG(LogTemp, Warning, TEXT("Not found ai"));
 	//}
 
-	//for (TActorIterator<MotionControllerPawn> ActorItr(GetWorld()); ActorItr; ++ActorItr)
-	//{
-	//	_areaLightingController = Cast<MotionControllerPawn>(*ActorItr);
-	//	if (_areaLightingController)
-	//	{
-	//		LOG("APrimaryPlayerController: GetAreaLightingController(): controller found!");
-	//		return;
-	//	}
-	//}
-
-
-	
 }
 
 // Called every frame
@@ -128,6 +116,14 @@ void AMyCharacter::Tick(float DeltaTime)
 
 	if (IsNotPlaying(Audio))
 	{
+		if (EComeState == EStatesEnum::Active)
+		{
+			PlayDialog("greetings4", DataTable, Audio, isCheck);
+			//FOnAudioFinished OnAudioFinished;
+
+			PlayDialog("requests4", DataTable, Audio, isCheck);
+			EComeState = EStatesEnum::Finished;
+		}
 		//UE_LOG(LogTemp, Warning, TEXT("Audio not playing"));
 	}
 
