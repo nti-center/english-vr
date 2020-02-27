@@ -40,23 +40,23 @@ static FORCEINLINE ObjClass* LoadObjFromPath(const FName& Path)
 	return Cast<ObjClass>(StaticLoadObject(ObjClass::StaticClass(), NULL, *Path.ToString()));
 }
 
-void AMyCharacter::GoToMarket(TArray<AActor*> pathArray, AAIController* _ai)
+void AMyCharacter::GoToMarket(TArray<AActor*> _toPath, AAIController* _ai)
 {
-	for (int32 i = pathArray.Num(); i > 0; i--)
+	for (int32 i = _toPath.Num(); i > 0; i--)
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("i = %d"), i);
-		_ai->MoveToActor(pathArray[i]);
+		_ai->MoveToActor(_toPath[i]);
 	}
 }
 
-void AMyCharacter::PlayDialog(FName DialogName, UDataTable* table, UAudioComponent* _audio, bool check)
+void AMyCharacter::PlayDialog(FName DialogName, UDataTable* _dataTable, UAudioComponent* _audio, bool _isCheck)
 {
 	FString ContextString;
 	USoundCue* cue;
 
-	if (check == true)
+	if (_isCheck == true)
 	{
-		FAudioDataTableStruct* Row = table->FindRow<FAudioDataTableStruct>(DialogName, ContextString, true);
+		FAudioDataTableStruct* Row = _dataTable->FindRow<FAudioDataTableStruct>(DialogName, ContextString, true);
 		if (Row)
 		{
 			FString output = (*Row).Path;
@@ -78,12 +78,20 @@ void AMyCharacter::PlayDialog(FName DialogName, UDataTable* table, UAudioCompone
 	}
 }
 
-bool AMyCharacter::IsState(UEnum * A, UEnum * B)
+bool AMyCharacter::IsState(EStatesEnum A, EStatesEnum B)
 {
 	if (A == B)
 		return true;
 	else
 		return false;
+}
+
+bool AMyCharacter::IsNotPlaying(UAudioComponent * _audio)
+{
+	if (_audio->IsPlaying())
+		return false;
+	else
+		return true;
 }
 
 // Called when the game starts or when spawned
@@ -117,6 +125,11 @@ void AMyCharacter::BeginPlay()
 void AMyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (IsNotPlaying(Audio))
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("Audio not playing"));
+	}
 
 }
 

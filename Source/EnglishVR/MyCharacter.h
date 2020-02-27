@@ -68,13 +68,16 @@ public:
 	EStatesEnum PickupState;
 
 	UFUNCTION(BlueprintCallable)
-	static void GoToMarket(TArray<AActor*> pathArray, AAIController* _ai);
+	static void GoToMarket(TArray<AActor*> _toPath, AAIController* _ai);
 
 	UFUNCTION(BlueprintCallable)
-	static void PlayDialog(FName DialogName, UDataTable* table, UAudioComponent* _audio, bool check);
+	static void PlayDialog(FName DialogName, UDataTable* _dataTable, UAudioComponent* _audio, bool _isCheck);
 
 	UFUNCTION(BlueprintCallable)
-	static bool IsState(UEnum* A, UEnum* B);
+	static bool IsState(EStatesEnum A, EStatesEnum B);
+
+	UFUNCTION(BlueprintCallable)
+	static bool IsNotPlaying(UAudioComponent* _audio);
 
 
 protected:
