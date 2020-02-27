@@ -6,6 +6,7 @@
 #include "Engine.h"
 #include "Engine/DataTable.h"
 #include "AIController.h"
+#include "Sound/SoundCue.h"
 #include "GameFramework/Character.h"
 #include "AudioDataTableStruct.h"
 #include "MyCharacter.generated.h"
@@ -49,13 +50,11 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	TArray<ATargetPoint*> OutPath;
 
-	FAudioDataTableStruct Struct;
-
 	UFUNCTION(BlueprintCallable)
 	static void GoToMarket(TArray<AActor*> pathArray, AAIController* _ai);
 
 	UFUNCTION(BlueprintCallable)
-	static void PlayDialog(FString DialogName, UDataTable* table, UAudioComponent* _audio, bool check);
+	static void PlayDialog(FName DialogName, UDataTable* table, UAudioComponent* _audio, bool check);
 
 
 protected:

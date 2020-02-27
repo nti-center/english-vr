@@ -33,6 +33,13 @@ AMyCharacter::AMyCharacter()
 	//ai = Cast<AAIController>(thisCharacter->GetController());
 }
 
+template <typename ObjClass>
+static FORCEINLINE ObjClass* LoadObjFromPath(const FName& Path)
+{
+	if (Path == NAME_None) return NULL;
+	return Cast<ObjClass>(StaticLoadObject(ObjClass::StaticClass(), NULL, *Path.ToString()));
+}
+
 void AMyCharacter::GoToMarket(TArray<AActor*> pathArray, AAIController* _ai)
 {
 	for (int32 i = pathArray.Num(); i > 0; i--)
@@ -42,11 +49,28 @@ void AMyCharacter::GoToMarket(TArray<AActor*> pathArray, AAIController* _ai)
 	}
 }
 
-void AMyCharacter::PlayDialog(FString DialogName, UDataTable* table, UAudioComponent* _audio, bool check)
+void AMyCharacter::PlayDialog(FName DialogName, UDataTable* table, UAudioComponent* _audio, bool check)
 {
+	FString ContextString;
+	USoundCue* cue;
+
 	if (check == true)
 	{
+		FAudioDataTableStruct* Row = table->FindRow<FAudioDataTableStruct>(DialogName, ContextString, true);
+		if (Row)
+		{
+			FString output = (*Row).Path;
+			GLog->Log(output);
 
+			FName path = FName(*output);
+
+			if (path != NAME_None)
+			{
+				cue = LoadObjFromPath<USoundCue>(path);
+				_audio->SetSound(cue);
+				_audio->Play();
+			}
+		}
 	}
 }
 
@@ -54,6 +78,14 @@ void AMyCharacter::PlayDialog(FString DialogName, UDataTable* table, UAudioCompo
 void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	//	GoToMarket(ToPath, ai);
+	//  PlayDialog("greetings4",DataTable,Audio,isCheck);
+
+	//if (!ai)
+	//{
+	//	UE_LOG(LogTemp, Warning, TEXT("Not found ai"));
+	//}
 
 	//for (TActorIterator<MotionControllerPawn> ActorItr(GetWorld()); ActorItr; ++ActorItr)
 	//{
@@ -65,7 +97,7 @@ void AMyCharacter::BeginPlay()
 	//	}
 	//}
 
-//	GoToMarket(ToPath, ai);
+
 	
 }
 
