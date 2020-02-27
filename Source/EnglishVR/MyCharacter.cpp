@@ -70,8 +70,20 @@ void AMyCharacter::PlayDialog(FName DialogName, UDataTable* table, UAudioCompone
 				_audio->SetSound(cue);
 				_audio->Play();
 			}
+			else
+			{
+				GLog->Log("Path is empty!");
+			}
 		}
 	}
+}
+
+bool AMyCharacter::IsState(UEnum * A, UEnum * B)
+{
+	if (A == B)
+		return true;
+	else
+		return false;
 }
 
 // Called when the game starts or when spawned

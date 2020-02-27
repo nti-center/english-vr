@@ -11,6 +11,14 @@
 #include "AudioDataTableStruct.h"
 #include "MyCharacter.generated.h"
 
+UENUM(BlueprintType)
+enum class EStatesEnum : uint8
+{
+	NotActive    UMETA(DisplayName = "NotActive"),
+	Active      UMETA(DisplayName = "Active"),
+	Finished   UMETA(DisplayName = "Finished"),
+};
+
 UCLASS()
 class ENGLISHVR_API AMyCharacter : public ACharacter
 {
@@ -50,11 +58,23 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	TArray<ATargetPoint*> OutPath;
 
+	UPROPERTY(BlueprintReadWrite)
+	EStatesEnum ComeState;
+
+	UPROPERTY(BlueprintReadWrite)
+	EStatesEnum NegativeState;
+
+	UPROPERTY(BlueprintReadWrite)
+	EStatesEnum PickupState;
+
 	UFUNCTION(BlueprintCallable)
 	static void GoToMarket(TArray<AActor*> pathArray, AAIController* _ai);
 
 	UFUNCTION(BlueprintCallable)
 	static void PlayDialog(FName DialogName, UDataTable* table, UAudioComponent* _audio, bool check);
+
+	UFUNCTION(BlueprintCallable)
+	static bool IsState(UEnum* A, UEnum* B);
 
 
 protected:
