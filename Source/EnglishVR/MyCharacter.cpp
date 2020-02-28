@@ -3,10 +3,8 @@
 
 #include "MyCharacter.h"
 
-// Sets default values
 AMyCharacter::AMyCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	Box = CreateDefaultSubobject<UBoxComponent>(TEXT("Box"));
@@ -15,22 +13,14 @@ AMyCharacter::AMyCharacter()
 	Audio = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio"));
 	Audio->SetupAttachment(RootComponent);
 
-	PlayerMesh = GetMesh();
-	if (PlayerMesh)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Player Mesh loaded"));
-		PlayerMesh->SetSkeletalMesh(AlternateMeshAsset);
-	}
-
-	static ConstructorHelpers::FObjectFinder<UDataTable> DataTableObject(TEXT("DataTable'/Game/CSV/MainDialog.MainDialog'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> DataTableObject(TEXT("DataTable'/Game/CSV/DataTable.DataTable'"));
 	if (DataTableObject.Succeeded())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Data table loaded"));
+	{	
 		DataTable = DataTableObject.Object;
 		isCheck = true;
-	}
 
-	//ai = Cast<AAIController>(thisCharacter->GetController());
+		UE_LOG(LogTemp, Warning, TEXT("Data table loaded"));
+	}
 }
 
 template <typename ObjClass>
@@ -56,12 +46,12 @@ bool AMyCharacter::IsNotPlaying(UAudioComponent * _audio)
 		return true;
 }
 
-void AMyCharacter::GoToMarket(TArray<AActor*> _toPath, AAIController* _ai)
+void AMyCharacter::GoToMarket(TArray<AActor*> _toPath, AAIController* _ai, int32 _walkingCount)
 {
-	for (int32 i = _toPath.Num(); i > 0; i--)
+	//while(_walkingCount<_toPath.Num())
+	for(int i = 0; i < _toPath.Num(); i++)
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("i = %d"), i);
-		_ai->MoveToActor(_toPath[i]);
+		_ai->MoveToActor(_toPath[i],-1.f,true,true);
 	}
 }
 
@@ -75,6 +65,8 @@ void AMyCharacter::PlayDialog(FName DialogName, UDataTable* _dataTable, UAudioCo
 		FAudioDataTableStruct* Row = _dataTable->FindRow<FAudioDataTableStruct>(DialogName, ContextString, true);
 		if (Row)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("Row"));
+
 			FString output = (*Row).Path;
 			GLog->Log(output);
 
@@ -82,7 +74,11 @@ void AMyCharacter::PlayDialog(FName DialogName, UDataTable* _dataTable, UAudioCo
 
 			if (path != NAME_None)
 			{
+				UE_LOG(LogTemp, Warning, TEXT("Path"));
+
 				cue = LoadObjFromPath<USoundCue>(path);
+				float duration = cue->GetDuration();
+
 				_audio->SetSound(cue);
 				_audio->Play();
 			}
@@ -100,12 +96,33 @@ void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//	GoToMarket(ToPath, ai);
+	walkingCount = 0;
 
-	//if (!ai)
+	//FVector FruitBoxBE = Box->Bounds.BoxExtent;
+	//UE_LOG(LogTemp, Warning, TEXT("BoxEtent is %s"),*FruitBoxBE.ToString());
+	//if (!Audio)
 	//{
-	//	UE_LOG(LogTemp, Warning, TEXT("Not found ai"));
+	//	UE_LOG(LogTemp, Warning, TEXT("Cant find Audio"));
+	//	return;
 	//}
+
+	PlayerMesh = GetMesh();
+	if (PlayerMesh)
+	{
+		PlayerMesh->SetSkeletalMesh(AlternateMeshAsset);
+		UE_LOG(LogTemp, Warning, TEXT("Player Mesh loaded"));
+	}
+
+	ai = Cast<AAIController>(thisCharacter->GetController());
+
+	if (!ai)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Not found ai"));
+		return;
+	}
+
+	//ai->MoveToActor(ToPath[0]);
+	GoToMarket(ToPath, ai, walkingCount);
 
 }
 
@@ -113,19 +130,20 @@ void AMyCharacter::BeginPlay()
 void AMyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
 
-	if (IsNotPlaying(Audio))
-	{
-		if (EComeState == EStatesEnum::Active)
-		{
-			PlayDialog("greetings4", DataTable, Audio, isCheck);
-			//FOnAudioFinished OnAudioFinished;
-
-			PlayDialog("requests4", DataTable, Audio, isCheck);
-			EComeState = EStatesEnum::Finished;
-		}
-		//UE_LOG(LogTemp, Warning, TEXT("Audio not playing"));
-	}
+	//if (IsNotPlaying(Audio))
+	//{
+	//	//if (EComeState == EStatesEnum::Active)
+	//	//{
+	//	//	PlayDialog("greetings4", DataTable, Audio, isCheck);
+	//	//	//FOnAudioFinished OnAudioFinished;
+	//	//
+	//	//	PlayDialog("requests4", DataTable, Audio, isCheck);
+	//	//	EComeState = EStatesEnum::Finished;
+	//	//}
+	//	UE_LOG(LogTemp, Warning, TEXT("Audio not playing"));
+	//}
 
 }
 

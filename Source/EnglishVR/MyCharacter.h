@@ -68,10 +68,14 @@ public:
 	EStatesEnum EPickupState;
 
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 walkingCount;
+
+
 
 
 	UFUNCTION(BlueprintCallable)
-	static void GoToMarket(TArray<AActor*> _toPath, AAIController* _ai);
+	static void GoToMarket(TArray<AActor*> _toPath, AAIController* _ai, int32 _walkingCount);
 
 	UFUNCTION(BlueprintCallable)
 	static void PlayDialog(FName DialogName, UDataTable* _dataTable, UAudioComponent* _audio, bool _isCheck);
