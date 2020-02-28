@@ -48,10 +48,9 @@ bool AMyCharacter::IsNotPlaying(UAudioComponent * _audio)
 
 void AMyCharacter::GoToMarket(TArray<AActor*> _toPath, AAIController* _ai, int32 _walkingCount)
 {
-	//while(_walkingCount<_toPath.Num())
-	for(int i = 0; i < _toPath.Num(); i++)
+	for (int32 i = 0; i < _toPath.Num(); i++)
 	{
-		_ai->MoveToActor(_toPath[i],-1.f,true,true);
+		_ai->MoveToActor(_toPath[0],-1.f,true,true);
 	}
 }
 
@@ -65,8 +64,7 @@ void AMyCharacter::PlayDialog(FName DialogName, UDataTable* _dataTable, UAudioCo
 		FAudioDataTableStruct* Row = _dataTable->FindRow<FAudioDataTableStruct>(DialogName, ContextString, true);
 		if (Row)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Row"));
-
+			
 			FString output = (*Row).Path;
 			GLog->Log(output);
 
