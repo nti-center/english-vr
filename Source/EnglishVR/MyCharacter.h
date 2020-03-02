@@ -6,6 +6,7 @@
 #include "Engine.h"
 #include "Engine/DataTable.h"
 #include "AIController.h"
+#include "Basket.h"
 #include "Sound/SoundCue.h"
 #include "GameFramework/Character.h"
 #include "AudioDataTableStruct.h"
@@ -19,7 +20,7 @@ enum class EStatesEnum : uint8
 	Finished   UMETA(DisplayName = "Finished"),
 };
 
-UCLASS()
+UCLASS(Abstract)
 class ENGLISHVR_API AMyCharacter : public ACharacter
 {
 	GENERATED_BODY()
@@ -34,10 +35,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SkeletalMesh)
 	USkeletalMesh* AlternateMeshAsset;
 
+
 	UPROPERTY(BlueprintReadWrite)
 	UBoxComponent* Box;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UAudioComponent* Audio;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
@@ -45,6 +47,12 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	bool isCheck = false;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool isTmp = false;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool isEnd = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	ACharacter* thisCharacter;
@@ -55,8 +63,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<AActor*> ToPath;
 
-	UPROPERTY(BlueprintReadWrite)
-	TArray<ATargetPoint*> OutPath;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<AActor*> OutPath;
 
 	UPROPERTY(BlueprintReadWrite)
 	EStatesEnum EComeState;
@@ -67,27 +75,45 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	EStatesEnum EPickupState;
 
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 walkingCount;
 
+	UPROPERTY(BlueprintReadWrite)
+	ABasket* Basket;
 
 
+	UPROPERTY(BlueprintReadWrite)
+	TMap<FString, int32> FruitsCount;
+
+
+
+
+	UFUNCTION(BlueprintCallable)
+	void GoToMarket();
 
 	UFUNCTION(BlueprintCallable)
-	static void GoToMarket(TArray<AActor*> _toPath, AAIController* _ai, int32 _walkingCount);
+	void GoAway();
 
 	UFUNCTION(BlueprintCallable)
-	static void PlayDialog(FName DialogName, UDataTable* _dataTable, UAudioComponent* _audio, bool _isCheck);
+	void GetABasket();
 
 	UFUNCTION(BlueprintCallable)
-	static bool IsState(EStatesEnum A, EStatesEnum B);
+	void PlayDialog(FName DialogName);
 
 	UFUNCTION(BlueprintCallable)
-	static bool IsNotPlaying(UAudioComponent* _audio);
+	bool IsState(EStatesEnum A, EStatesEnum B);
 
+	UFUNCTION(BlueprintCallable)
+	bool IsNotPlaying();
 
+	UFUNCTION(BlueprintCallable)
+	bool IsCorrectFruitsCount(TMap<FString, int32> _A, TMap<FString, int32> _B);
 
+	UFUNCTION()
+	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 
 protected:

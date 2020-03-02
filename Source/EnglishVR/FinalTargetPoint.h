@@ -5,11 +5,11 @@
 #include "CoreMinimal.h"
 #include "MyCharacter.h"
 #include "Engine/TargetPoint.h"
-#include "Midpoint.generated.h"
+#include "FinalTargetPoint.generated.h"
 
 
 UCLASS(Abstract)
-class ENGLISHVR_API AMidpoint : public ATargetPoint
+class ENGLISHVR_API AFinalTargetPoint : public ATargetPoint
 {
 	GENERATED_BODY()
 
@@ -20,7 +20,8 @@ class ENGLISHVR_API AMidpoint : public ATargetPoint
 	void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 public:
-	AMidpoint();
+	AFinalTargetPoint();
+
 
 	UPROPERTY(BlueprintReadWrite)
 	AMyCharacter* Character;
