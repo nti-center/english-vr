@@ -92,13 +92,16 @@ void AMyCharacter::GetABasket()
 {
 	if ((EPickupState == EStatesEnum::Finished) && !isEnd)
 	{
-		//Basket = Cast<ABasket>(Basket);
-		Basket->Mesh->SetSimulatePhysics(false);
+		UStaticMeshComponent* _mesh = Cast<UStaticMeshComponent>(Basket);
+		 if (!_mesh)
+		 {
+			 UE_LOG(LogTemp, Warning, TEXT("Not found basket mesh"));
+			 return;
+		 }
+		 _mesh->SetSimulatePhysics(false);
 		//Attach Insaide
-		Basket->Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		Basket->Mesh->AttachToComponent(PlayerMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "RightHandSocket");
-
-
+		_mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		_mesh->AttachToComponent(PlayerMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "RightHandSocket");
 		this->PlayDialog("goodbye3", DataTable, isCheck);
 
 		isEnd = true;
@@ -142,8 +145,6 @@ void AMyCharacter::Tick(float DeltaTime)
 		if (EComeState == EStatesEnum::Active)
 		{
 			this->PlayDialog("greetings4", DataTable, isCheck);
-			//FOnAudioFinished OnAudioFinished;
-		
 			this->PlayDialog("requests4", DataTable, isCheck);
 			EComeState = EStatesEnum::Finished;
 		}
@@ -157,21 +158,27 @@ void AMyCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* O
 	if (OtherActor == nullptr || OtherActor == this || OtherComp == nullptr)
 		return;
 
-	if (OtherActor && OtherActor != this)
+	if (OtherActor->ActorHasTag("Basket"))
 	{
 		if (IsNotPlaying())
 		{
 			if (!(EPickupState == EStatesEnum::Finished))
 			{
-				//if (IsCorrectFruitsCount(FruitsCount, Basket->CountItems))
-				//{
-				//	EPickupState = EStatesEnum::Active;
-				//}
-				//else
-				//{
-				//	this->PlayDialog("errors3", DataTable, isCheck);
-				//	ENegativeState = EStatesEnum::Active;
-				//}
+				Basket = Cast<ABasket>(OtherActor);
+				if (!Basket)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Not basket"));
+					return;
+				}
+				if (IsCorrectFruitsCount(FruitsCount, Basket->CountItems))
+				{
+					EPickupState = EStatesEnum::Active;
+				}
+				else
+				{
+					this->PlayDialog("errors3", DataTable, isCheck);
+					ENegativeState = EStatesEnum::Active;
+				}
 			}
 		}
 	}
