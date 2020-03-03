@@ -6,11 +6,21 @@
 #include "Engine.h"
 #include "Engine/DataTable.h"
 #include "AIController.h"
+#include "Basket.h"
+#include "Sound/SoundCue.h"
 #include "GameFramework/Character.h"
 #include "AudioDataTableStruct.h"
 #include "MyCharacter.generated.h"
 
-UCLASS()
+UENUM(BlueprintType)
+enum class EStatesEnum : uint8
+{
+	NotActive    UMETA(DisplayName = "NotActive"),
+	Active      UMETA(DisplayName = "Active"),
+	Finished   UMETA(DisplayName = "Finished"),
+};
+
+UCLASS(Abstract)
 class ENGLISHVR_API AMyCharacter : public ACharacter
 {
 	GENERATED_BODY()
@@ -25,10 +35,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SkeletalMesh)
 	USkeletalMesh* AlternateMeshAsset;
 
+
 	UPROPERTY(BlueprintReadWrite)
 	UBoxComponent* Box;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UAudioComponent* Audio;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
@@ -36,6 +47,12 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	bool isCheck = false;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool isTmp = false;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool isEnd = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	ACharacter* thisCharacter;
@@ -46,16 +63,57 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<AActor*> ToPath;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<AActor*> OutPath;
+
 	UPROPERTY(BlueprintReadWrite)
-	TArray<ATargetPoint*> OutPath;
+	EStatesEnum EComeState;
 
-	FAudioDataTableStruct Struct;
+	UPROPERTY(BlueprintReadWrite)
+	EStatesEnum ENegativeState;
+
+	UPROPERTY(BlueprintReadWrite)
+	EStatesEnum EPickupState;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 walkingCount;
+
+	UPROPERTY(BlueprintReadWrite)
+	ABasket* Basket;
+
+
+	UPROPERTY(BlueprintReadWrite)
+	TMap<FString, int32> FruitsCount;
+
+
+
 
 	UFUNCTION(BlueprintCallable)
-	static void GoToMarket(TArray<AActor*> pathArray, AAIController* _ai);
+	void GoToMarket();
 
 	UFUNCTION(BlueprintCallable)
-	static void PlayDialog(FString DialogName, UDataTable* table, UAudioComponent* _audio, bool check);
+	void GoAway();
+
+	UFUNCTION(BlueprintCallable)
+	void GetABasket();
+
+	UFUNCTION(BlueprintCallable)
+	void PlayDialog(FName DialogName);
+
+	UFUNCTION(BlueprintCallable)
+	bool IsState(EStatesEnum A, EStatesEnum B);
+
+	UFUNCTION(BlueprintCallable)
+	bool IsNotPlaying();
+
+	UFUNCTION(BlueprintCallable)
+	bool IsCorrectFruitsCount(TMap<FString, int32> _A, TMap<FString, int32> _B);
+
+	UFUNCTION()
+	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 
 protected:
