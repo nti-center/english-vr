@@ -98,13 +98,15 @@ public:
 	void GetABasket();
 
 	UFUNCTION(BlueprintCallable)
-	void PlayDialog(FName DialogName);
-
-	UFUNCTION(BlueprintCallable)
 	bool IsState(EStatesEnum A, EStatesEnum B);
 
-	UFUNCTION(BlueprintCallable)
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlayDialog(FName DialogName, UDataTable* _dataTable, bool _isCheck);
+
+	UFUNCTION(BlueprintImplementableEvent)
 	bool IsNotPlaying();
+
 
 	UFUNCTION(BlueprintCallable)
 	bool IsCorrectFruitsCount(TMap<FString, int32> _A, TMap<FString, int32> _B);

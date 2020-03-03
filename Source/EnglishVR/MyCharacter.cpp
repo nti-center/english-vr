@@ -15,14 +15,11 @@ AMyCharacter::AMyCharacter()
 
 	Audio = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio"));
 	Audio->SetupAttachment(RootComponent);
-	//Audio->Activate();
 
-	static ConstructorHelpers::FObjectFinder<UDataTable> DataTableObject(TEXT("DataTable'/Game/CSV/DataTable.DataTable'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> DataTableObject(TEXT("DataTable'/Game/CSV/MainDialog.MainDialog'"));
 	if (DataTableObject.Succeeded())
 	{	
 		DataTable = DataTableObject.Object;
-		isCheck = true;
-
 		UE_LOG(LogTemp, Warning, TEXT("Data table loaded"));
 	}
 }
@@ -40,14 +37,6 @@ bool AMyCharacter::IsState(EStatesEnum A, EStatesEnum B)
 		return true;
 	else
 		return false;
-}
-
-bool AMyCharacter::IsNotPlaying()
-{
-	if (Audio->IsPlaying())
-		return false;
-	else
-		return true;
 }
 
 bool AMyCharacter::IsCorrectFruitsCount(TMap<FString, int32> _A, TMap<FString, int32> _B)
@@ -103,48 +92,19 @@ void AMyCharacter::GetABasket()
 {
 	if ((EPickupState == EStatesEnum::Finished) && !isEnd)
 	{
-		//Basket = Cast<ABasket>(Basket);
-		Basket->Mesh->SetSimulatePhysics(false);
+		UStaticMeshComponent* _mesh = Cast<UStaticMeshComponent>(Basket);
+		 if (!_mesh)
+		 {
+			 UE_LOG(LogTemp, Warning, TEXT("Not found basket mesh"));
+			 return;
+		 }
+		 _mesh->SetSimulatePhysics(false);
 		//Attach Insaide
-		Basket->Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		Basket->Mesh->AttachToComponent(PlayerMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "RightHandSocket");
-		PlayDialog("goodbye3");
+		_mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		_mesh->AttachToComponent(PlayerMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "RightHandSocket");
+		this->PlayDialog("goodbye3", DataTable, isCheck);
+
 		isEnd = true;
-	}
-}
-
-
-void AMyCharacter::PlayDialog(FName DialogName)
-{
-	FString ContextString;
-	USoundCue* cue;
-
-	if (isCheck == true)
-	{
-		FAudioDataTableStruct* Row = DataTable->FindRow<FAudioDataTableStruct>(DialogName, ContextString, true);
-		if (Row)
-		{
-			
-			FString output = (*Row).Path;
-			GLog->Log(output);
-
-			FName path = FName(*output);
-
-			if (path != NAME_None)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Path"));
-
-				cue = LoadObjFromPath<USoundCue>(path);
-				float duration = cue->GetDuration();
-
-				Audio->SetSound(cue);
-				Audio->Play();
-			}
-			else
-			{
-				GLog->Log("Path is empty!");
-			}
-		}
 	}
 }
 
@@ -154,16 +114,8 @@ void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	isCheck = true;
 	walkingCount = 0;
-
-	//FVector FruitBoxBE = Box->Bounds.BoxExtent;
-	//UE_LOG(LogTemp, Warning, TEXT("BoxEtent is %s"),*FruitBoxBE.ToString());
-
-	if (!Audio)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Cant find Audio"));
-		//return;
-	}
 
 	PlayerMesh = GetMesh();
 	if (PlayerMesh)
@@ -180,9 +132,7 @@ void AMyCharacter::BeginPlay()
 		return;
 	}
 
-	//ai->MoveToActor(ToPath[0]);
 	GoToMarket();
-
 }
 
 // Called every frame
@@ -190,20 +140,17 @@ void AMyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	//if (IsNotPlaying())
-	//{
-	//	if (EComeState == EStatesEnum::Active)
-	//	{
-	//		PlayDialog("greetings4", DataTable, Audio, isCheck);
-	//		//FOnAudioFinished OnAudioFinished;
-	//	
-	//		PlayDialog("requests4", DataTable, Audio, isCheck);
-	//		EComeState = EStatesEnum::Finished;
-	//	}
+	if (this->IsNotPlaying())
+	{
+		if (EComeState == EStatesEnum::Active)
+		{
+			this->PlayDialog("greetings4", DataTable, isCheck);
+			this->PlayDialog("requests4", DataTable, isCheck);
+			EComeState = EStatesEnum::Finished;
+		}
 
-	// GoAway();
-	//}
-
+	 GoAway();
+	}
 }
 
 void AMyCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) 
@@ -211,19 +158,25 @@ void AMyCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* O
 	if (OtherActor == nullptr || OtherActor == this || OtherComp == nullptr)
 		return;
 
-	if (OtherActor && OtherActor != this)
+	if (OtherActor->ActorHasTag("Basket"))
 	{
 		if (IsNotPlaying())
 		{
 			if (!(EPickupState == EStatesEnum::Finished))
 			{
+				Basket = Cast<ABasket>(OtherActor);
+				if (!Basket)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Not basket"));
+					return;
+				}
 				if (IsCorrectFruitsCount(FruitsCount, Basket->CountItems))
 				{
 					EPickupState = EStatesEnum::Active;
 				}
 				else
 				{
-					PlayDialog("errors3");
+					this->PlayDialog("errors3", DataTable, isCheck);
 					ENegativeState = EStatesEnum::Active;
 				}
 			}
