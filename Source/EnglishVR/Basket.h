@@ -22,6 +22,9 @@ public:
     // Sets default values for this actor's properties
     ABasket();
 
+    UFUNCTION()
+    void AttachOverlappingActors();
+
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
     UStaticMeshComponent* Mesh;
 
