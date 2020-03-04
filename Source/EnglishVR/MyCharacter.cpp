@@ -82,24 +82,41 @@ void AMyCharacter::RandomDialogGenerator(TArray<FName> SoundsName, int32 min, in
 	for (int i = 0; i < SoundsName.Num(); i++)
 	{
 		int32 Rand = 0;
+		int32 requestCount = 1;
 		FName SoundName = "";
 		FName GetPath = "";
+
 
 		Rand = FMath::RandRange(min,max);
 		SoundName = SoundsName[i];
 
-		FString base = SoundName.ToString();
-		base.Append(FString::FromInt(Rand));
+		//if (SoundName == "requests")
+		//{
+		//	GetPath = "SoundCue'/Game/Sounds/TestRandomSoundCue.TestRandomSoundCue'";
+		//
+		//	FString base = SoundName.ToString();
+		//	base.Append(FString::FromInt(requestCount));
+		//	FName ConcatName = FName(*base);
+		//
+		//	DialogList.Add(ConcatName, GetPath);
+		//	requestCount++;
+		//}
+		//else 
+		//{
 
-		FName ConcatName = FName(*base);
+			FString base = SoundName.ToString();
+			base.Append(FString::FromInt(Rand));
 
-		FAudioDataTableStruct* Row = _Table->FindRow<FAudioDataTableStruct>(ConcatName, ContextString, true);
-		if (Row)
-		{
-			GetPath = (*Row->Path);
-		}
-		UE_LOG(LogTemp, Warning, TEXT("Key =  %s Value = %s"), *SoundName.ToString(), *GetPath.ToString());
-		DialogList.Add(SoundName, GetPath);
+			FName ConcatName = FName(*base);
+
+			FAudioDataTableStruct* Row = _Table->FindRow<FAudioDataTableStruct>(ConcatName, ContextString, true);
+			if (Row)
+			{
+				GetPath = (*Row->Path);
+			}
+			UE_LOG(LogTemp, Warning, TEXT("Key =  %s Value = %s"), *ConcatName.ToString(), *GetPath.ToString());
+			DialogList.Add(SoundName, GetPath);
+		//}
 	}
 }
 
