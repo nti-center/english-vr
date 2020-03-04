@@ -132,7 +132,7 @@ void AMyCharacter::GetABasket() {
         _mesh->SetSimulatePhysics(false);
         //Attach Insaide
         _mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-        _mesh->AttachToComponent(PlayerMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "RightHandSocket");
+        _mesh->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, "RightHandSocket");
         this->PlayDialog(DialogList.FindRef("goodbye"), DataTable, IsCheck);
         //this->PlayDialog("goodbye3", DataTable, isCheck);
         IsEnd = true;
@@ -154,12 +154,7 @@ void AMyCharacter::BeginPlay() {
 
     RandomDialogGenerator(name, 1, 3);
 
-    PlayerMesh = GetMesh();
-    if (PlayerMesh) {
-        PlayerMesh->SetSkeletalMesh(AlternateMeshAsset);
-        UE_LOG(LogTemp, Warning, TEXT("Player Mesh loaded"));
-    }
-
+    Ai = Cast<AAIController>(ThisCharacter->GetController());
     ai = Cast<AAIController>(thisCharacter->GetController());
 
     if (!ai) {
