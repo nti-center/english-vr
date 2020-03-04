@@ -47,13 +47,13 @@ public:
     UDataTable* _Table;
 
     UPROPERTY(BlueprintReadWrite)
-    bool isCheck = false;
+    bool IsCheck = false;
 
     UPROPERTY(BlueprintReadWrite)
-    bool isTmp = false;
+    bool IsTmp = false;
 
     UPROPERTY(BlueprintReadWrite)
-    bool isEnd = false;
+    bool IsEnd = false;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     ACharacter* thisCharacter;

@@ -112,17 +112,17 @@ void AMyCharacter::GoToMarket() {
 void AMyCharacter::GoAway() {
     walkingCount = 0;
 
-    if (!isTmp && isEnd) {
+    if (!IsTmp && IsEnd) {
         if (walkingCount < OutPath.Num()) {
             ai->MoveToActor(OutPath[walkingCount], -1.f, true, true);
         }
 
-        isTmp = false;
+        IsTmp = false;
     }
 }
 
 void AMyCharacter::GetABasket() {
-    if ((EPickupState == EStatesEnum::Finished) && !isEnd) {
+    if ((EPickupState == EStatesEnum::Finished) && !IsEnd) {
         UStaticMeshComponent* _mesh = Cast<UStaticMeshComponent>(Basket);
         if (!_mesh) {
             UE_LOG(LogTemp, Warning, TEXT("Not found basket mesh"));
@@ -133,9 +133,9 @@ void AMyCharacter::GetABasket() {
         //Attach Insaide
         _mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
         _mesh->AttachToComponent(PlayerMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "RightHandSocket");
-        this->PlayDialog(DialogList.FindRef("goodbye"), DataTable, isCheck);
+        this->PlayDialog(DialogList.FindRef("goodbye"), DataTable, IsCheck);
         //this->PlayDialog("goodbye3", DataTable, isCheck);
-        isEnd = true;
+        IsEnd = true;
     }
 }
 
@@ -143,7 +143,7 @@ void AMyCharacter::GetABasket() {
 void AMyCharacter::BeginPlay() {
     Super::BeginPlay();
 
-    isCheck = true;
+    IsCheck = true;
     walkingCount = 0;
 
     TArray<FName> name;
@@ -176,9 +176,9 @@ void AMyCharacter::Tick(float DeltaTime) {
     
     if (this->IsNotPlaying()) {
         if (EComeState == EStatesEnum::Active) {
-            this->PlayDialog(DialogList.FindRef("greetings"), DataTable, isCheck);
+            this->PlayDialog(DialogList.FindRef("greetings"), DataTable, IsCheck);
             //this->PlayDialog("greetings4", DataTable, isCheck);
-            this->PlayDialog(DialogList.FindRef("requests"), DataTable, isCheck);
+            this->PlayDialog(DialogList.FindRef("requests"), DataTable, IsCheck);
             //this->PlayDialog("requests4", DataTable, isCheck);
             EComeState = EStatesEnum::Finished;
         }
@@ -203,7 +203,7 @@ void AMyCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* O
                     EPickupState = EStatesEnum::Active;
                 }
                 else {
-                    this->PlayDialog(DialogList.FindRef("errors"), DataTable, isCheck);
+                    this->PlayDialog(DialogList.FindRef("errors"), DataTable, IsCheck);
                     //this->PlayDialog("errors3", DataTable, isCheck);
                     ENegativeState = EStatesEnum::Active;
                 }
