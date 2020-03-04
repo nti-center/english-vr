@@ -172,6 +172,13 @@ void AMyCharacter::BeginPlay()
 
 	TArray<FName> name;
 	name.Add("greetings");
+	//for (int i = 0; i < FMath::RandRange(3, 5); i++)
+	//{
+	//	FString base = "requests";
+	//	base.Append(FString::FromInt(i));
+	//	FName ConcatName = FName(*base);
+	//	name.Add(ConcatName);
+	//}
 	name.Add("requests");
 	name.Add("errors");
 	name.Add("goodbye");
