@@ -22,6 +22,14 @@ AMyCharacter::AMyCharacter()
 		DataTable = DataTableObject.Object;
 		UE_LOG(LogTemp, Warning, TEXT("Data table loaded"));
 	}
+
+	static ConstructorHelpers::FObjectFinder<UDataTable> _DataTableObject(TEXT("DataTable'/Game/CSV/DataTable.DataTable'"));
+	if (_DataTableObject.Succeeded())
+	{
+		_Table = _DataTableObject.Object;
+		UE_LOG(LogTemp, Warning, TEXT("Data table loaded"));
+	}
+
 }
 
 template <typename ObjClass>
@@ -67,6 +75,34 @@ bool AMyCharacter::IsCorrectFruitsCount(TMap<FString, int32> _A, TMap<FString, i
 	return false;
 }
 
+void AMyCharacter::RandomDialogGenerator(TArray<FName> SoundsName, int32 min, int32 max){
+
+    FString ContextString;
+
+	for (int i = 0; i < SoundsName.Num(); i++)
+	{
+		int32 Rand = 0;
+		FName SoundName = "";
+		FName GetPath = "";
+
+		Rand = FMath::RandRange(min,max);
+		SoundName = SoundsName[i];
+
+		FString base = SoundName.ToString();
+		base.Append(FString::FromInt(Rand));
+
+		FName ConcatName = FName(*base);
+
+		FAudioDataTableStruct* Row = _Table->FindRow<FAudioDataTableStruct>(ConcatName, ContextString, true);
+		if (Row)
+		{
+			GetPath = (*Row->Path);
+		}
+		UE_LOG(LogTemp, Warning, TEXT("Key =  %s Value = %s"), *SoundName.ToString(), *GetPath.ToString());
+		DialogList.Add(SoundName, GetPath);
+	}
+}
+
 void AMyCharacter::GoToMarket()
 {
 	if(walkingCount < ToPath.Num())
@@ -102,8 +138,8 @@ void AMyCharacter::GetABasket()
 		//Attach Insaide
 		_mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		_mesh->AttachToComponent(PlayerMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "RightHandSocket");
-		this->PlayDialog("goodbye3", DataTable, isCheck);
-
+		this->PlayDialog(DialogList.FindRef("goodbye"), DataTable, isCheck);
+		//this->PlayDialog("goodbye3", DataTable, isCheck);
 		isEnd = true;
 	}
 }
@@ -116,6 +152,15 @@ void AMyCharacter::BeginPlay()
 
 	isCheck = true;
 	walkingCount = 0;
+
+	TArray<FName> name;
+	name.Add("greetings");
+	name.Add("requests");
+	name.Add("errors");
+	name.Add("goodbye");
+
+	RandomDialogGenerator(name, 1, 3);
+
 
 	PlayerMesh = GetMesh();
 	if (PlayerMesh)
@@ -132,6 +177,7 @@ void AMyCharacter::BeginPlay()
 		return;
 	}
 
+	
 	GoToMarket();
 }
 
@@ -144,8 +190,10 @@ void AMyCharacter::Tick(float DeltaTime)
 	{
 		if (EComeState == EStatesEnum::Active)
 		{
-			this->PlayDialog("greetings4", DataTable, isCheck);
-			this->PlayDialog("requests4", DataTable, isCheck);
+			this->PlayDialog(DialogList.FindRef("greetings"), DataTable, isCheck);
+			//this->PlayDialog("greetings4", DataTable, isCheck);
+			this->PlayDialog(DialogList.FindRef("requests"), DataTable, isCheck);
+			//this->PlayDialog("requests4", DataTable, isCheck);
 			EComeState = EStatesEnum::Finished;
 		}
 
@@ -176,7 +224,8 @@ void AMyCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* O
 				}
 				else
 				{
-					this->PlayDialog("errors3", DataTable, isCheck);
+					this->PlayDialog(DialogList.FindRef("errors"), DataTable, isCheck);
+					//this->PlayDialog("errors3", DataTable, isCheck);
 					ENegativeState = EStatesEnum::Active;
 				}
 			}

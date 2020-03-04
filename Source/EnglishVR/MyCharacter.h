@@ -8,6 +8,7 @@
 #include "AIController.h"
 #include "Basket.h"
 #include "Sound/SoundCue.h"
+#include "Math/UnrealMathUtility.h"
 #include "GameFramework/Character.h"
 #include "AudioDataTableStruct.h"
 #include "MyCharacter.generated.h"
@@ -44,6 +45,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UDataTable* DataTable;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UDataTable* _Table;
 
 	UPROPERTY(BlueprintReadWrite)
 	bool isCheck = false;
@@ -85,6 +89,9 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	TMap<FString, int32> FruitsCount;
 
+	UPROPERTY(BlueprintReadWrite)
+	TMap<FName, FName> DialogList;
+
 
 
 
@@ -110,6 +117,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool IsCorrectFruitsCount(TMap<FString, int32> _A, TMap<FString, int32> _B);
+
+	UFUNCTION(BlueprintCallable)
+	void RandomDialogGenerator(TArray<FName> SoundsName, int32 min, int32 max);
 
 	UFUNCTION()
 	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
