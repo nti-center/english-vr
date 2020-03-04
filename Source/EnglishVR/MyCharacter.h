@@ -14,129 +14,119 @@
 #include "MyCharacter.generated.h"
 
 UENUM(BlueprintType)
-enum class EStatesEnum : uint8
-{
-	NotActive    UMETA(DisplayName = "NotActive"),
-	Active      UMETA(DisplayName = "Active"),
-	Finished   UMETA(DisplayName = "Finished"),
+enum class EStatesEnum : uint8 {
+    NotActive UMETA(DisplayName = "NotActive"),
+    Active    UMETA(DisplayName = "Active"),
+    Finished  UMETA(DisplayName = "Finished"),
 };
 
 UCLASS(Abstract)
-class ENGLISHVR_API AMyCharacter : public ACharacter
-{
-	GENERATED_BODY()
+class ENGLISHVR_API AMyCharacter : public ACharacter {
+    GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
-	AMyCharacter();
+    // Sets default values for this character's properties
+    AMyCharacter();
 
-	UPROPERTY(BlueprintReadWrite)
-	USkeletalMeshComponent* PlayerMesh;
+    UPROPERTY(BlueprintReadWrite)
+    USkeletalMeshComponent* PlayerMesh;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SkeletalMesh)
-	USkeletalMesh* AlternateMeshAsset;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SkeletalMesh)
+    USkeletalMesh* AlternateMeshAsset;
 
+    UPROPERTY(BlueprintReadWrite)
+    UBoxComponent* Box;
 
-	UPROPERTY(BlueprintReadWrite)
-	UBoxComponent* Box;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UAudioComponent* Audio;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UAudioComponent* Audio;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    UDataTable* DataTable;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	UDataTable* DataTable;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    UDataTable* _Table;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	UDataTable* _Table;
+    UPROPERTY(BlueprintReadWrite)
+    bool isCheck = false;
 
-	UPROPERTY(BlueprintReadWrite)
-	bool isCheck = false;
+    UPROPERTY(BlueprintReadWrite)
+    bool isTmp = false;
 
-	UPROPERTY(BlueprintReadWrite)
-	bool isTmp = false;
+    UPROPERTY(BlueprintReadWrite)
+    bool isEnd = false;
 
-	UPROPERTY(BlueprintReadWrite)
-	bool isEnd = false;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    ACharacter* thisCharacter;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	ACharacter* thisCharacter;
+    UPROPERTY(BlueprintReadWrite)
+    AAIController* ai;
 
-	UPROPERTY(BlueprintReadWrite)
-	AAIController* ai;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<AActor*> ToPath;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<AActor*> ToPath;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<AActor*> OutPath;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<AActor*> OutPath;
+    UPROPERTY(BlueprintReadWrite)
+    EStatesEnum EComeState;
 
-	UPROPERTY(BlueprintReadWrite)
-	EStatesEnum EComeState;
+    UPROPERTY(BlueprintReadWrite)
+    EStatesEnum ENegativeState;
 
-	UPROPERTY(BlueprintReadWrite)
-	EStatesEnum ENegativeState;
+    UPROPERTY(BlueprintReadWrite)
+    EStatesEnum EPickupState;
 
-	UPROPERTY(BlueprintReadWrite)
-	EStatesEnum EPickupState;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 walkingCount;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 walkingCount;
+    UPROPERTY(BlueprintReadWrite)
+    ABasket* Basket;
 
-	UPROPERTY(BlueprintReadWrite)
-	ABasket* Basket;
+    UPROPERTY(BlueprintReadWrite)
+    TMap<FString, int32> FruitsCount;
 
+    UPROPERTY(BlueprintReadWrite)
+    TMap<FName, FName> DialogList;
 
-	UPROPERTY(BlueprintReadWrite)
-	TMap<FString, int32> FruitsCount;
+    UFUNCTION(BlueprintCallable)
+    void GoToMarket();
 
-	UPROPERTY(BlueprintReadWrite)
-	TMap<FName, FName> DialogList;
+    UFUNCTION(BlueprintCallable)
+    void GoAway();
 
+    UFUNCTION(BlueprintCallable)
+    void GetABasket();
 
+    UFUNCTION(BlueprintCallable)
+    bool IsState(EStatesEnum A, EStatesEnum B);
 
+    UFUNCTION(BlueprintImplementableEvent)
+    void PlayDialog(FName DialogName, UDataTable* _dataTable, bool _isCheck);
 
-	UFUNCTION(BlueprintCallable)
-	void GoToMarket();
+    UFUNCTION(BlueprintImplementableEvent)
+    bool IsNotPlaying();
 
-	UFUNCTION(BlueprintCallable)
-	void GoAway();
+    UFUNCTION(BlueprintCallable)
+    bool IsCorrectFruitsCount(TMap<FString, int32> _A, TMap<FString, int32> _B);
 
-	UFUNCTION(BlueprintCallable)
-	void GetABasket();
+    UFUNCTION(BlueprintCallable)
+    void RandomDialogGenerator(TArray<FName> SoundsName, int32 min, int32 max);
 
-	UFUNCTION(BlueprintCallable)
-	bool IsState(EStatesEnum A, EStatesEnum B);
+    UFUNCTION()
+    void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void PlayDialog(FName DialogName, UDataTable* _dataTable, bool _isCheck);
-
-	UFUNCTION(BlueprintImplementableEvent)
-	bool IsNotPlaying();
-
-
-	UFUNCTION(BlueprintCallable)
-	bool IsCorrectFruitsCount(TMap<FString, int32> _A, TMap<FString, int32> _B);
-
-	UFUNCTION(BlueprintCallable)
-	void RandomDialogGenerator(TArray<FName> SoundsName, int32 min, int32 max);
-
-	UFUNCTION()
-	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	UFUNCTION()
-	void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
+    UFUNCTION()
+    void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+    // Called when the game starts or when spawned
+    virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+public:    
+    // Called every frame
+    virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+    // Called to bind functionality to input
+    virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 };
