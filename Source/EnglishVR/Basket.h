@@ -29,7 +29,7 @@ public:
     USphereComponent* FillSphere;
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
-    TMap<FString, int32> CountItems;
+    TMap<FString, int32> FruitCounts;
 
 protected:
     // Called when the game starts or when spawned
