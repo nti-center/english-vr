@@ -56,33 +56,27 @@ public:
     bool IsEnd = false;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    ACharacter* thisCharacter;
-
-    UPROPERTY(BlueprintReadWrite)
-    AAIController* ai;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TArray<AActor*> ToPath;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TArray<AActor*> OutPath;
 
-    UPROPERTY(BlueprintReadWrite)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     EStatesEnum EComeState;
 
-    UPROPERTY(BlueprintReadWrite)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     EStatesEnum ENegativeState;
 
     UPROPERTY(BlueprintReadWrite)
     EStatesEnum EPickupState;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    int32 walkingCount;
+    int32 WalkingCount;
 
     UPROPERTY(BlueprintReadWrite)
     ABasket* Basket;
 
-    UPROPERTY(BlueprintReadWrite)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TMap<FString, int32> FruitsCount;
 
     UPROPERTY(BlueprintReadWrite)
@@ -95,10 +89,7 @@ public:
     void GoAway();
 
     UFUNCTION(BlueprintCallable)
-    void GetABasket();
-
-    UFUNCTION(BlueprintCallable)
-    bool IsState(EStatesEnum A, EStatesEnum B);
+    void TakeBasket();
 
     UFUNCTION(BlueprintImplementableEvent)
     void PlayDialog(FName DialogName, UDataTable* _dataTable, bool _isCheck);
@@ -107,7 +98,7 @@ public:
     bool IsNotPlaying();
 
     UFUNCTION(BlueprintCallable)
-    bool IsCorrectFruitsCount(TMap<FString, int32> _A, TMap<FString, int32> _B);
+    bool IsCorrectFruitsCount();
 
     UFUNCTION(BlueprintCallable)
     void RandomDialogGenerator(TArray<FName> SoundsName, int32 min, int32 max);

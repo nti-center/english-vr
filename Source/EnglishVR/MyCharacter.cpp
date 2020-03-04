@@ -34,33 +34,15 @@ static FORCEINLINE ObjClass* LoadObjFromPath(const FName& Path) {
     return Cast<ObjClass>(StaticLoadObject(ObjClass::StaticClass(), NULL, *Path.ToString()));
 }
 
-bool AMyCharacter::IsState(EStatesEnum A, EStatesEnum B) {
-    if (A == B)
-        return true;
-    else
+bool AMyCharacter::IsCorrectFruitsCount() {
+    if (FruitsCount.Num() != Basket->FruitCounts.Num())
         return false;
-}
 
-bool AMyCharacter::IsCorrectFruitsCount(TMap<FString, int32> _A, TMap<FString, int32> _B) {
-    TArray<FString> keys;
-
-    _A.GenerateKeyArray(keys);
-    
-    for (int i = 0; i < keys.Num(); i++) {
-        if (_B.Contains(keys[i])) {
-            int32* a = _A.Find(keys[i]);
-            int32* b = _B.Find(keys[i]);
-
-            if (a != b) {
-                return false;
-            }
-        }
-        else {
+    for (auto& Item : FruitsCount)
+        if (!Basket->FruitCounts.Contains(Item.Key) || Item.Value != Basket->FruitCounts[Item.Key])
             return false;
-        }
-        return true;
-    }
-    return false;
+
+    return true;
 }
 
 void AMyCharacter::RandomDialogGenerator(TArray<FName> SoundsName, int32 min, int32 max) {
@@ -105,38 +87,36 @@ void AMyCharacter::RandomDialogGenerator(TArray<FName> SoundsName, int32 min, in
 }
 
 void AMyCharacter::GoToMarket() {
-    if (walkingCount < ToPath.Num())
-        ai->MoveToActor(ToPath[walkingCount], -1.f, true, true);
+    if (WalkingCount < ToPath.Num())
+        Cast<AAIController>(GetController())->MoveToActor(ToPath[WalkingCount], -1.f, true, true);
 }
 
 void AMyCharacter::GoAway() {
-    walkingCount = 0;
+    WalkingCount = 0;
 
     if (!IsTmp && IsEnd) {
-        if (walkingCount < OutPath.Num()) {
-            ai->MoveToActor(OutPath[walkingCount], -1.f, true, true);
-        }
+        if (WalkingCount < OutPath.Num())
+            Cast<AAIController>(GetController())->MoveToActor(OutPath[WalkingCount], -1.f, true, true);
 
         IsTmp = false;
     }
 }
 
-void AMyCharacter::GetABasket() {
-    if ((EPickupState == EStatesEnum::Finished) && !IsEnd) {
-        UStaticMeshComponent* _mesh = Cast<UStaticMeshComponent>(Basket);
-        if (!_mesh) {
-            UE_LOG(LogTemp, Warning, TEXT("Not found basket mesh"));
-            return;
-        }
+void AMyCharacter::TakeBasket() {
 
-        _mesh->SetSimulatePhysics(false);
-        //Attach Insaide
-        _mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-        _mesh->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, "RightHandSocket");
-        this->PlayDialog(DialogList.FindRef("goodbye"), DataTable, IsCheck);
-        //this->PlayDialog("goodbye3", DataTable, isCheck);
-        IsEnd = true;
+    if (Basket == nullptr) {
+        UE_LOG(LogTemp, Warning, TEXT("Can't take basket: basket is null"));
+        return;
     }
+
+    Basket->Mesh->SetSimulatePhysics(false);
+    //AttachInside
+    Basket->Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    Basket->AttachOverlappingActors();
+    FAttachmentTransformRules Atr(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepWorld, true);
+    Basket->AttachToComponent(GetMesh(), Atr, "RightHandSocket");
+    PlayDialog(DialogList.FindRef("goodbye"), DataTable, IsCheck);
+    IsEnd = true;
 }
 
 // Called when the game starts or when spawned
@@ -144,7 +124,7 @@ void AMyCharacter::BeginPlay() {
     Super::BeginPlay();
 
     IsCheck = true;
-    walkingCount = 0;
+    WalkingCount = 0;
 
     TArray<FName> name;
     name.Add("greetings");
@@ -154,14 +134,6 @@ void AMyCharacter::BeginPlay() {
 
     RandomDialogGenerator(name, 1, 3);
 
-    Ai = Cast<AAIController>(ThisCharacter->GetController());
-    ai = Cast<AAIController>(thisCharacter->GetController());
-
-    if (!ai) {
-        UE_LOG(LogTemp, Warning, TEXT("Not found ai"));
-        return;
-    }
-
     GoToMarket();
 }
 
@@ -169,41 +141,39 @@ void AMyCharacter::BeginPlay() {
 void AMyCharacter::Tick(float DeltaTime) {
     Super::Tick(DeltaTime);
     
-    if (this->IsNotPlaying()) {
-        if (EComeState == EStatesEnum::Active) {
-            this->PlayDialog(DialogList.FindRef("greetings"), DataTable, IsCheck);
-            //this->PlayDialog("greetings4", DataTable, isCheck);
-            this->PlayDialog(DialogList.FindRef("requests"), DataTable, IsCheck);
-            //this->PlayDialog("requests4", DataTable, isCheck);
-            EComeState = EStatesEnum::Finished;
-        }
+    if (!IsNotPlaying())
+        return;
 
-        GoAway();
+    if (EComeState == EStatesEnum::Active) {
+        this->PlayDialog(DialogList.FindRef("greetings"), DataTable, IsCheck);
+        //this->PlayDialog("greetings4", DataTable, isCheck);
+        this->PlayDialog(DialogList.FindRef("requests"), DataTable, IsCheck);
+        //this->PlayDialog("requests4", DataTable, isCheck);
+        EComeState = EStatesEnum::Finished;
     }
+    if (EPickupState == EStatesEnum::Finished && !IsEnd) {
+        TakeBasket();
+    }
+
+    GoAway();
 }
 
 void AMyCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)  {
     if (OtherActor == nullptr || OtherActor == this || OtherComp == nullptr)
         return;
+    
+    if (!IsNotPlaying() || EPickupState == EStatesEnum::Finished || !Cast<ABasket>(OtherActor))
+        return;
 
-    if (OtherActor->ActorHasTag("Basket")) {
-        if (IsNotPlaying()) {
-            if (!(EPickupState == EStatesEnum::Finished)) {
-                Basket = Cast<ABasket>(OtherActor);
-                if (!Basket) {
-                    UE_LOG(LogTemp, Warning, TEXT("Not basket"));
-                    return;
-                }
-                if (IsCorrectFruitsCount(FruitsCount, Basket->CountItems)) {
-                    EPickupState = EStatesEnum::Active;
-                }
-                else {
-                    this->PlayDialog(DialogList.FindRef("errors"), DataTable, IsCheck);
-                    //this->PlayDialog("errors3", DataTable, isCheck);
-                    ENegativeState = EStatesEnum::Active;
-                }
-            }
-        }
+    Basket = Cast<ABasket>(OtherActor);
+
+    if (IsCorrectFruitsCount()) {
+        EPickupState = EStatesEnum::Active;
+    }
+    else {
+        PlayDialog(DialogList.FindRef("errors"), DataTable, IsCheck);
+        //this->PlayDialog("errors3", DataTable, isCheck);
+        ENegativeState = EStatesEnum::Active;
     }
 }
 
@@ -212,13 +182,10 @@ void AMyCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* Oth
     if (OtherActor == nullptr || OtherActor == this || OtherComp == nullptr)
         return;
 
-    if (OtherActor && OtherActor != this) {
-        if (IsNotPlaying()) {
-            if (!(EPickupState == EStatesEnum::Finished)) {
-                EPickupState = EStatesEnum::NotActive;
-            }
-        }
-    }
+    if (!IsNotPlaying() || EPickupState == EStatesEnum::Finished || !Cast<ABasket>(OtherActor))
+        return;
+
+    EPickupState = EStatesEnum::NotActive;
 }
 
 // Called to bind functionality to input
