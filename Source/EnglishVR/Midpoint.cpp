@@ -32,6 +32,7 @@ void AMidpoint::OnOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor * Ot
 		Character = Cast<AMyCharacter>(OtherActor);
 		if (Character)
 		{
+            UE_LOG(LogTemp, Warning, TEXT("Walking count %d"), Character->WalkingCount);
 			Character->WalkingCount++;
 			Character->GoToMarket();
 		}

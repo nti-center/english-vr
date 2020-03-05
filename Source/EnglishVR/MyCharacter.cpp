@@ -62,7 +62,7 @@ void AMyCharacter::RandomDialogGenerator(TArray<FName> SoundsName) {
 		else if (SoundName == "requests")
 			Rand = FMath::RandRange(1, 6);
 		else if (SoundName == "errors")
-			Rand = FMath::RandRange(1, 3);
+			Rand = FMath::RandRange(3, 3);
 		else if (SoundName == "goodbye")
 			Rand = FMath::RandRange(1, 4);
 
@@ -159,9 +159,9 @@ void AMyCharacter::Tick(float DeltaTime) {
         return;
 
     if (EComeState == EStatesEnum::Active) {
-        this->PlayDialog(DialogList.FindRef("greetings"), DataTable, IsCheck);
+        PlayDialog(DialogList.FindRef("greetings"), DataTable, IsCheck);
         //this->PlayDialog("greetings4", DataTable, isCheck);
-        this->PlayDialog(DialogList.FindRef("requests"), DataTable, IsCheck);
+        PlayDialog(DialogList.FindRef("requests"), DataTable, IsCheck);
         //this->PlayDialog("requests4", DataTable, isCheck);
         EComeState = EStatesEnum::Finished;
     }
@@ -189,6 +189,7 @@ void AMyCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* O
     }
     else {
         PlayDialog(DialogList.FindRef("errors"), DataTable, IsCheck);
+        PlayDialog(DialogList.FindRef("requests"), DataTable, IsCheck);
         //this->PlayDialog("errors3", DataTable, isCheck);
         ENegativeState = EStatesEnum::Active;
     }
