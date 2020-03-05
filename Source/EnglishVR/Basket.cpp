@@ -28,7 +28,8 @@ ABasket::ABasket() {
     FillSphere->SetGenerateOverlapEvents(true);
     FillSphere->OnComponentBeginOverlap.AddDynamic(this, &ABasket::OnOverlapBegin);
     FillSphere->OnComponentEndOverlap.AddDynamic(this, &ABasket::OnOverlapEnd);
-    FillSphere->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+    FillSphere->SetupAttachment(Mesh);
+    //FillSphere->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
     //FillSphere->bEditableWhenInherited = true;
     //FillSphere->SetSphereRadius(12.0f);
     //FillSphere->SetRelativeLocation(FVector(0.0f, 0.0f, 11.0f));
