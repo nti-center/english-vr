@@ -42,5 +42,5 @@ void AMidpoint::OnOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor * Ot
 
 void AMidpoint::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	
+
 }

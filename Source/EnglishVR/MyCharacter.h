@@ -101,7 +101,7 @@ public:
     bool IsCorrectFruitsCount();
 
     UFUNCTION(BlueprintCallable)
-    void RandomDialogGenerator(TArray<FName> SoundsName, int32 min, int32 max);
+    void RandomDialogGenerator(TArray<FName> SoundsName);
 
     UFUNCTION()
     void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
