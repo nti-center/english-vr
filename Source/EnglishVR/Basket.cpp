@@ -21,7 +21,7 @@ ABasket::ABasket() {
 
     Mesh->SetStaticMesh(ModelPath.Object);
     Mesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
-    Mesh->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f));
+    Mesh->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f));    
     //Mesh->bEditableWhenInherited = true;
 
     FillSphere = CreateDefaultSubobject<USphereComponent>(TEXT("FillSphere"));    
@@ -106,6 +106,7 @@ void ABasket::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherAct
 void ABasket::BeginPlay() {
     Super::BeginPlay();
 
+    Mesh->SetSimulatePhysics(true);
 }
 
 // Called every frame
