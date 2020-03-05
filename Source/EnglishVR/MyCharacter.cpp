@@ -100,20 +100,20 @@ void AMyCharacter::RandomDialogGenerator(TArray<FName> SoundsName) {
 }
 
 void AMyCharacter::GoToMarket() {
-	if (WalkingCount < ToPath.Num()){
-		Cast<AAIController>(GetController())->MoveToActor(ToPath[WalkingCount], -1.f, true, true);
+	if (WalkingCount < ToPath.Num()) {
+        if (GetController() && Cast<AAIController>(GetController()))
+		    Cast<AAIController>(GetController())->MoveToActor(ToPath[WalkingCount], -1.f, true, true);
 	}
 }
 
 void AMyCharacter::GoAway() {
     //WalkingCount = 0;
 
-    if (!IsTmp && IsEnd) {
-        if (WalkingCount < OutPath.Num())
+    if (WalkingCount < OutPath.Num())
+        if (GetController() && Cast<AAIController>(GetController()))
             Cast<AAIController>(GetController())->MoveToActor(OutPath[WalkingCount], -1.f, true, true);
 
-        IsTmp = false;
-    }
+    IsTmp = false;
 }
 
 void AMyCharacter::TakeBasket() {
@@ -154,7 +154,7 @@ void AMyCharacter::BeginPlay() {
 // Called every frame
 void AMyCharacter::Tick(float DeltaTime) {
     Super::Tick(DeltaTime);
-    
+
     if (!IsNotPlaying())
         return;
 
@@ -169,7 +169,10 @@ void AMyCharacter::Tick(float DeltaTime) {
         TakeBasket();
     }
 
-    GoAway();
+    if (!IsTmp && IsEnd && IsNotPlaying()) {
+        GoAway();
+    }
+    
 }
 
 void AMyCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)  {

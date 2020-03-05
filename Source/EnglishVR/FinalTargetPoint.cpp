@@ -25,6 +25,7 @@ void AFinalTargetPoint::OnOverlapBegin(UPrimitiveComponent * OverlappedComp, AAc
 		if (Character)
 		{
 			Character->EComeState = EStatesEnum::Active;
+            Character->WalkingCount = 0;
 		}
 	}
 }
