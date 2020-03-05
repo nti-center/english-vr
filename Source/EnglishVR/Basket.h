@@ -22,6 +22,9 @@ public:
     // Sets default values for this actor's properties
     ABasket();
 
+    UFUNCTION()
+    void AttachOverlappingActors();
+
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
     UStaticMeshComponent* Mesh;
 
@@ -29,7 +32,7 @@ public:
     USphereComponent* FillSphere;
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
-    TMap<FString, int32> CountItems;
+    TMap<FString, int32> FruitCounts;
 
 protected:
     // Called when the game starts or when spawned

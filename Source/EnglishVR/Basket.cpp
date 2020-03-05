@@ -34,6 +34,22 @@ ABasket::ABasket() {
     //FillSphere->SetRelativeLocation(FVector(0.0f, 0.0f, 11.0f));
 }
 
+void ABasket::AttachOverlappingActors() {
+    TArray<AActor*> Actors;
+    FillSphere->GetOverlappingActors(Actors);
+    
+    for (auto& Actor : Actors) {
+        if (UKismetSystemLibrary::DoesImplementInterface(Actor, UCollectable::StaticClass())) {
+            FAttachmentTransformRules Atr(EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, true);
+            Actor->AttachToComponent(Mesh, Atr);
+
+            UActorComponent* ActorMesh = Actor->GetComponentByClass(UStaticMeshComponent::StaticClass());
+            if (ActorMesh != nullptr)
+                Cast<UStaticMeshComponent>(ActorMesh)->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        }
+    }
+}
+
 void ABasket::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
     //UE_LOG(LogTemp, Warning, TEXT("2 wrong"));
     if (OtherActor == nullptr || OtherActor == this || OtherComp == nullptr)
@@ -62,9 +78,9 @@ void ABasket::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
     //Actor->SetRootComponent(Component);
     //Actor->AddInstanceComponent(Component);
 
-    if (!CountItems.Contains(Type))
-        CountItems.Add(Type, 0);
-    ++CountItems[Type];
+    if (!FruitCounts.Contains(Type))
+        FruitCounts.Add(Type, 0);
+    ++FruitCounts[Type];
     //UE_LOG(LogTemp, Warning, TEXT("2 wrong"));
     //OtherActor->Destroy();    
 }
@@ -81,8 +97,8 @@ void ABasket::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherAct
 
     FString Type = ICollectable::Execute_GetType(OtherActor);
 
-    if (CountItems.Contains(Type))
-        --CountItems[Type];
+    if (FruitCounts.Contains(Type))
+        --FruitCounts[Type];
 }
 
 // Called when the game starts or when spawned

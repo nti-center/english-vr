@@ -32,7 +32,7 @@ void AMidpoint::OnOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor * Ot
 		Character = Cast<AMyCharacter>(OtherActor);
 		if (Character)
 		{
-			Character->walkingCount++;
+			Character->WalkingCount++;
 			Character->GoToMarket();
 		}
 		
