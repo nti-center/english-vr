@@ -60,20 +60,6 @@ void ABasket::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
     if (!OtherActor->GetClass()->ImplementsInterface(UCollectable::StaticClass()))
         return;
 
-    //OtherActor->RootComponent->AttachToComponent(RootComponent, Attachmentrule
-    //OtherActor->SetupAttachment(RootComponent);
-
-    //FAttachmentTransformRules AttachmentTransformRules(EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, true);
-    //OtherActor->AttachToActor(this, AttachmentTransformRules);
-
-    //Mesh->SetSimulatePhysics(false);
-    //Mesh->SetSimulatePhysics(true);
-
-    //SimulatePhysia
-    //OtherActor->GetRootComponent()->AttachToComponent(FillSphere, AttachmentTransformRules);
-    //FillSphere->SetupAttachment()
-    UE_LOG(LogTemp, Warning, TEXT("Attached %d"), Mesh->GetAttachChildren().Num());    
-
     FString Type = ICollectable::Execute_GetType(OtherActor);
     
     //Actor->SetRootComponent(Component);
@@ -100,6 +86,9 @@ void ABasket::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherAct
 
     if (FruitCounts.Contains(Type))
         --FruitCounts[Type];
+    if (FruitCounts[Type] == 0) {
+        FruitCounts.Remove(Type);
+    }
 }
 
 // Called when the game starts or when spawned
