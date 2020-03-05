@@ -75,7 +75,7 @@ bool AMyCharacter::IsCorrectFruitsCount(TMap<FString, int32> _A, TMap<FString, i
 	return false;
 }
 
-void AMyCharacter::RandomDialogGenerator(TArray<FName> SoundsName, int32 min, int32 max){
+void AMyCharacter::RandomDialogGenerator(TArray<FName> SoundsName){
 
     FString ContextString;
 
@@ -87,8 +87,17 @@ void AMyCharacter::RandomDialogGenerator(TArray<FName> SoundsName, int32 min, in
 		FName GetPath = "";
 
 
-		Rand = FMath::RandRange(min,max);
+		//Rand = FMath::RandRange(min,max);
 		SoundName = SoundsName[i];
+
+		if(SoundName == "greetings")
+			Rand = FMath::RandRange(1, 7);
+		else if(SoundName == "requests")
+			Rand = FMath::RandRange(1, 6);
+		else if (SoundName == "errors")
+			Rand = FMath::RandRange(1, 3);
+		else if (SoundName == "goodbye")
+			Rand = FMath::RandRange(1, 4);
 
 		//if (SoundName == "requests")
 		//{
@@ -113,6 +122,11 @@ void AMyCharacter::RandomDialogGenerator(TArray<FName> SoundsName, int32 min, in
 			if (Row)
 			{
 				GetPath = (*Row->Path);
+				if (SoundName == "requests")
+				{
+					FruitCount.Add((*Row->FruitType), Row->FruitCount);
+					UE_LOG(LogTemp, Warning, TEXT("Type =  %s Count = %d"), *Row->FruitType, Row->FruitCount);
+				}
 			}
 			UE_LOG(LogTemp, Warning, TEXT("Key =  %s Value = %s"), *ConcatName.ToString(), *GetPath.ToString());
 			DialogList.Add(SoundName, GetPath);
@@ -132,6 +146,7 @@ void AMyCharacter::GoAway()
 
 	if (!isTmp && isEnd)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("WalkingCount =  %d"), walkingCount);
 		if (walkingCount < OutPath.Num())
 		{
 			ai->MoveToActor(OutPath[walkingCount], -1.f, true, true);
@@ -183,7 +198,7 @@ void AMyCharacter::BeginPlay()
 	name.Add("errors");
 	name.Add("goodbye");
 
-	RandomDialogGenerator(name, 1, 3);
+	RandomDialogGenerator(name);
 
 
 	PlayerMesh = GetMesh();
@@ -242,7 +257,7 @@ void AMyCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* O
 					UE_LOG(LogTemp, Warning, TEXT("Not basket"));
 					return;
 				}
-				if (IsCorrectFruitsCount(FruitsCount, Basket->CountItems))
+				if (IsCorrectFruitsCount(FruitCount, Basket->CountItems))
 				{
 					EPickupState = EStatesEnum::Active;
 				}

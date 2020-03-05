@@ -87,10 +87,10 @@ public:
 
 
 	UPROPERTY(BlueprintReadWrite)
-	TMap<FString, int32> FruitsCount;
-
-	UPROPERTY(BlueprintReadWrite)
 	TMap<FName, FName> DialogList;
+	
+	UPROPERTY(BlueprintReadWrite)
+	TMap<FString, int32> FruitCount;
 
 
 
@@ -119,7 +119,7 @@ public:
 	bool IsCorrectFruitsCount(TMap<FString, int32> _A, TMap<FString, int32> _B);
 
 	UFUNCTION(BlueprintCallable)
-	void RandomDialogGenerator(TArray<FName> SoundsName, int32 min, int32 max);
+	void RandomDialogGenerator(TArray<FName> SoundsName);
 
 	UFUNCTION()
 	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
