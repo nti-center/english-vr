@@ -61,10 +61,12 @@ void AMyCharacter::RandomDialogGenerator(TArray<FName> SoundsName) {
 			Rand = FMath::RandRange(1, 7);
 		else if (SoundName == "requests")
 			Rand = FMath::RandRange(1, 6);
-		else if (SoundName == "errors")
-			Rand = FMath::RandRange(3, 3);
+        else if (SoundName == "gratitude")
+            Rand = FMath::RandRange(1, 6);
 		else if (SoundName == "goodbye")
 			Rand = FMath::RandRange(1, 4);
+		else if (SoundName == "errors")
+			Rand = FMath::RandRange(3, 3);
 
         //if (SoundName == "requests")
         //{
@@ -107,7 +109,6 @@ void AMyCharacter::GoToMarket() {
 }
 
 void AMyCharacter::GoAway() {
-    //WalkingCount = 0;
 
     if (WalkingCount < OutPath.Num())
         if (GetController() && Cast<AAIController>(GetController()))
@@ -124,11 +125,11 @@ void AMyCharacter::TakeBasket() {
     }
 
     Basket->Mesh->SetSimulatePhysics(false);
-    //AttachInside
     Basket->Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     Basket->AttachOverlappingActors();
     FAttachmentTransformRules Atr(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepWorld, true);
     Basket->AttachToComponent(GetMesh(), Atr, "RightHandSocket");
+    PlayDialog(DialogList.FindRef("gratitude"), DataTable, IsCheck);
     PlayDialog(DialogList.FindRef("goodbye"), DataTable, IsCheck);
     IsEnd = true;
 }
@@ -143,8 +144,9 @@ void AMyCharacter::BeginPlay() {
     TArray<FName> name;
     name.Add("greetings");
     name.Add("requests");
-    name.Add("errors");
+    name.Add("gratitude");
     name.Add("goodbye");
+	name.Add("errors");
 
     RandomDialogGenerator(name);
 
