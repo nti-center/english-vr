@@ -19,6 +19,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool IsRecord = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString  PathToRecord;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
