@@ -7,6 +7,8 @@ URecognitionComponent::URecognitionComponent() {
     PrimaryComponentTick.bCanEverTick = true;
 
     Http = &FHttpModule::Get();
+
+    //OnResponseReceived.AddDynamic(this, &URecognitionComponent::ResponseReceived);
 }
 
 // Called when the game starts
@@ -35,10 +37,10 @@ void URecognitionComponent::Recognize(const FString &FilePath) {
     }
 
     FString FolderId = "b1g0fapccdqlq2a46079";
-    FString IamToken = "CggVAgAAABoBMxKABEvgQBNWQ9qj1tM2T00ML12Ul5Le92fp5Hd6x3FBn1VyKCKIMQ9e-zmkSJG5Md3bW1eg0w_UM4q0acsRveY_zpWsC4RePzvPslFJaoT_BqyQ5_whFWPz3ZYNrB1G9IAyD9B2xioZchfMpPyEEtNy9BsI0dA_f39rAoFKxxd3H1j5b87Lwd0zXcT34-8sBG6uGZpkSQVjjifobwnKHuM9uWy8EzN7epMoNvlfk0PQdmc2vVo-W0Kjc9nd32aOE9GpY-ZY65SAUzDDRCBl-8kuhpjU0fUFoUEJfNxacgPl8_lo4J2Ra7qqxtWFDDnGKn5DuKkwhXjj2QjbiHfA1Fd7K2nlCqwat2Q8gV7Xn749zau22JlQmyJ1iR-izCZn3TBoVdBK0Yre3QY5LSvTp_Ih3FNOP043Nqs4e6OcWWEzj7j5YTf8_3_FajEnBMt36dWpV2wG5B5swgnGgCs-7a_WRGJxgiremFgMEm_o6HXpS87bLoHJLmvzH9MRWZbSDcP1VQnR1Jw-adptvk3sR6bCpZn3aVnz_Fi3XZ7eoQXogLi7zU8gREiG3JZMWLGGps_9SCfxrHcKm31vvy_s9SzKKH7HLXFJ9DMZSeY4ssMk0UW5aQ7klFmo-EGiukRj6tW9xi7Zs1ktvGMckgMpsewZvNbfoLOgG785h4wPqZtBBhuCGiQQmLym8wUY2I2p8wUiFgoUYWplZjJxcWl1dm0wbmVmMWx0aDY=";
+    FString IamToken = "CggVAgAAABoBMxKABBSg9HYxeDvfGjG6nY9pKUA9UA6vytnCVGub3_S7zGcpa1ypRusYQxHnMHaduXEZ5Vidqpl_TfTGxZWxu8gSAVGtfq7GrMN0shxrUsYLwURkc0gyvT4i8gwEbm6Qh8XEcDFEoQycK1GU-2GbrCIRuNte_1y6tpQWxcFDqp7qiP7kwjLygE4p4dN3LZ1bPZZBBG7Zx4ThFWPHRc2QET21wAfmQeOsOd50t5zxpvK55q57GY_I9OK5amyXvVKunskdMo1vL5Hmb5qvgvEPGfQWoIQb2icc-zX1JIhdn7s77PoxDojcOuLIVDNVDPS92HT7wzoKe8qeRDG-At4gqz39hDlaeVoyhFWqn5HWgojsZ3HbEaqg2eHHeOhp8IjeMujzSqaL-FCeXtLsLlf70Q_S-n6h3LHvo53AAW_Q8PbgKTzaxRg18Mf1whJq-OJEC9v6ERjdGbTfxJr5p4C6p7QAhuXIzYmVXZsjxlLXejwBc_30nX2_luYDmAnX0-JAMv5cLaT8IKBnQouKFBi-V0BFw81MAGF4Bo3pPyO4MdASNU6OB8GwezjNDx8scL0pJxKsYpzIEeUJ-rxmFCHibXA0tdtCARWdZnteCP5UX0WbbfA0aW98Wzg3qUF9RDdWHC-NICCKNLTdpji5MtkOOJEp53TThslZNO0QC7INPwbUxCpnGiQQ6eKr8wUYqbSu8wUiFgoUYWplZjJxcWl1dm0wbmVmMWx0aDY=";
 
     TSharedRef<IHttpRequest> Request = Http->CreateRequest();
-    Request->OnProcessRequestComplete().BindUObject(this, &URecognitionComponent::OnResponseReceived);
+    Request->OnProcessRequestComplete().BindUObject(this, &URecognitionComponent::ResponseReceived);
   
     Request->SetURL(TEXT("https://stt.api.cloud.yandex.net/speech/v1/stt:recognize?topic=general&lang=en-US&folderId=") + FolderId);
     Request->SetVerb("POST");
@@ -50,15 +52,19 @@ void URecognitionComponent::Recognize(const FString &FilePath) {
     UE_LOG(LogTemp, Warning, TEXT("Send request"));
 }
 
-void URecognitionComponent::OnResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful) {
+void URecognitionComponent::ResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful) {    
     TSharedPtr<FJsonObject> JsonObject;
     TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(Response->GetContentAsString());
 
-    if (FJsonSerializer::Deserialize(Reader, JsonObject)) {
+    if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid()) {
         UE_LOG(LogTemp, Warning, TEXT("%s"), *Response->GetContentAsString());
+        OnResponseReceived.Broadcast(JsonObject->GetStringField(TEXT("result")));
     }
     else {
         UE_LOG(LogTemp, Warning, TEXT("Cant deserialize response"));
+        OnResponseReceived.Broadcast(TEXT("Error"));
     }
+
+    
 }
 

@@ -12,23 +12,32 @@
 //#include <format>
 #include "RecognitionComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FResponseReceivedDelegate, FString, Response);
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class ENGLISHVR_API URecognitionComponent : public USceneComponent {
     GENERATED_BODY()
 
 public:
-    //UPROPERTY()
-    FHttpModule* Http;
+    //DECLARE_DYNAMIC_MULTICAST_DELEGATE(FYourDelegate, FChangedEvent)
+    //FChangedEvent& OnChanged() { return ChangedEvent; }
+    //
+    //UPROPERTY(BlueprintAssignable)
+    //FYourDelegate delegateVariableName;
 
-    /* The actual HTTP call */
+    UPROPERTY(BlueprintAssignable, BlueprintCallable)
+    FResponseReceivedDelegate OnResponseReceived;
+
     UFUNCTION(BlueprintCallable)
     void Recognize(const FString &FilePath);
 
-    /*Assign this function to call when the GET request processes sucessfully*/
-    void OnResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+    void ResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
     // Sets default values for this actor's properties
     URecognitionComponent();
+
+private:
+    FHttpModule* Http;
 
 protected:
     // Called when the game starts
