@@ -6,6 +6,7 @@
 #include "Engine.h"
 #include "GameFramework/Actor.h"
 #include "Collectable.h"
+#include "MControllerClass.h"
 #include "Basket.generated.h"
 
 UCLASS(Abstract)
@@ -17,6 +18,12 @@ class ENGLISHVR_API ABasket : public AActor {
 
     UFUNCTION()
     void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	UFUNCTION()
+	void OnBoxOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnBoxOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 public:	
     // Sets default values for this actor's properties
@@ -30,6 +37,9 @@ public:
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
     USphereComponent* FillSphere;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UBoxComponent* FillBox;
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
     TMap<FString, int32> FruitCounts;

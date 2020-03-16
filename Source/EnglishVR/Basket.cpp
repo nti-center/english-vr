@@ -29,6 +29,12 @@ ABasket::ABasket() {
     FillSphere->OnComponentBeginOverlap.AddDynamic(this, &ABasket::OnOverlapBegin);
     FillSphere->OnComponentEndOverlap.AddDynamic(this, &ABasket::OnOverlapEnd);
     FillSphere->SetupAttachment(Mesh);
+
+	FillBox = CreateDefaultSubobject<UBoxComponent>(TEXT("FillBox"));
+	FillBox->SetGenerateOverlapEvents(true);
+	FillBox->OnComponentBeginOverlap.AddDynamic(this, &ABasket::OnBoxOverlapBegin);
+	FillBox->OnComponentEndOverlap.AddDynamic(this, &ABasket::OnBoxOverlapEnd);
+	FillBox->SetupAttachment(Mesh);
     //FillSphere->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
     //FillSphere->bEditableWhenInherited = true;
     //FillSphere->SetSphereRadius(12.0f);
@@ -72,6 +78,17 @@ void ABasket::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
     //OtherActor->Destroy();    
 }
 
+void ABasket::OnBoxOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
+	if (OtherActor == nullptr || OtherActor == this || OtherComp == nullptr)
+		return;
+
+	AMControllerClass *MController =  Cast<AMControllerClass>(OtherActor);
+	if (MController) {
+	    Mesh->SetRenderCustomDepth(true);
+	    Mesh->SetCustomDepthStencilValue(2);
+	}   
+}
+
 void ABasket::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) {
     if (OtherActor == nullptr || OtherActor == this || OtherComp == nullptr)
         return;
@@ -91,11 +108,23 @@ void ABasket::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherAct
     }
 }
 
+void ABasket::OnBoxOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) {
+	if (OtherActor == nullptr || OtherActor == this || OtherComp == nullptr)
+		return;
+
+	AMControllerClass *MController = Cast<AMControllerClass>(OtherActor);
+	if (MController) {
+		Mesh->SetRenderCustomDepth(false);
+		Mesh->SetCustomDepthStencilValue(0);
+	}
+}
+
 // Called when the game starts or when spawned
 void ABasket::BeginPlay() {
     Super::BeginPlay();
 
     Mesh->SetSimulatePhysics(true);
+	Mesh->SetMassOverrideInKg("", 3, true);
 }
 
 // Called every frame
