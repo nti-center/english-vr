@@ -30,11 +30,11 @@ ABasket::ABasket() {
 	FillSphere->OnComponentEndOverlap.AddDynamic(this, &ABasket::OnOverlapEnd);
 	FillSphere->SetupAttachment(Mesh);
 
-	FillBox = CreateDefaultSubobject<UBoxComponent>(TEXT("FillBox"));
-	FillBox->SetGenerateOverlapEvents(true);
-	FillBox->OnComponentBeginOverlap.AddDynamic(this, &ABasket::OnBoxOverlapBegin);
-	FillBox->OnComponentEndOverlap.AddDynamic(this, &ABasket::OnBoxOverlapEnd);
-	FillBox->SetupAttachment(Mesh);
+	OutlineSphere = CreateDefaultSubobject<USphereComponent>(TEXT("FillBox"));
+	OutlineSphere->SetGenerateOverlapEvents(true);
+	OutlineSphere->OnComponentBeginOverlap.AddDynamic(this, &ABasket::OnOutlineOverlapBegin);
+	OutlineSphere->OnComponentEndOverlap.AddDynamic(this, &ABasket::OnOutlineOverlapEnd);
+	OutlineSphere->SetupAttachment(Mesh);
 	//FillSphere->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 	//FillSphere->bEditableWhenInherited = true;
 	//FillSphere->SetSphereRadius(12.0f);
@@ -78,7 +78,7 @@ void ABasket::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 	//OtherActor->Destroy();    
 }
 
-void ABasket::OnBoxOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
+void ABasket::OnOutlineOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
 	if (OtherActor == nullptr || OtherActor == this || OtherComp == nullptr)
 		return;
 
@@ -108,7 +108,7 @@ void ABasket::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherAct
 	}
 }
 
-void ABasket::OnBoxOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) {
+void ABasket::OnOutlineOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) {
 	if (OtherActor == nullptr || OtherActor == this || OtherComp == nullptr)
 		return;
 
