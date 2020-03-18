@@ -60,7 +60,7 @@ void AMyCharacter::RandomDialogGenerator(TArray<FName> SoundsName) {
 		if (SoundName == "greetings")
 			Rand = FMath::RandRange(1, 7);
 		else if (SoundName == "requests")
-			Rand = FMath::RandRange(1, 5);
+			Rand = FMath::RandRange(1, 6);
         else if (SoundName == "gratitude")
             Rand = FMath::RandRange(1, 6);
 		else if (SoundName == "goodbye")

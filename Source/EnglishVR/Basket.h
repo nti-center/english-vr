@@ -11,45 +11,45 @@
 
 UCLASS(Abstract)
 class ENGLISHVR_API ABasket : public AActor {
-    GENERATED_BODY()    
+	GENERATED_BODY()
 
-    UFUNCTION()
-    void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-    UFUNCTION()
-    void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+		UFUNCTION()
+		void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UFUNCTION()
-	void OnBoxOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+		void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	UFUNCTION()
-	void OnBoxOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+		void OnBoxOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-public:	
-    // Sets default values for this actor's properties
-    ABasket();
+	UFUNCTION()
+		void OnBoxOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-    UFUNCTION()
-    void AttachOverlappingActors();
+public:
+	// Sets default values for this actor's properties
+	ABasket();
 
-    UPROPERTY(BlueprintReadWrite, EditAnywhere)
-    UStaticMeshComponent* Mesh;
-
-    UPROPERTY(BlueprintReadWrite, EditAnywhere)
-    USphereComponent* FillSphere;
+	UFUNCTION()
+		void AttachOverlappingActors();
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	UBoxComponent* FillBox;
+		UStaticMeshComponent* Mesh;
 
-    UPROPERTY(BlueprintReadWrite, EditAnywhere)
-    TMap<FString, int32> FruitCounts;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		USphereComponent* FillSphere;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		UBoxComponent* FillBox;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		TMap<FString, int32> FruitCounts;
 
 protected:
-    // Called when the game starts or when spawned
-    virtual void BeginPlay() override;
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
 
-public:	
-    // Called every frame
-    virtual void Tick(float DeltaTime) override;
+public:
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
 
 };
