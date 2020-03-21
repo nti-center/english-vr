@@ -7,10 +7,11 @@
 #include "GameFramework/Actor.h"
 #include "Collectable.h"
 #include "MControllerClass.h"
+#include "PickableActor.h"
 #include "Basket.generated.h"
 
 UCLASS(Abstract)
-class ENGLISHVR_API ABasket : public AActor {
+class ENGLISHVR_API ABasket : public AActor, public IPickableActor {
 	GENERATED_BODY()
 
 		UFUNCTION()

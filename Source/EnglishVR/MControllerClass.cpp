@@ -25,3 +25,7 @@ void AMControllerClass::Tick(float DeltaTime)
 
 }
 
+void AMControllerClass::GetActorHearHand1(AActor *& NearestMesh) {
+    NearestMesh = nullptr;
+}
+

@@ -23,4 +23,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+    UFUNCTION(BlueprintCallable, Category = "MotionColntroller")
+    void GetActorHearHand1(AActor *& NearestMesh);
 };
