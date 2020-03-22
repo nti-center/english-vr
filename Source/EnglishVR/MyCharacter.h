@@ -28,12 +28,6 @@ public:
     // Sets default values for this character's properties
     AMyCharacter();
 
-    //UPROPERTY(BlueprintReadWrite)
-    //USkeletalMeshComponent* PlayerMesh;
-    //
-    //UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SkeletalMesh)
-    //USkeletalMesh* AlternateMeshAsset;
-
     UPROPERTY(BlueprintReadWrite)
     UBoxComponent* Box;
 

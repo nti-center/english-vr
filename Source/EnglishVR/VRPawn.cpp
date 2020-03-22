@@ -4,21 +4,19 @@
 #include "VRPawn.h"
 
 // Sets default values
-AVRPawn::AVRPawn()
-{
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
-	AutoPossessPlayer = EAutoReceiveInput::Player0;
+AVRPawn::AVRPawn() {
+     // Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+    PrimaryActorTick.bCanEverTick = true;
+    
+    AutoPossessPlayer = EAutoReceiveInput::Player0;
 
 }
 
-void AVRPawn::ResetPositionAndRotation()
-{
+void AVRPawn::ResetPositionAndRotation() {
     FVector ActorLocation = GetActorLocation();
     FRotator ActorRotation = GetActorRotation();
-    if (!ResetPoint){
-    	return;
+    if (!ResetPoint) {
+        return;
     }
     
     ActorLocation = ResetPoint->GetActorLocation();
@@ -32,26 +30,19 @@ void AVRPawn::ResetPositionAndRotation()
 }
 
 // Called when the game starts or when spawned
-void AVRPawn::BeginPlay()
-{
-	Super::BeginPlay();
-
-	
+void AVRPawn::BeginPlay() {
+    Super::BeginPlay();
 }
 
 // Called every frame
-void AVRPawn::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
+void AVRPawn::Tick(float DeltaTime) {
+    Super::Tick(DeltaTime);
 }
 
 // Called to bind functionality to input
-void AVRPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	PlayerInputComponent->BindAction("ResetPlayerPosition", IE_Pressed, this, &AVRPawn::ResetPositionAndRotation);
-
+void AVRPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
+    Super::SetupPlayerInputComponent(PlayerInputComponent);
+    
+    PlayerInputComponent->BindAction("ResetPlayerPosition", IE_Pressed, this, &AVRPawn::ResetPositionAndRotation);
 }
 

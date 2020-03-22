@@ -1,13 +1,9 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "ActorAppleSpawner.h"
 
 // Sets default values
-AActorAppleSpawner::AActorAppleSpawner()
-{
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+AActorAppleSpawner::AActorAppleSpawner() {
+    PrimaryActorTick.bCanEverTick = true;
 
     SceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Mesh"));
     SceneComponent->SetupAttachment(RootComponent);
@@ -20,9 +16,8 @@ AActorAppleSpawner::AActorAppleSpawner()
 //}
 
 // Called when the game starts or when spawned
-void AActorAppleSpawner::BeginPlay()
-{
-	Super::BeginPlay();
+void AActorAppleSpawner::BeginPlay() {
+    Super::BeginPlay();
 
     UObject* SpawnActor = Cast<UObject>(StaticLoadObject(UObject::StaticClass(), NULL,
         TEXT("/Game/Blueprints/Apple.Apple")));
@@ -52,13 +47,10 @@ void AActorAppleSpawner::BeginPlay()
         if (NewActor)
             NewActor->GetActorBounds(false, Origin, BoxExtent);
     }
-
     //UE_LOG(LogTemp, Warning, TEXT("Done"));
 }
 
 // Called every frame
-void AActorAppleSpawner::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
+void AActorAppleSpawner::Tick(float DeltaTime) {
+    Super::Tick(DeltaTime);
 }
-

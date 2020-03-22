@@ -68,20 +68,6 @@ void AMyCharacter::RandomDialogGenerator(TArray<FName> SoundsName) {
 		else if (SoundName == "errors")
 			Rand = FMath::RandRange(3, 3);
 
-        //if (SoundName == "requests")
-        //{
-        //    GetPath = "SoundCue'/Game/Sounds/TestRandomSoundCue.TestRandomSoundCue'";
-        //
-        //    FString base = SoundName.ToString();
-        //    base.Append(FString::FromInt(requestCount));
-        //    FName ConcatName = FName(*base);
-        //
-        //    DialogList.Add(ConcatName, GetPath);
-        //    requestCount++;
-        //}
-        //else 
-        //{
-
         FString base = SoundName.ToString();
         base.Append(FString::FromInt(Rand));
 
@@ -97,7 +83,6 @@ void AMyCharacter::RandomDialogGenerator(TArray<FName> SoundsName) {
         }
         UE_LOG(LogTemp, Warning, TEXT("Key =  %s Value = %s"), *ConcatName.ToString(), *GetPath.ToString());
         DialogList.Add(SoundName, GetPath);
-        //}
     }
 }
 

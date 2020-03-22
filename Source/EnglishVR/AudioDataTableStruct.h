@@ -4,22 +4,16 @@
 #include "AudioDataTableStruct.generated.h"
 
 USTRUCT(BlueprintType)
-struct FAudioDataTableStruct : public FTableRowBase
-{
-	GENERATED_BODY()
+struct FAudioDataTableStruct : public FTableRowBase {
+    GENERATED_BODY()
 
-	public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString Path;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString FruitType;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 FruitCount;
-
-	
-
-
-
+    public:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FString Path;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FString FruitType;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 FruitCount;
 };

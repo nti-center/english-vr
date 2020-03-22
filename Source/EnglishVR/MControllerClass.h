@@ -7,20 +7,18 @@
 #include "MControllerClass.generated.h"
 
 UCLASS()
-class ENGLISHVR_API AMControllerClass : public AActor
-{
-	GENERATED_BODY()
+class ENGLISHVR_API AMControllerClass : public AActor {
+    GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AMControllerClass();
+    AMControllerClass();
 
 protected:
 	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+    virtual void BeginPlay() override;
 
 public:	
 	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
+    virtual void Tick(float DeltaTime) override;
 };
