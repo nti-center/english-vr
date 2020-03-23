@@ -15,12 +15,6 @@ AMyCharacter::AMyCharacter() {
     Audio = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio"));
     Audio->SetupAttachment(RootComponent);
 
-    static ConstructorHelpers::FObjectFinder<UDataTable> DataTableObject(TEXT("DataTable'/Game/CSV/MainDialog.MainDialog'"));
-    if (DataTableObject.Succeeded()) {
-        DataTable = DataTableObject.Object;
-        UE_LOG(LogTemp, Warning, TEXT("Data table loaded"));
-    }
-
     static ConstructorHelpers::FObjectFinder<UDataTable> _DataTableObject(TEXT("DataTable'/Game/CSV/DataTable.DataTable'"));
     if (_DataTableObject.Succeeded()) {
         _Table = _DataTableObject.Object;
@@ -114,8 +108,8 @@ void AMyCharacter::TakeBasket() {
     Basket->AttachOverlappingActors();
     FAttachmentTransformRules Atr(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepWorld, true);
     Basket->AttachToComponent(GetMesh(), Atr, "RightHandSocket");
-    PlayDialog(DialogList.FindRef("gratitude"), DataTable, IsCheck);
-    PlayDialog(DialogList.FindRef("goodbye"), DataTable, IsCheck);
+    PlayDialog(DialogList.FindRef("gratitude"), IsCheck);
+    PlayDialog(DialogList.FindRef("goodbye"), IsCheck);
     IsEnd = true;
 }
 
@@ -146,9 +140,9 @@ void AMyCharacter::Tick(float DeltaTime) {
         return;
 
     if (EComeState == EStatesEnum::Active) {
-        PlayDialog(DialogList.FindRef("greetings"), DataTable, IsCheck);
+        PlayDialog(DialogList.FindRef("greetings"), IsCheck);
         //this->PlayDialog("greetings4", DataTable, isCheck);
-        PlayDialog(DialogList.FindRef("requests"), DataTable, IsCheck);
+        PlayDialog(DialogList.FindRef("requests"), IsCheck);
         //this->PlayDialog("requests4", DataTable, isCheck);
         EComeState = EStatesEnum::Finished;
     }
@@ -175,8 +169,8 @@ void AMyCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* O
         EPickupState = EStatesEnum::Active;
     }
     else {
-        PlayDialog(DialogList.FindRef("errors"), DataTable, IsCheck);
-        PlayDialog(DialogList.FindRef("requests"), DataTable, IsCheck);
+        PlayDialog(DialogList.FindRef("errors"), IsCheck);
+        PlayDialog(DialogList.FindRef("requests"), IsCheck);
         //this->PlayDialog("errors3", DataTable, isCheck);
         ENegativeState = EStatesEnum::Active;
     }

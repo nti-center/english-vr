@@ -86,7 +86,7 @@ public:
     void TakeBasket();
 
     UFUNCTION(BlueprintImplementableEvent)
-    void PlayDialog(FName DialogName, UDataTable* _dataTable, bool _isCheck);
+    void PlayDialog(FName DialogName, bool _isCheck);
 
     UFUNCTION(BlueprintImplementableEvent)
     bool IsNotPlaying();
