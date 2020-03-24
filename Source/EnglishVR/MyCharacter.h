@@ -8,9 +8,12 @@
 #include "AIController.h"
 #include "Basket.h"
 #include "Sound/SoundCue.h"
+#include "AudioDataTableStruct.h"
+#include "FruitSoundDataTableStruct.h"
+#include "NumbersSoundDataTableStruct.h"
+#include "SoundDataTableStruct.h"
 #include "Math/UnrealMathUtility.h"
 #include "GameFramework/Character.h"
-#include "AudioDataTableStruct.h"
 #include "MyCharacter.generated.h"
 
 UENUM(BlueprintType)
@@ -35,10 +38,25 @@ public:
     UAudioComponent* Audio;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-    UDataTable* DataTable;
+    UDataTable* _Table;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-    UDataTable* _Table;
+    UDataTable* RequestTable;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    UDataTable* NumberTable;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    UDataTable* FruitTable;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    UDataTable* FruitsTable;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    UDataTable* EndingTable;
+
+    UPROPERTY(EditDefaultsOnly)
+    UDataTable* TmpTable;
 
     UPROPERTY(BlueprintReadWrite)
     bool IsCheck = false;
@@ -76,6 +94,9 @@ public:
     UPROPERTY(BlueprintReadWrite)
     TMap<FName, FName> DialogList;
 
+    UPROPERTY(BlueprintReadWrite)
+    TArray <FName> RequestPhrasesList;
+
     UFUNCTION(BlueprintCallable)
     void GoToMarket();
 
@@ -91,11 +112,17 @@ public:
     UFUNCTION(BlueprintImplementableEvent)
     bool IsNotPlaying();
 
+    UFUNCTION(BlueprintImplementableEvent)
+    void PlayRequestList(const TArray<FName>& RequestList,  bool check);
+
     UFUNCTION(BlueprintCallable)
     bool IsCorrectFruitsCount();
 
     UFUNCTION(BlueprintCallable)
     void RandomDialogGenerator(TArray<FName> SoundsName);
+
+    UFUNCTION(BlueprintCallable)
+    void RandomRequestGenerator();
 
     UFUNCTION()
     void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
