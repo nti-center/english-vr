@@ -15,6 +15,8 @@ AMyCharacter::AMyCharacter() {
     Audio = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio"));
     Audio->SetupAttachment(RootComponent);
 
+#pragma region DataTableLoading
+
     static ConstructorHelpers::FObjectFinder<UDataTable> _DataTableObject(TEXT("DataTable'/Game/CSV/DataTable.DataTable'"));
     if (_DataTableObject.Succeeded()) {
         _Table = _DataTableObject.Object;
@@ -50,6 +52,7 @@ AMyCharacter::AMyCharacter() {
         EndingTable = _DataTableEnding.Object;
        // UE_LOG(LogTemp, Warning, TEXT("Data table loaded"));
     }
+#pragma endregion
 }
 
 template <typename ObjClass>
@@ -113,18 +116,21 @@ void AMyCharacter::RandomDialogGenerator(TArray<FName> SoundsName) {
 
 void AMyCharacter::RandomRequestGenerator() {
 
-    RequestPhrasesList.Empty();
+    RequestFullPhrasesArray.Empty();
     FruitsCount.Empty();
 
     FString ContextString;
     int32 Rand = 0;
     FName SoundName = "";
     FName GetPath = "";
-    TArray<FName> tmp;
+    FString base = "";
+    FName ConcatName = "";
 
+    TArray<FName> tmp;
+    
     FString FruitType;
     int32 FruitCount;
-
+   
     tmp.Add("request");
     tmp.Add("numbers");
 
@@ -138,25 +144,38 @@ void AMyCharacter::RandomRequestGenerator() {
     }
     tmp.Add("ending");
 
-    FString base;
-    FName ConcatName;
-
     for (int i = 0; i < 4; i++) {
 
         SoundName = tmp[i];
 
         if (SoundName == "request") {
-            Rand = FMath::RandRange(1, 2);
             TmpTable = RequestTable;
 
-            base = SoundName.ToString();
-            base.Append(FString::FromInt(Rand));
+            FSoundDataTableStruct* Row;
 
-            ConcatName = FName(*base);
+            if (Counter == 0) {
+                for (auto it : RequestTable->GetRowMap()) {
+                    Row = TmpTable->FindRow<FSoundDataTableStruct>(it.Key, ContextString, true);
+                    if (Row) {
+                        RequestPhrasesArray.Add((*Row->Path));
+                    }
+                }
+                RequestPhrasesArrayLength = RequestPhrasesArray.Num() - 1;
+                Rand = FMath::RandRange(0, RequestPhrasesArrayLength);
 
-            FSoundDataTableStruct* Row = TmpTable->FindRow<FSoundDataTableStruct>(ConcatName, ContextString, true);
-            if (Row) {
-                GetPath = (*Row->Path);
+                GetPath = RequestPhrasesArray[Rand];
+                //RequestPhrasesArray.RemoveAt(Rand);
+
+                //RequestPhrasesArrayLength--;
+            }
+            else
+            {
+                Rand = FMath::RandRange(0, RequestPhrasesArrayLength);
+
+                GetPath = RequestPhrasesArray[Rand];
+                //RequestPhrasesArray.RemoveAt(Rand);
+
+               // RequestPhrasesArrayLength--;
             }
         }
         else if (SoundName == "numbers") {
@@ -219,8 +238,8 @@ void AMyCharacter::RandomRequestGenerator() {
             }
         }
 
-        RequestPhrasesList.Add(GetPath);
-        UE_LOG(LogTemp, Warning, TEXT("RequestPhrases %s"), *RequestPhrasesList[i].ToString());
+        RequestFullPhrasesArray.Add(GetPath);
+        //UE_LOG(LogTemp, Warning, TEXT("RequestPhrases %s"), * RequestFullPhrasesArray[i].ToString());
     } 
 
    FruitsCount.Add(FruitType, FruitCount);
@@ -249,6 +268,7 @@ void AMyCharacter::TakeBasket() {
         UE_LOG(LogTemp, Warning, TEXT("Can't take basket: basket is null"));
         return;
     }
+    UE_LOG(LogTemp, Warning, TEXT("TakeBasket"));
 
     Basket->Mesh->SetSimulatePhysics(false);
     Basket->Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -267,6 +287,11 @@ void AMyCharacter::BeginPlay() {
     IsCheck = true;
     WalkingCount = 0;
 
+    RequestCount = 0;
+    RequestCount = 2;//FMath::RandRange(2,3);
+
+    Counter = 0;
+
     TArray<FName> name;
     name.Add("greetings");
     name.Add("gratitude");
@@ -274,8 +299,7 @@ void AMyCharacter::BeginPlay() {
 	name.Add("errors");
 
    RandomDialogGenerator(name);
-
-    GoToMarket();
+   GoToMarket();
 }
 
 // Called every frame
@@ -288,12 +312,37 @@ void AMyCharacter::Tick(float DeltaTime) {
     if (EComeState == EStatesEnum::Active) {
         PlayDialog(DialogList.FindRef("greetings"), IsCheck);
 
-        RandomRequestGenerator();
-        PlayRequestList(RequestPhrasesList, IsCheck);
+        EComeState = EStatesEnum::Process;
+        //EComeState = EStatesEnum::Finished;
+    }
 
-        //PlayDialog(DialogList.FindRef("requests"), IsCheck);
+	if((EComeState == EStatesEnum::Process) && (Counter < RequestCount)){
+
+        RandomRequestGenerator();
+        PlayRequestList(RequestFullPhrasesArray, IsCheck);
+
+        for (TActorIterator<ABasket> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+        {
+            Basket = Cast<ABasket>(*ActorItr);
+        }    
+        EComeState = EStatesEnum::Whaiting;
+	}
+    else if ((Basket) && (EComeState == EStatesEnum::Whaiting)) {
+        if (IsCorrectFruitsCount()) {
+            
+            //UE_LOG(LogTemp, Warning, TEXT("CorrectFruitCount"));
+
+            FruitsCount.Empty();
+            Basket->FruitCounts.Empty();
+
+            Counter++;
+            EComeState = EStatesEnum::Process;
+        }
+    }
+    else if (Counter == RequestCount) {
         EComeState = EStatesEnum::Finished;
     }
+
     if (EPickupState == EStatesEnum::Finished && !IsEnd) {
         TakeBasket();
     }
@@ -301,27 +350,23 @@ void AMyCharacter::Tick(float DeltaTime) {
     if (!IsTmp && IsEnd && IsNotPlaying()) {
         GoAway();
     }
-    
 }
 
 void AMyCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)  {
     if (OtherActor == nullptr || OtherActor == this || OtherComp == nullptr)
         return;
-    
     if (!IsNotPlaying() || EPickupState == EStatesEnum::Finished || !Cast<ABasket>(OtherActor))
         return;
 
     Basket = Cast<ABasket>(OtherActor);
 
-    if (IsCorrectFruitsCount()) {
+    if (Counter == RequestCount /*IsCorrectFruitsCount()*/) {
         EPickupState = EStatesEnum::Active;
     }
     else {
         PlayDialog(DialogList.FindRef("errors"), IsCheck);
+        PlayRequestList(RequestFullPhrasesArray, IsCheck);
 
-        PlayRequestList(RequestPhrasesList, IsCheck);
-
-        //PlayDialog(DialogList.FindRef("requests"), IsCheck);
         ENegativeState = EStatesEnum::Active;
     }
 }

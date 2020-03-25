@@ -20,6 +20,8 @@ UENUM(BlueprintType)
 enum class EStatesEnum : uint8 {
     NotActive UMETA(DisplayName = "NotActive"),
     Active    UMETA(DisplayName = "Active"),
+	Process   UMETA(DisplayName = "Process"),
+    Whaiting   UMETA(DisplayName = "Whaiting"),
     Finished  UMETA(DisplayName = "Finished"),
 };
 
@@ -79,11 +81,20 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     EStatesEnum ENegativeState;
 
-    UPROPERTY(BlueprintReadWrite)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     EStatesEnum EPickupState;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPROPERTY(BlueprintReadWrite)
     int32 WalkingCount;
+
+    UPROPERTY(BlueprintReadWrite)
+    int32 RequestCount;
+
+    UPROPERTY(BlueprintReadWrite)
+    int32 Counter = 1;
+
+    UPROPERTY(BlueprintReadWrite)
+    int32 RequestPhrasesArrayLength = 0;
 
     UPROPERTY(BlueprintReadWrite)
     ABasket* Basket;
@@ -95,7 +106,10 @@ public:
     TMap<FName, FName> DialogList;
 
     UPROPERTY(BlueprintReadWrite)
-    TArray <FName> RequestPhrasesList;
+    TArray <FName> RequestFullPhrasesArray;
+
+    UPROPERTY(BlueprintReadWrite)
+    TArray<FName> RequestPhrasesArray;
 
     UFUNCTION(BlueprintCallable)
     void GoToMarket();
