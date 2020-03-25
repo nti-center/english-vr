@@ -98,11 +98,13 @@ void ABasket::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherAct
     //OtherActor->AttachToComponent(FillSphere, FAttachmentTransformRules::KeepWorldTransform);
     
     FString Type = ICollectable::Execute_GetType(OtherActor);
-    
-    if (FruitCounts.Contains(Type))
-        --FruitCounts[Type];
-    if (FruitCounts[Type] == 0) {
-        FruitCounts.Remove(Type);
+
+    if (FruitCounts.Num() != 0) {
+        if (FruitCounts.Contains(Type))
+            --FruitCounts[Type];
+        if (FruitCounts[Type] == 0) {
+            FruitCounts.Remove(Type);
+        }
     }
 }
 
