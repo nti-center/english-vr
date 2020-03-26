@@ -8,15 +8,20 @@
 #include "AIController.h"
 #include "Basket.h"
 #include "Sound/SoundCue.h"
+#include "AudioDataTableStruct.h"
+#include "FruitSoundDataTableStruct.h"
+#include "NumbersSoundDataTableStruct.h"
+#include "SoundDataTableStruct.h"
 #include "Math/UnrealMathUtility.h"
 #include "GameFramework/Character.h"
-#include "AudioDataTableStruct.h"
 #include "MyCharacter.generated.h"
 
 UENUM(BlueprintType)
 enum class EStatesEnum : uint8 {
     NotActive UMETA(DisplayName = "NotActive"),
     Active    UMETA(DisplayName = "Active"),
+	Process   UMETA(DisplayName = "Process"),
+    Whaiting   UMETA(DisplayName = "Whaiting"),
     Finished  UMETA(DisplayName = "Finished"),
 };
 
@@ -28,23 +33,36 @@ public:
     // Sets default values for this character's properties
     AMyCharacter();
 
-    //UPROPERTY(BlueprintReadWrite)
-    //USkeletalMeshComponent* PlayerMesh;
-    //
-    //UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = SkeletalMesh)
-    //USkeletalMesh* AlternateMeshAsset;
-
     UPROPERTY(BlueprintReadWrite)
     UBoxComponent* Box;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     UAudioComponent* Audio;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-    UDataTable* DataTable;
-
+#pragma region DataTable
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     UDataTable* _Table;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    UDataTable* RequestTable;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    UDataTable* NumberTable;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    UDataTable* FruitTable;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    UDataTable* FruitsTable;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    UDataTable* PaymentTable;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    UDataTable* EndingTable;
+
+    UPROPERTY(EditDefaultsOnly)
+    UDataTable* TmpTable;
+#pragma endregion
 
     UPROPERTY(BlueprintReadWrite)
     bool IsCheck = false;
@@ -67,17 +85,50 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     EStatesEnum ENegativeState;
 
-    UPROPERTY(BlueprintReadWrite)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     EStatesEnum EPickupState;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPROPERTY(BlueprintReadWrite)
     int32 WalkingCount;
+
+#pragma region VariablesForRandomRequestGeneration
+
+    //Переменная для генерации количества запросов NPC
+    UPROPERTY(BlueprintReadWrite)
+    int32 RequestCount;
+
+    //Переменная для подсчета, какой сейчас идет запрос
+    UPROPERTY(BlueprintReadWrite)
+    int32 Counter = 1;
+
+    //Переменная для задания длины массива фраз запросов, используется для того
+    //что бы данные фразы не повторялись
+    UPROPERTY(BlueprintReadWrite)
+    int32 RequestPhrasesArrayLength = 0;
+
+    //Тип фрукта запрашиваемого на предыдущем шаге
+    UPROPERTY(BlueprintReadWrite)
+    FString PreviousFruit;
+
+    //Хранит тип и количество фруктов ожидаемых на данном шаге
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TMap<FString, int32> FruitsCount;
+
+    //Массив путей к фразам полного запроса
+    UPROPERTY(BlueprintReadWrite)
+    TArray <FName> RequestFullPhrasesArray;
+
+    //Массив названий всех запросов, полученных из таблицы request
+    UPROPERTY(BlueprintReadWrite)
+    TArray<FName> RequestPhrasesArray;
+
+    UPROPERTY(BlueprintReadWrite)
+    TMap<FString, int32> AllRequestsFruitsAndCountList;
+
+#pragma  endregion
 
     UPROPERTY(BlueprintReadWrite)
     ABasket* Basket;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TMap<FString, int32> FruitsCount;
 
     UPROPERTY(BlueprintReadWrite)
     TMap<FName, FName> DialogList;
@@ -92,16 +143,22 @@ public:
     void TakeBasket();
 
     UFUNCTION(BlueprintImplementableEvent)
-    void PlayDialog(FName DialogName, UDataTable* _dataTable, bool _isCheck);
+    void PlayDialog(FName DialogName, bool _isCheck);
 
     UFUNCTION(BlueprintImplementableEvent)
     bool IsNotPlaying();
+
+    UFUNCTION(BlueprintImplementableEvent)
+    void PlayRequestList(const TArray<FName>& RequestList,  bool check);
 
     UFUNCTION(BlueprintCallable)
     bool IsCorrectFruitsCount();
 
     UFUNCTION(BlueprintCallable)
     void RandomDialogGenerator(TArray<FName> SoundsName);
+
+    UFUNCTION(BlueprintCallable)
+    void RandomRequestGenerator();
 
     UFUNCTION()
     void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

@@ -12,9 +12,7 @@ class UCollectable : public UInterface {
     GENERATED_BODY()
 };
 
-/**
- * 
- */
+
 class ENGLISHVR_API ICollectable {
     GENERATED_BODY()
 

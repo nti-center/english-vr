@@ -8,27 +8,25 @@
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class ENGLISHVR_API UAudioRecord : public USceneComponent
-{
-	GENERATED_BODY()
+class ENGLISHVR_API UAudioRecord : public USceneComponent {
+    GENERATED_BODY()
 
 public:	
-	// Sets default values for this component's properties
-	UAudioRecord();
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool IsRecord = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString  PathToRecord;
+    UAudioRecord();
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    bool IsRecord = false;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FString  PathToRecord;
 
 protected:
 	// Called when the game starts
-	virtual void BeginPlay() override;
+    virtual void BeginPlay() override;
 
 public:	
 	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+    virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 		
 };
