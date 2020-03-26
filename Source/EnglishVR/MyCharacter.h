@@ -38,7 +38,7 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     UAudioComponent* Audio;
-
+#pragma region DataTable
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     UDataTable* _Table;
 
@@ -55,10 +55,14 @@ public:
     UDataTable* FruitsTable;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    UDataTable* PaymentTable;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     UDataTable* EndingTable;
 
     UPROPERTY(EditDefaultsOnly)
     UDataTable* TmpTable;
+#pragma endregion
 
     UPROPERTY(BlueprintReadWrite)
     bool IsCheck = false;
@@ -87,29 +91,47 @@ public:
     UPROPERTY(BlueprintReadWrite)
     int32 WalkingCount;
 
+#pragma region VariablesForRandomRequestGeneration
+
+    //Переменная для генерации количества запросов NPC
     UPROPERTY(BlueprintReadWrite)
     int32 RequestCount;
 
+    //Переменная для подсчета, какой сейчас идет запрос
     UPROPERTY(BlueprintReadWrite)
     int32 Counter = 1;
 
+    //Переменная для задания длины массива фраз запросов, используется для того
+    //что бы данные фразы не повторялись
     UPROPERTY(BlueprintReadWrite)
     int32 RequestPhrasesArrayLength = 0;
+
+    //Тип фрукта запрашиваемого на предыдущем шаге
+    UPROPERTY(BlueprintReadWrite)
+    FString PreviousFruit;
+
+    //Хранит тип и количество фруктов ожидаемых на данном шаге
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TMap<FString, int32> FruitsCount;
+
+    //Массив путей к фразам полного запроса
+    UPROPERTY(BlueprintReadWrite)
+    TArray <FName> RequestFullPhrasesArray;
+
+    //Массив названий всех запросов, полученных из таблицы request
+    UPROPERTY(BlueprintReadWrite)
+    TArray<FName> RequestPhrasesArray;
+
+    UPROPERTY(BlueprintReadWrite)
+    TMap<FString, int32> AllRequestsFruitsAndCountList;
+
+#pragma  endregion
 
     UPROPERTY(BlueprintReadWrite)
     ABasket* Basket;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TMap<FString, int32> FruitsCount;
-
     UPROPERTY(BlueprintReadWrite)
     TMap<FName, FName> DialogList;
-
-    UPROPERTY(BlueprintReadWrite)
-    TArray <FName> RequestFullPhrasesArray;
-
-    UPROPERTY(BlueprintReadWrite)
-    TArray<FName> RequestPhrasesArray;
 
     UFUNCTION(BlueprintCallable)
     void GoToMarket();
