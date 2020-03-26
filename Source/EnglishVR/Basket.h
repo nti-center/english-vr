@@ -44,6 +44,9 @@ public:
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<FString, int32> FruitCounts;
 
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    TMap<FString, int32> AllFruitCounts;
+
 protected:
 	// Called when the game starts or when spawned
     virtual void BeginPlay() override;

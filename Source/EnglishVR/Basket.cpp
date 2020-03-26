@@ -70,8 +70,13 @@ void ABasket::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
     //Actor->AddInstanceComponent(Component);
     
     if (!FruitCounts.Contains(Type))
-        FruitCounts.Add(Type, 0);
+        FruitCounts.Add(Type, 0); 
     ++FruitCounts[Type];
+    
+    if(!AllFruitCounts.Contains(Type))
+        AllFruitCounts.Add(Type, 0);
+
+    ++AllFruitCounts[Type];
     //UE_LOG(LogTemp, Warning, TEXT("2 wrong"));
     //OtherActor->Destroy();    
 }
@@ -99,12 +104,18 @@ void ABasket::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherAct
     
     FString Type = ICollectable::Execute_GetType(OtherActor);
 
-    if (FruitCounts.Num() != 0) {
+    //if (FruitCounts.Num() != 0) {
         if (FruitCounts.Contains(Type))
             --FruitCounts[Type];
-        if (FruitCounts[Type] == 0) {
+        if (FruitCounts.Contains(Type) && (FruitCounts[Type] == 0)) {
             FruitCounts.Remove(Type);
         }
+   // }
+
+    if (AllFruitCounts.Contains(Type))
+        --AllFruitCounts[Type];
+    if ((AllFruitCounts.Contains(Type)) && (AllFruitCounts[Type] == 0 )) {
+        AllFruitCounts.Remove(Type);
     }
 }
 
