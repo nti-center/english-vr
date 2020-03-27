@@ -39,9 +39,26 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     UAudioComponent* Audio;
 #pragma region DataTable
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-    UDataTable* _Table;
+    //UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    //UDataTable* _Table;
 
+    //“аблицы дл€ генерации общей части диалога
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    UDataTable* GreetingsTable;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    UDataTable* GratitudeTable;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    UDataTable* PaymentTable;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    UDataTable* GoodbyeTable;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    UDataTable* ErrorsTable;
+
+    //“аблицы дл€ генерации составного запроса
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     UDataTable* RequestTable;
 
@@ -53,9 +70,6 @@ public:
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     UDataTable* FruitsTable;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-    UDataTable* PaymentTable;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     UDataTable* EndingTable;
@@ -149,7 +163,7 @@ public:
     bool IsNotPlaying();
 
     UFUNCTION(BlueprintImplementableEvent)
-    void PlayRequestList(const TArray<FName>& RequestList,  bool check);
+    void PlayRequestList(const TArray<FName>& RequestList, int32 ListLength,  bool check);
 
     UFUNCTION(BlueprintCallable)
     bool IsCorrectFruitsCount();
