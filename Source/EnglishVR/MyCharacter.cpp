@@ -17,11 +17,6 @@ AMyCharacter::AMyCharacter() {
 
 #pragma region DataTableLoading
 
-   //static ConstructorHelpers::FObjectFinder<UDataTable> _DataTableObject(TEXT("DataTable'/Game/CSV/DataTable.DataTable'"));
-   //if (_DataTableObject.Succeeded()) {
-   //    _Table = _DataTableObject.Object;
-   //    //UE_LOG(LogTemp, Warning, TEXT("Data table loaded"));
-   //}
 
     static ConstructorHelpers::FObjectFinder<UDataTable> _DataTableGreetings(TEXT("DataTable'/Game/CSV/Greetings_phrases_table.Greetings_phrases_table'"));
     if (_DataTableGreetings.Succeeded()) {
@@ -71,6 +66,11 @@ AMyCharacter::AMyCharacter() {
     static ConstructorHelpers::FObjectFinder<UDataTable> _DataTableEnding(TEXT("DataTable'/Game/CSV/Ending_phrases_table.Ending_phrases_table'"));
     if (_DataTableEnding.Succeeded()) {
         EndingTable = _DataTableEnding.Object;
+    }
+
+    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTable(TEXT("DataTable'/Game/CSV/TestFromAIML.TestFromAIML'"));
+    if (_DataTable.Succeeded()) {
+        DataTable = _DataTable.Object;
     }
 #pragma endregion
 }
@@ -346,9 +346,37 @@ void AMyCharacter::RandomRequestGenerator() {
 
 void AMyCharacter::GoToMarket() {
 	if (WalkingCount < ToPath.Num()) {
-        if (GetController() && Cast<AAIController>(GetController()))
-		    Cast<AAIController>(GetController())->MoveToActor(ToPath[WalkingCount], -1.f, true, true);
+        if (GetController() && Cast<AAIController>(GetController())) {
+            Cast<AAIController>(GetController())->MoveToActor(ToPath[WalkingCount], -1.f, true, true);
+        }
 	}
+}
+
+void AMyCharacter::PlaySoundFromAIML(FString SoundNameString){
+
+    FString ContextString;
+    TArray<FString> InputArray;
+    TArray<FName> PathArray;
+
+    SoundNameString.ParseIntoArray(InputArray, TEXT(" "), true);
+    
+   for(int i = 0; i < InputArray.Num(); i++) {
+       FSoundDataTableStruct* Row = DataTable->FindRow<FSoundDataTableStruct>(FName(*InputArray[i]), ContextString, true);
+       if (Row) {
+          PathArray.Add(*Row->Path);
+       }
+   }
+   PlayRequestList(PathArray, PathArray.Num(), true);
+
+   //while (PlayingSoundNumber < PathArray.Num()){
+   //    if (!(Audio->IsPlaying())) {
+   //        USoundCue* Sound = LoadObjFromPath<USoundCue>(PathArray[PlayingSoundNumber]);
+   //
+   //        Audio->SetSound(Sound);
+   //        Audio->Play();       
+   //    }
+   //}
+
 }
 
 void AMyCharacter::GoAway() {
@@ -398,6 +426,7 @@ void AMyCharacter::BeginPlay() {
 	name.Add("errors");
 
    RandomDialogGenerator(name);
+   //PlaySoundFromAIML("Can_I_Have_Male_Cue One_male_Cue Apple_male_Cue Please_Male_Cue");
    GoToMarket();
 }
 

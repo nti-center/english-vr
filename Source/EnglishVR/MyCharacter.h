@@ -8,6 +8,7 @@
 #include "AIController.h"
 #include "Basket.h"
 #include "Sound/SoundCue.h"
+#include "UObject/UObjectGlobals.h"
 #include "AudioDataTableStruct.h"
 #include "FruitSoundDataTableStruct.h"
 #include "NumbersSoundDataTableStruct.h"
@@ -39,9 +40,6 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     UAudioComponent* Audio;
 #pragma region DataTable
-    //UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-    //UDataTable* _Table;
-
     //“аблицы дл€ генерации общей части диалога
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     UDataTable* GreetingsTable;
@@ -76,6 +74,9 @@ public:
 
     UPROPERTY(EditDefaultsOnly)
     UDataTable* TmpTable;
+
+    UPROPERTY(EditDefaultsOnly)
+    UDataTable* DataTable;
 #pragma endregion
 
     UPROPERTY(BlueprintReadWrite)
@@ -104,6 +105,9 @@ public:
 
     UPROPERTY(BlueprintReadWrite)
     int32 WalkingCount;
+
+    UPROPERTY(BlueprintReadWrite)
+    int32 PlayingSoundNumber = 0;
 
 #pragma region VariablesForRandomRequestGeneration
 
@@ -149,6 +153,9 @@ public:
 
     UFUNCTION(BlueprintCallable)
     void GoToMarket();
+
+    UFUNCTION(BlueprintCallable)
+    void PlaySoundFromAIML(FString SoundNameString);
 
     UFUNCTION(BlueprintCallable)
     void GoAway();
