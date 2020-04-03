@@ -426,7 +426,7 @@ void AMyCharacter::BeginPlay() {
 	name.Add("errors");
 
    RandomDialogGenerator(name);
-   //PlaySoundFromAIML("Can_I_Have_Male_Cue One_male_Cue Apple_male_Cue Please_Male_Cue");
+   //PlaySoundFromAIML("Can_I_Have_Male One_male Apple_male Please_Male");
    GoToMarket();
 }
 
