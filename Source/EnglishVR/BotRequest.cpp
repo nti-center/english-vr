@@ -31,10 +31,8 @@ void UBotRequest::Request() {
 
     Request->SetURL(TEXT("http://localhost:8989/api/rest/v1.0/ask?question=" + Question + "&userid=" + UserID));
     Request->SetVerb("GET");
-    //Request->SetVerb("POST");
     Request->SetHeader(TEXT("User-Agent"), "X-UnrealEngine-Agent");
     Request->SetHeader("Content-Type", TEXT("application/json"));
-    //Request->SetHeader(TEXT("Content-Type"), TEXT("text/plain"));
     Request->ProcessRequest();
 
     UE_LOG(LogTemp, Warning, TEXT("Send request"));
@@ -53,11 +51,11 @@ void UBotRequest::ResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Res
 
     UE_LOG(LogTemp, Warning, TEXT("Format string %s"), *ResponseString);
 
-    TSharedRef<TJsonReader<TCHAR>> Reader = TJsonReaderFactory<TCHAR>::Create(ResponseString/*Response->GetContentAsString()*/);
+    TSharedRef<TJsonReader<TCHAR>> Reader = TJsonReaderFactory<TCHAR>::Create(ResponseString);
 
-    if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.IsValid()) {
-        //FString string_value_read = JsonObject->GetStringField("answer");
-        //UE_LOG(LogTemp, Warning, TEXT("%s"), *string_value_read);
+    if (FJsonSerializer::Deserialize(Reader, JsonObject)) {
+        TSharedPtr<FJsonObject> obj = JsonObject->GetObjectField("response");
+        UE_LOG(LogTemp, Warning, TEXT("Bot answer is: %s"), *obj->GetStringField("answer"));
     }
     else {
         UE_LOG(LogTemp, Warning, TEXT("Cant deserialize response")); 
