@@ -8,6 +8,7 @@
 #include "AIController.h"
 #include "Basket.h"
 #include "Sound/SoundCue.h"
+#include "UObject/UObjectGlobals.h"
 #include "AudioDataTableStruct.h"
 #include "FruitSoundDataTableStruct.h"
 #include "NumbersSoundDataTableStruct.h"
@@ -36,12 +37,27 @@ public:
     UPROPERTY(BlueprintReadWrite)
     UBoxComponent* Box;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Audio Conmponent", meta = (AllowPrivateAccess = "true"))
     UAudioComponent* Audio;
-#pragma region DataTable
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-    UDataTable* _Table;
 
+#pragma region DataTable
+    //Таблицы для генерации общей части диалога
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    UDataTable* GreetingsTable;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    UDataTable* GratitudeTable;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    UDataTable* PaymentTable;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    UDataTable* GoodbyeTable;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    UDataTable* ErrorsTable;
+
+    //Таблицы для генерации составного запроса
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     UDataTable* RequestTable;
 
@@ -55,13 +71,13 @@ public:
     UDataTable* FruitsTable;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-    UDataTable* PaymentTable;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     UDataTable* EndingTable;
 
     UPROPERTY(EditDefaultsOnly)
     UDataTable* TmpTable;
+
+    UPROPERTY(EditDefaultsOnly)
+    UDataTable* DataTable;
 #pragma endregion
 
     UPROPERTY(BlueprintReadWrite)
@@ -90,6 +106,13 @@ public:
 
     UPROPERTY(BlueprintReadWrite)
     int32 WalkingCount;
+
+    //Для проигрывания звука
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<FName> PathArray;
+
+    UPROPERTY(BlueprintReadWrite)
+    int32 PlayingSoundNumber = 0;
 
 #pragma region VariablesForRandomRequestGeneration
 
@@ -137,6 +160,12 @@ public:
     void GoToMarket();
 
     UFUNCTION(BlueprintCallable)
+    void PlaySoundFromAIML(FString SoundNameString);
+
+    UFUNCTION(BlueprintCallable)
+    void PlaySound();
+
+    UFUNCTION(BlueprintCallable)
     void GoAway();
 
     UFUNCTION(BlueprintCallable)
@@ -149,7 +178,7 @@ public:
     bool IsNotPlaying();
 
     UFUNCTION(BlueprintImplementableEvent)
-    void PlayRequestList(const TArray<FName>& RequestList,  bool check);
+    void PlayRequestList(const TArray<FName>& RequestList, int32 ListLength,  bool check);
 
     UFUNCTION(BlueprintCallable)
     bool IsCorrectFruitsCount();
@@ -168,7 +197,8 @@ public:
 
 protected:
     // Called when the game starts or when spawned
-    virtual void BeginPlay() override;
+    virtual void BeginPlay() override; 
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReasonType) override;
 
 public:    
     // Called every frame

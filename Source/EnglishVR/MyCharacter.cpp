@@ -17,46 +17,60 @@ AMyCharacter::AMyCharacter() {
 
 #pragma region DataTableLoading
 
-    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTableObject(TEXT("DataTable'/Game/CSV/DataTable.DataTable'"));
-    if (_DataTableObject.Succeeded()) {
-        _Table = _DataTableObject.Object;
-        //UE_LOG(LogTemp, Warning, TEXT("Data table loaded"));
+
+    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTableGreetings(TEXT("DataTable'/Game/CSV/Greetings_phrases_table.Greetings_phrases_table'"));
+    if (_DataTableGreetings.Succeeded()) {
+        GreetingsTable = _DataTableGreetings.Object;
     }
 
-    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTableRequest(TEXT("DataTable'/Game/CSV/Request_phrases_table.Request_phrases_table'"));
-    if (_DataTableRequest.Succeeded()) {
-        RequestTable = _DataTableRequest.Object;
-        //UE_LOG(LogTemp, Warning, TEXT("Data table loaded"));
-    }
-
-    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTableNumber(TEXT("DataTable'/Game/CSV/Numbers_phrases_table.Numbers_phrases_table'"));
-    if (_DataTableNumber.Succeeded()) {
-        NumberTable = _DataTableNumber.Object;
-        //UE_LOG(LogTemp, Warning, TEXT("Data table loaded"));
-    }
-
-    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTableFruit(TEXT("DataTable'/Game/CSV/Fruit_phrases_table.Fruit_phrases_table'"));
-    if (_DataTableFruit.Succeeded()) {
-        FruitTable = _DataTableFruit.Object;
-        //UE_LOG(LogTemp, Warning, TEXT("Data table loaded"));
-    }
-
-    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTableFruits(TEXT("DataTable'/Game/CSV/Fruits_phrases_table.Fruits_phrases_table'"));
-    if (_DataTableFruits.Succeeded()) {
-        FruitsTable = _DataTableFruits.Object;
-        //UE_LOG(LogTemp, Warning, TEXT("Data table loaded"));
+    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTableGratitude(TEXT("DataTable'/Game/CSV/Gratitude_phrases_table.Gratitude_phrases_table'"));
+    if (_DataTableGratitude.Succeeded()) {
+        GratitudeTable = _DataTableGratitude.Object;
     }
 
     static ConstructorHelpers::FObjectFinder<UDataTable> _DataTablePayment(TEXT("DataTable'/Game/CSV/payment_phrases_table.Payment_phrases_table'"));
     if (_DataTablePayment.Succeeded()) {
         PaymentTable = _DataTablePayment.Object;
-        // UE_LOG(LogTemp, Warning, TEXT("Data table loaded"));
+    }
+
+    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTableGoodbye(TEXT("DataTable'/Game/CSV/Goodbye_phrases_table.Goodbye_phrases_table'"));
+    if (_DataTableGoodbye.Succeeded()) {
+        GoodbyeTable = _DataTableGoodbye.Object;
+    }
+
+    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTableErrors(TEXT("DataTable'/Game/CSV/Error_phrases_table.Error_phrases_table'"));
+    if (_DataTableErrors.Succeeded()) {
+        ErrorsTable = _DataTableErrors.Object;
+    }
+
+    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTableRequest(TEXT("DataTable'/Game/CSV/Request_phrases_table.Request_phrases_table'"));
+    if (_DataTableRequest.Succeeded()) {
+        RequestTable = _DataTableRequest.Object;
+    }
+
+    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTableNumber(TEXT("DataTable'/Game/CSV/Numbers_phrases_table.Numbers_phrases_table'"));
+    if (_DataTableNumber.Succeeded()) {
+        NumberTable = _DataTableNumber.Object;
+    }
+
+    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTableFruit(TEXT("DataTable'/Game/CSV/Fruit_phrases_table.Fruit_phrases_table'"));
+    if (_DataTableFruit.Succeeded()) {
+        FruitTable = _DataTableFruit.Object;
+    }
+
+    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTableFruits(TEXT("DataTable'/Game/CSV/Fruits_phrases_table.Fruits_phrases_table'"));
+    if (_DataTableFruits.Succeeded()) {
+        FruitsTable = _DataTableFruits.Object;
     }
 
     static ConstructorHelpers::FObjectFinder<UDataTable> _DataTableEnding(TEXT("DataTable'/Game/CSV/Ending_phrases_table.Ending_phrases_table'"));
     if (_DataTableEnding.Succeeded()) {
         EndingTable = _DataTableEnding.Object;
-       // UE_LOG(LogTemp, Warning, TEXT("Data table loaded"));
+    }
+
+    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTable(TEXT("DataTable'/Game/CSV/TestFromAIML.TestFromAIML'"));
+    if (_DataTable.Succeeded()) {
+        DataTable = _DataTable.Object;
     }
 #pragma endregion
 }
@@ -79,42 +93,94 @@ bool AMyCharacter::IsCorrectFruitsCount() {
 }
 
 void AMyCharacter::RandomDialogGenerator(TArray<FName> SoundsName) {
+
     FString ContextString;
+    FString base = "";
+
+    int32 Rand = 0;
+
+    FName SoundName = "";
+    FName GetPath = "";
+    FName ConcatName = "";
 
     for (int i = 0; i < SoundsName.Num(); i++) {
-        int32 Rand = 0;
-        FName SoundName = "";
-        FName GetPath = "";
 
-       // Rand = FMath::RandRange(min,max);
         SoundName = SoundsName[i];
 
-		if (SoundName == "greetings")
-			Rand = FMath::RandRange(1, 7);
-		//else if (SoundName == "requests")
-		//	Rand = FMath::RandRange(1, 6);
-        else if (SoundName == "gratitude")
+        if (SoundName == "greetings") {
+            Rand = FMath::RandRange(1, 7);
+            TmpTable = GreetingsTable;
+
+            base = SoundName.ToString();
+            base.Append(FString::FromInt(Rand));
+
+            ConcatName = FName(*base);
+
+            FSoundDataTableStruct* Row = TmpTable->FindRow<FSoundDataTableStruct>(ConcatName, ContextString, true);
+            if (Row) {
+                GetPath = (*Row->Path);
+            }
+        }
+        else if (SoundName == "gratitude") {
             Rand = FMath::RandRange(1, 6);
-		else if (SoundName == "goodbye")
-			Rand = FMath::RandRange(1, 4);
-		else if (SoundName == "errors")
-			Rand = FMath::RandRange(3, 3);
-        else if (SoundName == "payment")
-            Rand = FMath::RandRange(5, 5);
+            TmpTable = GratitudeTable;
 
-        FString base = SoundName.ToString();
-        base.Append(FString::FromInt(Rand));
+            base = SoundName.ToString();
+            base.Append(FString::FromInt(Rand));
 
-        FName ConcatName = FName(*base);
+            ConcatName = FName(*base);
 
-        FAudioDataTableStruct* Row = _Table->FindRow<FAudioDataTableStruct>(ConcatName, ContextString, true);
-        if (Row) {
-            GetPath = (*Row->Path);
-			if (SoundName == "requests"){
-                RandomRequestGenerator();
-			}
-        } 
-        if(SoundName != "requests")
+            FSoundDataTableStruct* Row = TmpTable->FindRow<FSoundDataTableStruct>(ConcatName, ContextString, true);
+            if (Row) {
+                GetPath = (*Row->Path);
+            }
+        }
+        else if (SoundName == "payment") {
+            Rand = FMath::RandRange(1, 1);
+
+            TmpTable = PaymentTable;
+
+            base = SoundName.ToString();
+            base.Append(FString::FromInt(Rand));
+
+            ConcatName = FName(*base);
+
+            FSoundDataTableStruct* Row = TmpTable->FindRow<FSoundDataTableStruct>(ConcatName, ContextString, true);
+            if (Row) {
+                GetPath = (*Row->Path);
+            }
+        }
+        else if (SoundName == "goodbye") {
+            Rand = FMath::RandRange(1, 4);
+
+            TmpTable = GoodbyeTable;
+
+            base = SoundName.ToString();
+            base.Append(FString::FromInt(Rand));
+
+            ConcatName = FName(*base);
+
+            FSoundDataTableStruct* Row = TmpTable->FindRow<FSoundDataTableStruct>(ConcatName, ContextString, true);
+            if (Row) {
+                GetPath = (*Row->Path);
+            }
+        }
+        else if (SoundName == "errors") {
+            Rand = FMath::RandRange(4, 4);
+
+            TmpTable = ErrorsTable;
+
+            base = SoundName.ToString();
+            base.Append(FString::FromInt(Rand));
+
+            ConcatName = FName(*base);
+
+            FSoundDataTableStruct* Row = TmpTable->FindRow<FSoundDataTableStruct>(ConcatName, ContextString, true);
+            if (Row) {
+                GetPath = (*Row->Path);
+            }
+        }
+
         DialogList.Add(SoundName, GetPath);
     }
 }
@@ -280,10 +346,56 @@ void AMyCharacter::RandomRequestGenerator() {
 
 void AMyCharacter::GoToMarket() {
 	if (WalkingCount < ToPath.Num()) {
-        if (GetController() && Cast<AAIController>(GetController()))
-		    Cast<AAIController>(GetController())->MoveToActor(ToPath[WalkingCount], -1.f, true, true);
+        if (GetController() && Cast<AAIController>(GetController())) {
+            Cast<AAIController>(GetController())->MoveToActor(ToPath[WalkingCount], -1.f, true, true);
+        }
 	}
 }
+
+void AMyCharacter::PlaySoundFromAIML(FString SoundNameString){
+
+    FString ContextString;
+    TArray<FString> InputArray;
+
+    PathArray.Empty();
+    PlayingSoundNumber = 0;
+
+    SoundNameString.ParseIntoArray(InputArray, TEXT(" "), true);
+    
+   for(FString name : InputArray) {
+
+       //¬ данный момент не будет работать, так как сейчас все звуки хран€тс€ в разных папках,
+       //а необходимо, что бы хранились в одной
+       //FString path = "SoundCue'/Game/Sounds/AllSounds/" + name + "_Cue." + name + "_Cue'";
+       //PathArray.Add(FName(*path));
+
+       FSoundDataTableStruct* Row = DataTable->FindRow<FSoundDataTableStruct>(FName(*name), ContextString, true);
+       if (Row) {
+          PathArray.Add(*Row->Path);
+       }
+   }
+   PlaySound();
+}
+
+void AMyCharacter::PlaySound() {
+    if (PlayingSoundNumber < PathArray.Num()) {
+        if ((Audio->IsPlaying())) {
+            Audio->OnAudioFinished.AddDynamic(this, &AMyCharacter::PlaySound);
+        }
+        else {
+            USoundCue* Sound = LoadObjFromPath<USoundCue>(PathArray[PlayingSoundNumber]);
+
+            Audio->SetSound(Sound);
+            Audio->Play();
+
+            PlayingSoundNumber++;
+            PlaySound();
+        }
+    }
+    else
+        return;
+}
+
 
 void AMyCharacter::GoAway() {
 
@@ -327,12 +439,18 @@ void AMyCharacter::BeginPlay() {
     TArray<FName> name;
     name.Add("greetings");
     name.Add("gratitude");
-    name.Add("goodbye");
     name.Add("payment");
+    name.Add("goodbye");
 	name.Add("errors");
 
    RandomDialogGenerator(name);
+   //PlaySoundFromAIML("Can_I_Have_Male One_male Apple_male Please_Male");
    GoToMarket();
+}
+
+void AMyCharacter::EndPlay(const EEndPlayReason::Type EndPlayReasonType) {
+    Audio->OnAudioFinished.RemoveDynamic(this, &AMyCharacter::PlaySound);
+    Super::EndPlay(EndPlayReasonType);
 }
 
 // Called every frame
@@ -352,7 +470,7 @@ void AMyCharacter::Tick(float DeltaTime) {
 	if((EComeState == EStatesEnum::Process) && (Counter < RequestCount)){
 
         RandomRequestGenerator();
-        PlayRequestList(RequestFullPhrasesArray, IsCheck);
+        PlayRequestList(RequestFullPhrasesArray, RequestFullPhrasesArray.Num(), IsCheck);
 
         for (TActorIterator<ABasket> ActorItr(GetWorld()); ActorItr; ++ActorItr)
         {
@@ -415,21 +533,10 @@ void AMyCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* O
    }
    else {
        PlayDialog(DialogList.FindRef("errors"), IsCheck);
-       PlayRequestList(RequestFullPhrasesArray, IsCheck);
+       PlayRequestList(RequestFullPhrasesArray, RequestFullPhrasesArray.Num(), IsCheck);
    
        ENegativeState = EStatesEnum::Active;
    }
-
-    //if (Counter == RequestCount /*IsCorrectFruitsCount()*/) {
-    //    EPickupState = EStatesEnum::Active;
-    //    
-    //}
-    //else {
-    //    PlayDialog(DialogList.FindRef("errors"), IsCheck);
-    //    PlayRequestList(RequestFullPhrasesArray, IsCheck);
-    //
-    //    ENegativeState = EStatesEnum::Active;
-    //}
 }
 
 void AMyCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
