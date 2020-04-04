@@ -37,8 +37,9 @@ public:
     UPROPERTY(BlueprintReadWrite)
     UBoxComponent* Box;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Audio Conmponent", meta = (AllowPrivateAccess = "true"))
     UAudioComponent* Audio;
+
 #pragma region DataTable
     //Таблицы для генерации общей части диалога
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
@@ -106,6 +107,10 @@ public:
     UPROPERTY(BlueprintReadWrite)
     int32 WalkingCount;
 
+    //Для проигрывания звука
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<FName> PathArray;
+
     UPROPERTY(BlueprintReadWrite)
     int32 PlayingSoundNumber = 0;
 
@@ -158,6 +163,9 @@ public:
     void PlaySoundFromAIML(FString SoundNameString);
 
     UFUNCTION(BlueprintCallable)
+    void PlaySound();
+
+    UFUNCTION(BlueprintCallable)
     void GoAway();
 
     UFUNCTION(BlueprintCallable)
@@ -189,7 +197,8 @@ public:
 
 protected:
     // Called when the game starts or when spawned
-    virtual void BeginPlay() override;
+    virtual void BeginPlay() override; 
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReasonType) override;
 
 public:    
     // Called every frame

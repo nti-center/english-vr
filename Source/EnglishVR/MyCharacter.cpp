@@ -356,28 +356,46 @@ void AMyCharacter::PlaySoundFromAIML(FString SoundNameString){
 
     FString ContextString;
     TArray<FString> InputArray;
-    TArray<FName> PathArray;
+
+    PathArray.Empty();
+    PlayingSoundNumber = 0;
 
     SoundNameString.ParseIntoArray(InputArray, TEXT(" "), true);
     
-   for(int i = 0; i < InputArray.Num(); i++) {
-       FSoundDataTableStruct* Row = DataTable->FindRow<FSoundDataTableStruct>(FName(*InputArray[i]), ContextString, true);
+   for(FString name : InputArray) {
+
+       //¬ данный момент не будет работать, так как сейчас все звуки хран€тс€ в разных папках,
+       //а необходимо, что бы хранились в одной
+       //FString path = "SoundCue'/Game/Sounds/AllSounds/" + name + "_Cue." + name + "_Cue'";
+       //PathArray.Add(FName(*path));
+
+       FSoundDataTableStruct* Row = DataTable->FindRow<FSoundDataTableStruct>(FName(*name), ContextString, true);
        if (Row) {
           PathArray.Add(*Row->Path);
        }
    }
-   PlayRequestList(PathArray, PathArray.Num(), true);
-
-   //while (PlayingSoundNumber < PathArray.Num()){
-   //    if (!(Audio->IsPlaying())) {
-   //        USoundCue* Sound = LoadObjFromPath<USoundCue>(PathArray[PlayingSoundNumber]);
-   //
-   //        Audio->SetSound(Sound);
-   //        Audio->Play();       
-   //    }
-   //}
-
+   PlaySound();
 }
+
+void AMyCharacter::PlaySound() {
+    if (PlayingSoundNumber < PathArray.Num()) {
+        if ((Audio->IsPlaying())) {
+            Audio->OnAudioFinished.AddDynamic(this, &AMyCharacter::PlaySound);
+        }
+        else {
+            USoundCue* Sound = LoadObjFromPath<USoundCue>(PathArray[PlayingSoundNumber]);
+
+            Audio->SetSound(Sound);
+            Audio->Play();
+
+            PlayingSoundNumber++;
+            PlaySound();
+        }
+    }
+    else
+        return;
+}
+
 
 void AMyCharacter::GoAway() {
 
@@ -428,6 +446,11 @@ void AMyCharacter::BeginPlay() {
    RandomDialogGenerator(name);
    //PlaySoundFromAIML("Can_I_Have_Male One_male Apple_male Please_Male");
    GoToMarket();
+}
+
+void AMyCharacter::EndPlay(const EEndPlayReason::Type EndPlayReasonType) {
+    Audio->OnAudioFinished.RemoveDynamic(this, &AMyCharacter::PlaySound);
+    Super::EndPlay(EndPlayReasonType);
 }
 
 // Called every frame
