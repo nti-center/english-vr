@@ -18,6 +18,9 @@ public:
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
     UStaticMeshComponent* Mesh;
 
+    FString GetType_Implementation() override;
+    FString Type;
+
 protected:
     virtual void BeginPlay() override;
 

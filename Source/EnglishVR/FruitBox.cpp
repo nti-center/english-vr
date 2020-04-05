@@ -21,12 +21,6 @@ void UFruitBox::BeginPlay() {
         return;
     }
 
-    if (!FruitBP) {
-        UE_LOG(LogTemp, Warning, TEXT("Cant find Blueprint"));
-        return;
-    }
-
-    UBlueprint* GeneratedBP = FruitBP;
     UWorld* World = GetWorld();
     FActorSpawnParameters SpawnParams;    
     SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
@@ -62,7 +56,14 @@ void UFruitBox::BeginPlay() {
                 FRotator RRotator(FMath::RandRange(-40, 40), FMath::RandRange(-40, 40), FMath::RandRange(-40, 40));
                 FVector FruitLocation = FVector(CurrX + ROffsetX, CurrY + ROffsetY, CurrZ + ROffsetZ);
                 FVector Location = Box->GetComponentLocation() + OriginOffset + Box->GetComponentRotation().RotateVector(FruitLocation - FruitBoxBE);
-                World->SpawnActor<AActor>(GeneratedBP->GeneratedClass, Location, RRotator, SpawnParams);
+                //AFruit
+                
+                AFruit* Fruit = World->SpawnActor<AFruit>(AFruit::StaticClass(), Location, RRotator, SpawnParams);
+
+                if (Fruit) {
+                    Fruit->Mesh->SetStaticMesh(FruitMesh);
+                    Fruit->Type = FruitType;
+                }
             }
         }
     }

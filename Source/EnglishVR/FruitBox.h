@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine.h"
 #include "GameFramework/Actor.h"
+#include "Fruit.h"
 #include "FruitBox.generated.h"
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
@@ -14,11 +15,14 @@ class ENGLISHVR_API UFruitBox : public USceneComponent {
     UPROPERTY(EditAnywhere, Category = "Crate")
     UBoxComponent* Box;
 
+    //UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Fruit")
+    //UStaticMeshComponent* Mesh;
+
     UPROPERTY(EditAnywhere, Category = "Fruit")
     UStaticMesh* FruitMesh;
 
     UPROPERTY(EditAnywhere, Category = "Fruit")
-    UBlueprint* FruitBP;
+    FString FruitType;
 
 public:
     UFruitBox();

@@ -27,3 +27,7 @@ void AFruit::Tick(float DeltaTime) {
 
 }
 
+FString AFruit::GetType_Implementation() {
+    return Type;
+}
+
