@@ -50,8 +50,8 @@ void UFruitBox::BeginPlay() {
     FActorSpawnParameters SpawnParams;    
     SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
     
-    FVector FruitBoxBE = Box->Bounds.BoxExtent;
-    FVector FruitBoxOrigin = Box->Bounds.Origin - FruitBoxBE;
+    FVector FruitBoxBE = Box->GetScaledBoxExtent();
+    FVector FruitBoxOrigin = Box->GetComponentLocation() - FruitBoxBE;
 
     FVector FruitBE = FruitMesh->GetBounds().BoxExtent;
     FVector FruitOffset = FruitBE / 3.0f;
@@ -81,9 +81,9 @@ void UFruitBox::BeginPlay() {
                     break;
                 
                 FRotator RRotator(FMath::RandRange(-40, 40), FMath::RandRange(-40, 40), FMath::RandRange(-40, 40));
-
-                World->SpawnActor<AActor>(GeneratedBP->GeneratedClass, FruitBoxOrigin + OriginOffset + FVector(CurrX + ROffsetX, CurrY + ROffsetY, CurrZ + OffsetZ),
-                    RRotator, SpawnParams);
+                FVector FruitLocation = FVector(CurrX + ROffsetX, CurrY + ROffsetY, CurrZ + OffsetZ);
+                FVector Location = Box->GetComponentLocation() + OriginOffset + Box->GetComponentRotation().RotateVector(FruitLocation - FruitBoxBE);
+                World->SpawnActor<AActor>(GeneratedBP->GeneratedClass, Location, RRotator, SpawnParams);
             }
         }
     }
