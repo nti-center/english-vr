@@ -38,7 +38,7 @@ void UFruitBox::BeginPlay() {
     FActorSpawnParameters SpawnParams;    
     SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
     
-    FVector FruitBoxBE = Box->GetScaledBoxExtent();
+    FVector FruitBoxBE = Box->GetScaledBoxExtent().GetAbs();
     FVector FruitBoxOrigin = Box->GetComponentLocation() - FruitBoxBE;
 
     FVector FruitBE = FruitMesh->GetBounds().BoxExtent;
