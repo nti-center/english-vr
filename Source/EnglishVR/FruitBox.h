@@ -13,9 +13,6 @@ class ENGLISHVR_API UFruitBox : public USceneComponent {
 
     UPROPERTY(EditAnywhere, Category = "Crate")
     UBoxComponent* Box;
-    
-    //UPROPERTY(EditAnywhere, Category = "Crate")
-    //FVector BorderSize;
 
     UPROPERTY(EditAnywhere, Category = "Fruit")
     UStaticMesh* FruitMesh;
@@ -24,15 +21,12 @@ class ENGLISHVR_API UFruitBox : public USceneComponent {
     UBlueprint* FruitBP;
 
 public:
-    // Sets default values for this component's properties
     UFruitBox();
 
 protected:
-    // Called when the game starts
     virtual void BeginPlay() override;
 
 public:
-    // Called every frame
     virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 };
