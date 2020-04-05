@@ -12,6 +12,9 @@ UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class ENGLISHVR_API UFruitBox : public USceneComponent {
     GENERATED_BODY()
 
+public:
+    UFruitBox();
+
     UPROPERTY(EditAnywhere, Category = "Crate")
     UBoxComponent* Box;
 
@@ -24,8 +27,8 @@ class ENGLISHVR_API UFruitBox : public USceneComponent {
     UPROPERTY(EditAnywhere, Category = "Fruit")
     FString FruitType;
 
-public:
-    UFruitBox();
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fruit")
+    TSubclassOf<class AFruit> FruitClass;
 
 protected:
     virtual void BeginPlay() override;

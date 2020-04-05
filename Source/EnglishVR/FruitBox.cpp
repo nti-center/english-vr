@@ -11,6 +11,14 @@ UFruitBox::UFruitBox() {
 
     Box->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
     Box->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f));
+
+    //static ConstructorHelpers::FClassFinder<AFruit> PickableBPClass(TEXT("/Game/Blueprints/PickableBP"));
+    //if (!PickableBPClass.Succeeded()) {
+    //    UE_LOG(LogTemp, Warning, TEXT("Cant find PickableBPClass"));
+    //    return;
+    //}
+    
+    FruitClass = AFruit::StaticClass();
 }
 
 void UFruitBox::BeginPlay() {
@@ -18,6 +26,11 @@ void UFruitBox::BeginPlay() {
 
     if (!FruitMesh) {
         UE_LOG(LogTemp, Warning, TEXT("Cant find Mesh"));
+        return;
+    }
+
+    if (!FruitClass) {
+        UE_LOG(LogTemp, Warning, TEXT("Cant find fruit class"));
         return;
     }
 
@@ -58,7 +71,7 @@ void UFruitBox::BeginPlay() {
                 FVector Location = Box->GetComponentLocation() + OriginOffset + Box->GetComponentRotation().RotateVector(FruitLocation - FruitBoxBE);
                 //AFruit
                 
-                AFruit* Fruit = World->SpawnActor<AFruit>(AFruit::StaticClass(), Location, RRotator, SpawnParams);
+                AFruit* Fruit = World->SpawnActor<AFruit>(FruitClass, Location, RRotator, SpawnParams);
 
                 if (Fruit) {
                     Fruit->Mesh->SetStaticMesh(FruitMesh);
