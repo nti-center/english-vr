@@ -42,6 +42,9 @@ void UBotRequest::Request() {
 void UBotRequest::ResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful) {
     TSharedPtr<FJsonObject> JsonObject;
 
+    if (!bWasSuccessful || !Response.IsValid())
+        return;
+
     UE_LOG(LogTemp, Warning, TEXT("Get Answer %s"), *Response->GetContentAsString());
 
     FString ResponseString = Response->GetContentAsString();
