@@ -420,7 +420,12 @@ void AMyCharacter::TakeBasket() {
     FAttachmentTransformRules Atr(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepWorld, true);
     Basket->AttachToComponent(GetMesh(), Atr, "RightHandSocket");
     PlayDialog(DialogList.FindRef("gratitude"), IsCheck);
-    PlayDialog(DialogList.FindRef("goodbye"), IsCheck);
+    
+    //¬ременна€ заплатка, код удалитс€ при переходе к AIML
+    TArray<FName> tmp;
+    tmp.Add(DialogList.FindRef("goodbye"));
+    PlayRequestList(tmp, 1 ,IsCheck);
+
     IsEnd = true;
 }
 
