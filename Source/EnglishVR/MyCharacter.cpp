@@ -378,22 +378,22 @@ void AMyCharacter::PlaySoundFromAIML(FString SoundNameString){
 }
 
 void AMyCharacter::PlaySound() {
-    if (PlayingSoundNumber < PathArray.Num()) {
-        if ((Audio->IsPlaying())) {
-            Audio->OnAudioFinished.AddDynamic(this, &AMyCharacter::PlaySound);
-        }
-        else {
-            USoundCue* Sound = LoadObjFromPath<USoundCue>(PathArray[PlayingSoundNumber]);
-
-            Audio->SetSound(Sound);
-            Audio->Play();
-
-            PlayingSoundNumber++;
-            PlaySound();
-        }
-    }
-    else
+    if (PlayingSoundNumber >= PathArray.Num())
         return;
+
+    if ((Audio->IsPlaying())) {
+        Audio->OnAudioFinished.AddDynamic(this, &AMyCharacter::PlaySound);
+    }
+    else {
+        USoundCue* Sound = LoadObjFromPath<USoundCue>(PathArray[PlayingSoundNumber]);
+
+        Audio->SetSound(Sound);
+        Audio->Play();
+
+        PlayingSoundNumber++;
+        PlaySound();
+    }
+        
 }
 
 
