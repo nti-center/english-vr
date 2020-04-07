@@ -40,25 +40,19 @@ void UBotRequest::Request() {
 
 
 void UBotRequest::ResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful) {
-    TSharedPtr<FJsonObject> JsonObject;
+
+    TArray<TSharedPtr<FJsonValue>> JsonArray;
 
     if (!bWasSuccessful || !Response.IsValid())
         return;
 
     UE_LOG(LogTemp, Warning, TEXT("Get Answer %s"), *Response->GetContentAsString());
 
-    FString ResponseString = Response->GetContentAsString();
-    int32 FirstPosition = ResponseString.Find("{");
-    int32 EndPosition = ResponseString.Find("}", ESearchCase::CaseSensitive, ESearchDir::FromEnd);
-    ResponseString = ResponseString.Mid(FirstPosition, EndPosition);
+    TSharedRef<TJsonReader<TCHAR>> Reader = TJsonReaderFactory<TCHAR>::Create(Response->GetContentAsString());
 
-    UE_LOG(LogTemp, Warning, TEXT("Format string %s"), *ResponseString);
-
-    TSharedRef<TJsonReader<TCHAR>> Reader = TJsonReaderFactory<TCHAR>::Create(ResponseString);
-
-    if (FJsonSerializer::Deserialize(Reader, JsonObject)) {
-        TSharedPtr<FJsonObject> obj = JsonObject->GetObjectField("response");
-        UE_LOG(LogTemp, Warning, TEXT("Bot answer is: %s"), *obj->GetStringField("answer"));
+    if (FJsonSerializer::Deserialize(Reader, JsonArray)) {
+        TSharedPtr<FJsonObject> obj = JsonArray[0]->AsObject()->GetObjectField("response");
+        UE_LOG(LogTemp, Warning, TEXT("Question is: %s Bot answer is: %s"), *obj->GetStringField("question"), *obj->GetStringField("answer"));
     }
     else {
         UE_LOG(LogTemp, Warning, TEXT("Cant deserialize response")); 
