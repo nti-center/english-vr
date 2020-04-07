@@ -166,6 +166,9 @@ public:
     void PlaySound();
 
     UFUNCTION(BlueprintCallable)
+    void PlaySoundWithCrossfade(FString SoundNameString);
+
+    UFUNCTION(BlueprintCallable)
     void GoAway();
 
     UFUNCTION(BlueprintCallable)

@@ -396,6 +396,31 @@ void AMyCharacter::PlaySound() {
         
 }
 
+void AMyCharacter::PlaySoundWithCrossfade(FString SoundNameString) {
+
+    TArray<FString> InputArray;
+
+    int32 i = 0;
+    FString parametr = "";
+
+    SoundNameString.ParseIntoArray(InputArray, TEXT(" "), true);
+    USoundCue* SoundCue = LoadObjFromPath<USoundCue>("SoundCue'/Game/Sounds/CueWithCrossfade.CueWithCrossfade'");
+    
+    Audio->SetSound(SoundCue);
+
+    for (FString name : InputArray) {
+        i++;
+        FString path = "SoundCue'/Game/Sounds/TestSound/" + name + "." + name + "'";
+
+        USoundWave* SoundWave = LoadObjFromPath<USoundWave>(FName(*path));
+
+        parametr = "Wave" + FString::FromInt(i);
+        Audio->SetWaveParameter(FName(*parametr), SoundWave);
+    }
+
+    Audio->Play();
+}
+
 
 void AMyCharacter::GoAway() {
 
@@ -450,6 +475,7 @@ void AMyCharacter::BeginPlay() {
 
    RandomDialogGenerator(name);
    //PlaySoundFromAIML("Can_I_Have_Male One_male Apple_male Please_Male");
+   //PlaySoundWithCrossfade("Can_I_Have_Male Five_male Apples_male Please_Male");
    GoToMarket();
 }
 
