@@ -11,7 +11,6 @@ UBotRequest::UBotRequest() {
 void UBotRequest::BeginPlay()
 {
     Super::BeginPlay();
-    Request();
 }
 
 // Called every frame
@@ -53,12 +52,15 @@ void UBotRequest::ResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Res
             UE_LOG(LogTemp, Warning, TEXT("Actions is: %s"), *JsonObject->GetStringField("Actions"));
             UE_LOG(LogTemp, Warning, TEXT("VoicePhrases is: %s"), *JsonObject->GetStringField("VoicePhrases"));
             
-            if (!Actions.Contains(JsonObject->GetStringField("Actions"))) {
+            EAction Action = Action = EAction::None;             
+            if (Actions.Contains(JsonObject->GetStringField("Actions"))) {
+                Action = Actions[JsonObject->GetStringField("Actions")];
+            }
+            else {
                 UE_LOG(LogTemp, Warning, TEXT("Undefine action: %s"), *JsonObject->GetStringField("Actions"));
-                return;
             }
 
-            OnResponseReceived.Broadcast(Actions[JsonObject->GetStringField("Actions")], ParsePhrasesString(JsonObject->GetStringField("VoicePhrases")));
+            OnResponseReceived.Broadcast(Action, ParsePhrasesString(JsonObject->GetStringField("VoicePhrases")));
         }
         else {
             UE_LOG(LogTemp, Warning, TEXT("Cant deserialize text"));
