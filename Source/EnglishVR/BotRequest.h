@@ -12,6 +12,8 @@
 UENUM(BlueprintType)
 enum class ECommand : uint8 {
     Start UMETA(DisplayName = "Start"),
+    NewCharacterSpawned UMETA(DisplayName = "NewCharacterSpawned"),
+    ReachedMarket UMETA(DisplayName = "ReachedMarket"),
 };
 
 //UENUM(BlueprintType)
@@ -22,7 +24,9 @@ enum class ECommand : uint8 {
 
 UENUM(BlueprintType)
 enum class EAction : uint8 {
+    None UMETA(DisplayName = "None"),
     Go UMETA(DisplayName = "Go"),
+    GoToMarket UMETA(DisplayName = "GoToMarket"),
 };
 
 UENUM(BlueprintType)
@@ -31,7 +35,9 @@ enum class EPhrase : uint8 {
 };
 
 const TMap<ECommand, FString> Commands = {
-    { ECommand::Start, "cmdStart" }
+    { ECommand::Start, "cmdStart" },
+    { ECommand::NewCharacterSpawned, "cmdNewCharacterSpawned" },
+    { ECommand::ReachedMarket, "cmdReachedMarket" }
 };
 
 //const TMap<EJsonField, FString> JsonFields = {
@@ -40,7 +46,8 @@ const TMap<ECommand, FString> Commands = {
 //};
 
 const TMap<FString, EAction> Actions = {
-    { "Go", EAction::Go }
+    { "Go",         EAction::Go },
+    { "GoToMarket", EAction::GoToMarket }
 };
 
 const TMap<FString, EPhrase> Phrases = {
