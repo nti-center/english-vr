@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "MyCharacter.h"
 #include "Basket.h"
+#include "BotRequest.h"
 #include "MarketLevelScriptActor.generated.h"
 
 UCLASS()
@@ -40,11 +41,17 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TArray<AActor*> OutPath;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    UBotRequest* BotRequest;
+
     UFUNCTION(BlueprintCallable)
     void SpawnCharacter();
 
     UFUNCTION(BlueprintCallable)
     void SpawnBasket();
+
+    UFUNCTION()
+    void OnBotResponseReceived(EAction Action, TArray<EPhrase> PhraseArray);
 
 protected:
     virtual void BeginPlay() override;

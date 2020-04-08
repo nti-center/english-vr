@@ -6,6 +6,9 @@
 AMarketLevelScriptActor::AMarketLevelScriptActor() {
     PrimaryActorTick.bCanEverTick = true;
     
+    BotRequest = CreateDefaultSubobject<UBotRequest>(TEXT("BotRequest"));
+    BotRequest->OnResponseReceived.AddDynamic(this, &AMarketLevelScriptActor::OnBotResponseReceived);
+    BotRequest->SetupAttachment(RootComponent);
 }
 
 void AMarketLevelScriptActor::BeginPlay() {
