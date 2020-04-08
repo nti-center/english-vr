@@ -19,11 +19,10 @@ void UBotRequest::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void UBotRequest::Request() {
+void UBotRequest::Request(ECommand Command) {
 
     TSharedRef<IHttpRequest> Request = Http->CreateRequest();
 
-    ECommand Command = ECommand::Start;
     FString UserID = "Player";
     Request->OnProcessRequestComplete().BindUObject(this, &UBotRequest::ResponseReceived);
 

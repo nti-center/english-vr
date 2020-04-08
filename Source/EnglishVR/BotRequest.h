@@ -54,7 +54,7 @@ class ENGLISHVR_API UBotRequest : public USceneComponent {
 
 public:
     UBotRequest();
-    void Request();
+    void Request(ECommand Command);
     void ResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
     UPROPERTY(BlueprintAssignable, BlueprintCallable)
     FResponseReceivedDelegate OnResponseReceived;
