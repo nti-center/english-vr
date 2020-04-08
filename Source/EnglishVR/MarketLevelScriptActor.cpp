@@ -9,11 +9,19 @@ AMarketLevelScriptActor::AMarketLevelScriptActor() {
     BotRequest = CreateDefaultSubobject<UBotRequest>(TEXT("BotRequest"));
     BotRequest->OnResponseReceived.AddDynamic(this, &AMarketLevelScriptActor::OnBotResponseReceived);
     BotRequest->SetupAttachment(RootComponent);
+
+    
 }
 
 void AMarketLevelScriptActor::BeginPlay() {
     Super::BeginPlay();
 
+    if (MarketPoint) {
+        MarketPoint->FillSphere->OnComponentBeginOverlap.AddDynamic(this, &AMarketLevelScriptActor::OnTargetPointOverlapBegin);
+    }
+    else {
+        UE_LOG(LogTemp, Warning, TEXT("Market point is not initilized"));
+    }
 }
 
 void AMarketLevelScriptActor::Tick(float DeltaTime) {
@@ -31,7 +39,10 @@ void AMarketLevelScriptActor::SpawnCharacter() {
 
     Character->ToPath = ToPath;
     Character->OutPath = OutPath;
-    Character->GoToMarket();
+
+    BotRequest->Request(ECommand::NewCharacterSpawned);
+
+    //Character->GoToMarket();
 }
 
 void AMarketLevelScriptActor::SpawnBasket() {
@@ -43,3 +54,31 @@ void AMarketLevelScriptActor::SpawnBasket() {
     Basket = Cast<ABasket>(GetWorld()->SpawnActor(ToBasketSpawn, &BasketSpawnPoint->GetActorTransform()));
 }
 
+void AMarketLevelScriptActor::OnBotResponseReceived(EAction Action, TArray<EPhrase> PhraseArray) {
+    switch (Action) {
+    case EAction::GoToMarket: {
+        Character->GoToMarket();
+        break;
+    }
+    default: {
+        break;
+    }
+    }
+
+    for (auto& Phrase : PhraseArray) {
+        UE_LOG(LogTemp, Warning, TEXT("Current phrase is"));
+    }
+}
+
+void AMarketLevelScriptActor::OnTargetPointOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+    UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
+    if (OtherActor == nullptr || OtherActor == this || OtherComp == nullptr)
+        return;
+    
+    if (OtherActor && OtherActor != this) {
+        AMyCharacter* CurrentCharacter = Cast<AMyCharacter>(OtherActor);
+        if (CurrentCharacter && CurrentCharacter == Character) {
+            BotRequest->Request(ECommand::ReachedMarket);
+        }
+    }
+}

@@ -8,6 +8,7 @@
 #include "MyCharacter.h"
 #include "Basket.h"
 #include "BotRequest.h"
+#include "FinalTargetPoint.h"
 #include "MarketLevelScriptActor.generated.h"
 
 UCLASS()
@@ -36,6 +37,9 @@ public:
     ATargetPoint* CharacterSpawnPoint;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    AFinalTargetPoint* MarketPoint;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TArray<AActor*> ToPath;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -52,6 +56,10 @@ public:
 
     UFUNCTION()
     void OnBotResponseReceived(EAction Action, TArray<EPhrase> PhraseArray);
+
+    UFUNCTION()
+    void OnTargetPointOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+    UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 protected:
     virtual void BeginPlay() override;
