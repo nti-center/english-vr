@@ -23,11 +23,11 @@ void UBotRequest::Request() {
 
     TSharedRef<IHttpRequest> Request = Http->CreateRequest();
 
-    FString Question = "Hello,+who+are+you?";
-    FString UserID = "1234567890";
+    ECommand Command = ECommand::Start;
+    FString UserID = "Player";
     Request->OnProcessRequestComplete().BindUObject(this, &UBotRequest::ResponseReceived);
 
-    Request->SetURL(TEXT("http://localhost:8989/api/rest/v1.0/ask?question=" + Question + "&userid=" + UserID));
+    Request->SetURL(TEXT("http://localhost:8989/api/rest/v2.0/ask?query=" + Commands[Command] + "&userId=" + UserID));
     Request->SetVerb("GET");
     Request->SetHeader(TEXT("User-Agent"), "X-UnrealEngine-Agent");
     Request->SetHeader("Content-Type", TEXT("application/json"));
@@ -38,26 +38,57 @@ void UBotRequest::Request() {
 
 
 void UBotRequest::ResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful) {
-    TSharedPtr<FJsonObject> JsonObject;
-
     UE_LOG(LogTemp, Warning, TEXT("Get Answer %s"), *Response->GetContentAsString());
 
-    FString ResponseString = Response->GetContentAsString();
-    int32 FirstPosition = ResponseString.Find("{");
-    int32 EndPosition = ResponseString.Find("}", ESearchCase::CaseSensitive, ESearchDir::FromEnd);
-    ResponseString = ResponseString.Mid(FirstPosition, EndPosition);
-
-    UE_LOG(LogTemp, Warning, TEXT("Format string %s"), *ResponseString);
-
+    TSharedPtr<FJsonObject> JsonObject;
+    FString ResponseString = Response->GetContentAsString();    
     TSharedRef<TJsonReader<TCHAR>> Reader = TJsonReaderFactory<TCHAR>::Create(ResponseString);
-
+    
     if (FJsonSerializer::Deserialize(Reader, JsonObject)) {
-        TSharedPtr<FJsonObject> obj = JsonObject->GetObjectField("response");
-        UE_LOG(LogTemp, Warning, TEXT("Bot answer is: %s"), *obj->GetStringField("answer"));
+        TSharedPtr<FJsonObject> Response = JsonObject->GetObjectField("response");
+        UE_LOG(LogTemp, Warning, TEXT("Bot answer is: %s"), *Response->GetStringField("text"));
+        FString TextString = Response->GetStringField("text");
+        TextString.RemoveFromEnd(".");
+        Reader = TJsonReaderFactory<TCHAR>::Create(TextString);
+        if (FJsonSerializer::Deserialize(Reader, JsonObject)) {
+            UE_LOG(LogTemp, Warning, TEXT("Actions is: %s"), *JsonObject->GetStringField("Actions"));
+            UE_LOG(LogTemp, Warning, TEXT("VoicePhrases is: %s"), *JsonObject->GetStringField("VoicePhrases"));
+            
+            if (!Actions.Contains(JsonObject->GetStringField("Actions"))) {
+                UE_LOG(LogTemp, Warning, TEXT("Undefine action: %s"), *JsonObject->GetStringField("Actions"));
+                return;
+            }
+
+            OnResponseReceived.Broadcast(Actions[JsonObject->GetStringField("Actions")], ParsePhrasesString(JsonObject->GetStringField("VoicePhrases")));
+        }
+        else {
+            UE_LOG(LogTemp, Warning, TEXT("Cant deserialize text"));
+        }
     }
     else {
-        UE_LOG(LogTemp, Warning, TEXT("Cant deserialize response")); 
+        UE_LOG(LogTemp, Warning, TEXT("Cant deserialize response"));
     }
+}
+
+TArray<EPhrase> UBotRequest::ParsePhrasesString(const FString& PhrasesString) {
+    TArray<EPhrase> PhraseArray;
+
+    TArray<FString> PhraseStringArray;
+    PhrasesString.ParseIntoArray(PhraseStringArray, TEXT(" "), true);
+    bool IsCorrect = true;
+    for (auto& PhraseString : PhraseStringArray) {
+        if (!Phrases.Contains(PhraseString)) {
+            UE_LOG(LogTemp, Warning, TEXT("Undefine phrase: %s"), *PhraseString);
+            IsCorrect = false;
+            continue;
+        }
+        PhraseArray.Add(Phrases[PhraseString]);
+    }
+
+    if (!IsCorrect)
+        PhraseArray.Empty();
+
+    return PhraseArray;
 }
 
 
