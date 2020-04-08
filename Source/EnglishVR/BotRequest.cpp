@@ -3,15 +3,14 @@
 
 
 UBotRequest::UBotRequest() {
-	PrimaryComponentTick.bCanEverTick = true;
+    PrimaryComponentTick.bCanEverTick = true;
 
     Http = &FHttpModule::Get();
-
 }
 
 void UBotRequest::BeginPlay()
 {
-	Super::BeginPlay();
+    Super::BeginPlay();
     Request();
 }
 
@@ -19,7 +18,6 @@ void UBotRequest::BeginPlay()
 void UBotRequest::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
-
 
 void UBotRequest::Request() {
 

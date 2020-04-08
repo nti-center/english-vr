@@ -9,30 +9,22 @@
 #include "Engine.h"
 #include "BotRequest.generated.h"
 
-
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class ENGLISHVR_API UBotRequest : public USceneComponent
-{
-	GENERATED_BODY()
+class ENGLISHVR_API UBotRequest : public USceneComponent {
+    GENERATED_BODY()
 
-public:	
-	
+public:
+    UBotRequest();
     void Request();
-
     void ResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
-
-	UBotRequest();
 
 private:
     FHttpModule* Http;
 
 protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
+    virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+public:
+    virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-		
 };
