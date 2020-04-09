@@ -8,6 +8,9 @@
 #include "AIController.h"
 #include "Basket.h"
 #include "Sound/SoundCue.h"
+#include "EdGraph/EdGraph.h"
+#include "Sound/SoundNodeWavePlayer.h"
+#include "Sound/SoundNodeParamCrossFade.h"
 #include "UObject/UObjectGlobals.h"
 #include "AudioDataTableStruct.h"
 #include "FruitSoundDataTableStruct.h"
@@ -39,6 +42,9 @@ public:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Audio Conmponent", meta = (AllowPrivateAccess = "true"))
     UAudioComponent* Audio;
+
+    UPROPERTY(BlueprintReadWrite)
+    USoundCue* SoundCue;
 
 #pragma region DataTable
     //“аблицы дл€ генерации общей части диалога
@@ -164,6 +170,9 @@ public:
 
     UFUNCTION(BlueprintCallable)
     void PlaySound();
+
+    UFUNCTION(BlueprintCallable)
+    void CreateCue(TArray<FString>InputArray);
 
     UFUNCTION(BlueprintCallable)
     void PlaySoundWithCrossfade(FString SoundNameString);

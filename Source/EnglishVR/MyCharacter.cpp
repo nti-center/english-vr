@@ -396,28 +396,71 @@ void AMyCharacter::PlaySound() {
         
 }
 
+void AMyCharacter::CreateCue(TArray<FString>InputArray) {
+
+    TArray<struct FDistanceDatum> Datum;
+    FString SoundCueName = "CueWithCrossfade";
+    SoundCue = NewObject<USoundCue>(this, *SoundCueName);
+    int32 NodeIndex = 0;
+
+    USoundNodeParamCrossFade* Crossfade = SoundCue->ConstructSoundNode<USoundNodeParamCrossFade>();
+
+    Crossfade->ParamName = "CrossfadeParam";
+
+    Crossfade->GraphNode->NodePosX = -130;
+    Crossfade->GraphNode->NodePosY = 50 * InputArray.Num() / 2;
+
+    SoundCue->FirstNode = Crossfade;
+    SoundCue->LinkGraphNodesFromSoundNodes();
+
+    for (int i = 0; i < InputArray.Num() / 2; i++) {
+        Crossfade->CreateStartingConnectors();
+    }
+
+    for (FString name : InputArray) {
+        FString path = "SoundWave'/Game/Sounds/TestSound/" + name + "." + name + "'";
+        USoundWave* SoundWave = LoadObjFromPath<USoundWave>(FName(*path));
+        FDistanceDatum TempDatum;
+        
+        if (NodeIndex == 0) {
+            TempDatum.FadeInDistanceStart = 0;
+            TempDatum.FadeInDistanceEnd = 0;
+
+            TempDatum.FadeOutDistanceStart = SoundWave->GetDuration() - 0.2f;
+            TempDatum.FadeOutDistanceEnd = SoundWave->GetDuration();
+        }
+        else {
+            TempDatum.FadeInDistanceStart = Datum[NodeIndex - 1].FadeOutDistanceStart;
+            TempDatum.FadeInDistanceEnd = Datum[NodeIndex - 1].FadeOutDistanceEnd;
+            TempDatum.FadeOutDistanceStart = Datum[NodeIndex - 1].FadeInDistanceStart + SoundWave->GetDuration();
+            TempDatum.FadeOutDistanceEnd = Datum[NodeIndex - 1].FadeInDistanceEnd + SoundWave->GetDuration();
+        }
+
+
+        Datum.Add(TempDatum);
+
+        USoundNodeWavePlayer* WavePlayer = SoundCue->ConstructSoundNode<USoundNodeWavePlayer>();
+        WavePlayer->SetSoundWave(SoundWave);
+
+        WavePlayer->GraphNode->NodePosX = -350;
+        WavePlayer->GraphNode->NodePosY = -50 * NodeIndex;
+
+        Crossfade->ChildNodes[NodeIndex] = WavePlayer;
+        SoundCue->LinkGraphNodesFromSoundNodes();
+        NodeIndex++;
+    }
+    Crossfade->CrossFadeInput = Datum;
+}
+
 void AMyCharacter::PlaySoundWithCrossfade(FString SoundNameString) {
 
     TArray<FString> InputArray;
 
-    int32 i = 0;
-    FString parametr = "";
-
     SoundNameString.ParseIntoArray(InputArray, TEXT(" "), true);
-    USoundCue* SoundCue = LoadObjFromPath<USoundCue>("SoundCue'/Game/Sounds/CueWithCrossfade.CueWithCrossfade'");
-    
+
+    CreateCue(InputArray);
+
     Audio->SetSound(SoundCue);
-
-    for (FString name : InputArray) {
-        i++;
-        FString path = "SoundCue'/Game/Sounds/TestSound/" + name + "." + name + "'";
-
-        USoundWave* SoundWave = LoadObjFromPath<USoundWave>(FName(*path));
-
-        parametr = "Wave" + FString::FromInt(i);
-        Audio->SetWaveParameter(FName(*parametr), SoundWave);
-    }
-
     Audio->Play();
 }
 
@@ -474,8 +517,7 @@ void AMyCharacter::BeginPlay() {
 	name.Add("errors");
 
    RandomDialogGenerator(name);
-   //PlaySoundFromAIML("Can_I_Have_Male One_male Apple_male Please_Male");
-   //PlaySoundWithCrossfade("Can_I_Have_Male Five_male Apples_male Please_Male");
+   PlaySoundWithCrossfade("Can_I_Have_Male Five_male Apples_male Please_Male");
    GoToMarket();
 }
 
