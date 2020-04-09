@@ -15,6 +15,9 @@ AMyCharacter::AMyCharacter() {
     Audio = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio"));
     Audio->SetupAttachment(RootComponent);
 
+    PhrasesAudio = CreateDefaultSubobject<UPhrasesAudioComponent>(TEXT("PhrasesAudio"));
+    PhrasesAudio->SetupAttachment(RootComponent);
+
 #pragma region DataTableLoading
 
 

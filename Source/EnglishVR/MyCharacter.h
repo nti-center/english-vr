@@ -8,6 +8,7 @@
 #include "AIController.h"
 #include "Basket.h"
 #include "Sound/SoundCue.h"
+#include "PhrasesAudioComponent.h"
 #include "UObject/UObjectGlobals.h"
 #include "AudioDataTableStruct.h"
 #include "FruitSoundDataTableStruct.h"
@@ -39,6 +40,9 @@ public:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Audio Conmponent", meta = (AllowPrivateAccess = "true"))
     UAudioComponent* Audio;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    UPhrasesAudioComponent* PhrasesAudio;
 
 #pragma region DataTable
     //“аблицы дл€ генерации общей части диалога
