@@ -71,24 +71,9 @@ void UBotRequest::ResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Res
     }
 }
 
-TArray<EPhrase> UBotRequest::ParsePhrasesString(const FString& PhrasesString) {
-    TArray<EPhrase> PhraseArray;
-
-    TArray<FString> PhraseStringArray;
-    PhrasesString.ParseIntoArray(PhraseStringArray, TEXT(" "), true);
-    bool IsCorrect = true;
-    for (auto& PhraseString : PhraseStringArray) {
-        if (!Phrases.Contains(PhraseString)) {
-            UE_LOG(LogTemp, Warning, TEXT("Undefine phrase: %s"), *PhraseString);
-            IsCorrect = false;
-            continue;
-        }
-        PhraseArray.Add(Phrases[PhraseString]);
-    }
-
-    if (!IsCorrect)
-        PhraseArray.Empty();
-
+TArray<FString> UBotRequest::ParsePhrasesString(const FString& PhrasesString) {
+    TArray<FString> PhraseArray;
+    PhrasesString.ParseIntoArray(PhraseArray, TEXT(" "), true);
     return PhraseArray;
 }
 

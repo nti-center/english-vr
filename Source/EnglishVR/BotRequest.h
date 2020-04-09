@@ -29,11 +29,6 @@ enum class EAction : uint8 {
     GoToMarket UMETA(DisplayName = "GoToMarket"),
 };
 
-UENUM(BlueprintType)
-enum class EPhrase : uint8 {
-    Hello UMETA(DisplayName = "Go")
-};
-
 const TMap<ECommand, FString> Commands = {
     { ECommand::Start, "cmdStart" },
     { ECommand::NewCharacterSpawned, "cmdNewCharacterSpawned" },
@@ -50,14 +45,10 @@ const TMap<FString, EAction> Actions = {
     { "GoToMarket", EAction::GoToMarket }
 };
 
-const TMap<FString, EPhrase> Phrases = {
-    { "Hello", EPhrase::Hello }
-};
-
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class ENGLISHVR_API UBotRequest : public USceneComponent {
     GENERATED_BODY()
-    DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FResponseReceivedDelegate, EAction, Action, TArray<EPhrase>, PhraseArray);
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FResponseReceivedDelegate, EAction, Action, TArray<FString>, PhraseArray);
 
 public:
     UBotRequest();
@@ -69,7 +60,7 @@ public:
 private:
     FHttpModule* Http;
 
-    TArray<EPhrase> ParsePhrasesString(const FString& PhrasesString);
+    TArray<FString> ParsePhrasesString(const FString& PhrasesString);
 
 protected:
     virtual void BeginPlay() override;

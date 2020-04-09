@@ -54,7 +54,7 @@ void AMarketLevelScriptActor::SpawnBasket() {
     Basket = Cast<ABasket>(GetWorld()->SpawnActor(ToBasketSpawn, &BasketSpawnPoint->GetActorTransform()));
 }
 
-void AMarketLevelScriptActor::OnBotResponseReceived(EAction Action, TArray<EPhrase> PhraseArray) {
+void AMarketLevelScriptActor::OnBotResponseReceived(EAction Action, TArray<FString> PhraseArray) {
     switch (Action) {
     case EAction::GoToMarket: {
         Character->GoToMarket();
@@ -66,8 +66,9 @@ void AMarketLevelScriptActor::OnBotResponseReceived(EAction Action, TArray<EPhra
     }
 
     for (auto& Phrase : PhraseArray) {
-        UE_LOG(LogTemp, Warning, TEXT("Current phrase is"));
+        Character->PhrasesAudio->SoundQueue.Enqueue(Phrase);
     }
+    Character->PhrasesAudio->StartPlayingQueue();
 }
 
 void AMarketLevelScriptActor::OnTargetPointOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,

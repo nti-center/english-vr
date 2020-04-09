@@ -55,7 +55,7 @@ public:
     void SpawnBasket();
 
     UFUNCTION()
-    void OnBotResponseReceived(EAction Action, TArray<EPhrase> PhraseArray);
+    void OnBotResponseReceived(EAction Action, TArray<FString> PhraseArray);
 
     UFUNCTION()
     void OnTargetPointOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
