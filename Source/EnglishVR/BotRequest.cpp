@@ -39,7 +39,7 @@ void UBotRequest::ResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Res
     UE_LOG(LogTemp, Warning, TEXT("Get Answer %s"), *Response->GetContentAsString());
 
     TSharedPtr<FJsonObject> JsonObject;
-    FString ResponseString = Response->GetContentAsString();    
+    FString ResponseString = Response->GetContentAsString().Replace(TEXT("\\n"), TEXT(" "));
     TSharedRef<TJsonReader<TCHAR>> Reader = TJsonReaderFactory<TCHAR>::Create(ResponseString);
     
     if (FJsonSerializer::Deserialize(Reader, JsonObject)) {
