@@ -9,14 +9,16 @@ AMyCharacter::AMyCharacter() {
     Box = CreateDefaultSubobject<UBoxComponent>(TEXT("Box"));
     Box->SetupAttachment(RootComponent);
     Box->SetGenerateOverlapEvents(true);
-    Box->OnComponentBeginOverlap.AddDynamic(this, &AMyCharacter::OnOverlapBegin);
-    Box->OnComponentEndOverlap.AddDynamic(this, &AMyCharacter::OnOverlapEnd);
+    //Box->OnComponentBeginOverlap.AddDynamic(this, &AMyCharacter::OnOverlapBegin);
+    //Box->OnComponentEndOverlap.AddDynamic(this, &AMyCharacter::OnOverlapEnd);
 
     Audio = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio"));
     Audio->SetupAttachment(RootComponent);
 
     PhrasesAudio = CreateDefaultSubobject<UPhrasesAudioComponent>(TEXT("PhrasesAudio"));
     PhrasesAudio->SetupAttachment(RootComponent);
+
+    AnimationState = EAnimationState::None;
 
 #pragma region DataTableLoading
 
@@ -560,3 +562,13 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 }
 
+void AMyCharacter::AddFruitRequest(FString Type, int32 Count) {
+    if (FruitsCount.Contains(Type))
+        FruitsCount[Type] += Count;
+    else
+        FruitsCount.Emplace(Type, Count);
+}
+
+void AMyCharacter::ClearFruitRequests() {
+    FruitsCount.Empty();
+}

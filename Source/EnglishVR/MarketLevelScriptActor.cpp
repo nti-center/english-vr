@@ -9,8 +9,6 @@ AMarketLevelScriptActor::AMarketLevelScriptActor() {
     BotRequest = CreateDefaultSubobject<UBotRequest>(TEXT("BotRequest"));
     BotRequest->OnResponseReceived.AddDynamic(this, &AMarketLevelScriptActor::OnBotResponseReceived);
     BotRequest->SetupAttachment(RootComponent);
-
-    
 }
 
 void AMarketLevelScriptActor::BeginPlay() {
@@ -39,6 +37,8 @@ void AMarketLevelScriptActor::SpawnCharacter() {
 
     Character->ToPath = ToPath;
     Character->OutPath = OutPath;
+    Character->Box->OnComponentBeginOverlap.AddDynamic(this, &AMarketLevelScriptActor::OnPickupBoxOverlapBegin);
+    Character->Box->OnComponentEndOverlap.AddDynamic(this, &AMarketLevelScriptActor::OnPickupBoxOverlapEnd);
 
     BotRequest->Request(ECommand::NewCharacterSpawned);
 
@@ -65,6 +65,20 @@ void AMarketLevelScriptActor::PlayAction(EAction Action, TArray<FString> ParamAr
         Character->GoToMarket();
         break;
     }
+    case EAction::SetRequest: {
+        Character->ClearFruitRequests();
+        for (int i = 0; i < ParamArray.Num(); i += 2)
+            Character->AddFruitRequest(ParamArray[i + 1], FCString::Atoi(*ParamArray[i]));
+        break;
+    }
+    case EAction::TryToTakeBasket: {
+        Character->AnimationState = EAnimationState::Taking;
+        break;
+    }
+    case EAction::StartGrieving: {
+        Character->AnimationState = EAnimationState::Grieving;
+        break;
+    }
     default: {
         break;
     }
@@ -89,4 +103,19 @@ void AMarketLevelScriptActor::OnTargetPointOverlapBegin(UPrimitiveComponent* Ove
             BotRequest->Request(ECommand::ReachedMarket);
         }
     }
+}
+
+void AMarketLevelScriptActor::OnPickupBoxOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+    UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
+    if (OtherActor == nullptr || OtherActor == this || OtherComp == nullptr || !Cast<ABasket>(OtherActor) || Cast<ABasket>(OtherActor)->Mesh != OtherComp)
+        return;
+    
+    BotRequest->Request(ECommand::BasketOverlapCharacterBegin);
+}
+
+void AMarketLevelScriptActor::OnPickupBoxOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) {
+    if (OtherActor == nullptr || OtherActor == this || OtherComp == nullptr || !Cast<ABasket>(OtherActor) || Cast<ABasket>(OtherActor)->Mesh != OtherComp)
+        return;
+
+    BotRequest->Request(ECommand::BasketOverlapCharacterEnd);
 }

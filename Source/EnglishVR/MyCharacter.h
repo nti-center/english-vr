@@ -27,6 +27,13 @@ enum class EStatesEnum : uint8 {
     Finished  UMETA(DisplayName = "Finished"),
 };
 
+UENUM(BlueprintType)
+enum class EAnimationState : uint8 {
+    None     UMETA(DisplayName = "None"),
+    Taking   UMETA(DisplayName = "Taking"),
+    Grieving UMETA(DisplayName = "Grieving"),
+};
+
 UCLASS(Abstract)
 class ENGLISHVR_API AMyCharacter : public ACharacter {
     GENERATED_BODY()
@@ -43,6 +50,9 @@ public:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     UPhrasesAudioComponent* PhrasesAudio;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    EAnimationState AnimationState;
 
 #pragma region DataTable
     //“аблицы дл€ генерации общей части диалога
@@ -192,6 +202,12 @@ public:
 
     UFUNCTION(BlueprintCallable)
     void RandomRequestGenerator();
+
+    UFUNCTION(BlueprintCallable)
+    void AddFruitRequest(FString Type, int32 Count);
+
+    UFUNCTION(BlueprintCallable)
+    void ClearFruitRequests();
 
     UFUNCTION()
     void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
