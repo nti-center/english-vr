@@ -55,6 +55,11 @@ void AMarketLevelScriptActor::SpawnBasket() {
 }
 
 void AMarketLevelScriptActor::OnBotResponseReceived(EAction Action, TArray<FString> PhraseArray) {
+    PlayAction(Action);
+    PlayAudio(PhraseArray);
+}
+
+void AMarketLevelScriptActor::PlayAction(EAction Action) {
     switch (Action) {
     case EAction::GoToMarket: {
         Character->GoToMarket();
@@ -64,7 +69,9 @@ void AMarketLevelScriptActor::OnBotResponseReceived(EAction Action, TArray<FStri
         break;
     }
     }
+}
 
+void AMarketLevelScriptActor::PlayAudio(TArray<FString> PhraseArray) {
     for (auto& Phrase : PhraseArray) {
         Character->PhrasesAudio->SoundQueue.Enqueue(Phrase);
     }
