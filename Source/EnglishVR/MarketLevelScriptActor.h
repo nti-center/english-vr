@@ -55,14 +55,14 @@ public:
     void SpawnBasket();
 
     UFUNCTION()
-    void OnBotResponseReceived(EAction Action, TArray<FString> PhraseArray);
+    void OnBotResponseReceived(EAction Action, TArray<FString> ParamArray, TArray<FString> PhraseArray);
 
     UFUNCTION()
     void OnTargetPointOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 private:
-    void PlayAction(EAction Action);
+    void PlayAction(EAction Action, TArray<FString> ParamArray);
     void PlayAudio(TArray<FString> PhraseArray);
 
 protected:

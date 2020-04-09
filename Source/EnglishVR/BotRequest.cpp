@@ -60,7 +60,11 @@ void UBotRequest::ResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Res
                 UE_LOG(LogTemp, Warning, TEXT("Undefine action: %s"), *JsonObject->GetStringField("Actions"));
             }
 
-            OnResponseReceived.Broadcast(Action, ParsePhrasesString(JsonObject->GetStringField("VoicePhrases")));
+            TArray<FString> Params;
+            for (auto& Value : JsonObject->GetArrayField("Params")) {
+                Params.Add(Value.Get()->AsString());
+            }
+            OnResponseReceived.Broadcast(Action, Params, ParsePhrasesString(JsonObject->GetStringField("VoicePhrases")));
         }
         else {
             UE_LOG(LogTemp, Warning, TEXT("Cant deserialize text"));

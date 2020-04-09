@@ -54,12 +54,12 @@ void AMarketLevelScriptActor::SpawnBasket() {
     Basket = Cast<ABasket>(GetWorld()->SpawnActor(ToBasketSpawn, &BasketSpawnPoint->GetActorTransform()));
 }
 
-void AMarketLevelScriptActor::OnBotResponseReceived(EAction Action, TArray<FString> PhraseArray) {
-    PlayAction(Action);
+void AMarketLevelScriptActor::OnBotResponseReceived(EAction Action, TArray<FString> ParamArray, TArray<FString> PhraseArray) {
+    PlayAction(Action, ParamArray);
     PlayAudio(PhraseArray);
 }
 
-void AMarketLevelScriptActor::PlayAction(EAction Action) {
+void AMarketLevelScriptActor::PlayAction(EAction Action, TArray<FString> ParamArray) {
     switch (Action) {
     case EAction::GoToMarket: {
         Character->GoToMarket();

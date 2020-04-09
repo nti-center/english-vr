@@ -48,7 +48,7 @@ const TMap<FString, EAction> Actions = {
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class ENGLISHVR_API UBotRequest : public USceneComponent {
     GENERATED_BODY()
-    DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FResponseReceivedDelegate, EAction, Action, TArray<FString>, PhraseArray);
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FResponseReceivedDelegate, EAction, Action, TArray<FString>, ParamArray, TArray<FString>, PhraseArray);
 
 public:
     UBotRequest();
