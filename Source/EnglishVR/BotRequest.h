@@ -11,11 +11,13 @@
 
 UENUM(BlueprintType)
 enum class ECommand : uint8 {
-    Start UMETA(DisplayName = "Start"),
-    NewCharacterSpawned UMETA(DisplayName = "NewCharacterSpawned"),
-    ReachedMarket UMETA(DisplayName = "ReachedMarket"),
+    Start                       UMETA(DisplayName = "Start"),
+    NewCharacterSpawned         UMETA(DisplayName = "NewCharacterSpawned"),
+    ReachedMarket               UMETA(DisplayName = "ReachedMarket"),
     BasketOverlapCharacterBegin UMETA(DisplayName = "BasketOverlapCharacterBegin"),
-    BasketOverlapCharacterEnd UMETA(DisplayName = "BasketOverlapCharacterEnd"),
+    BasketOverlapCharacterEnd   UMETA(DisplayName = "BasketOverlapCharacterEnd"),
+    CorrectFruitsCount          UMETA(DisplayName = "CorrectFruitsCount"),
+    IncorrectFruitsCount        UMETA(DisplayName = "IncorrectFruitsCount"),
 };
 
 //UENUM(BlueprintType)
@@ -26,20 +28,24 @@ enum class ECommand : uint8 {
 
 UENUM(BlueprintType)
 enum class EAction : uint8 {
-    None            UMETA(DisplayName = "None"),
-    Go              UMETA(DisplayName = "Go"),
-    GoToMarket      UMETA(DisplayName = "GoToMarket"),
-    SetRequest      UMETA(DisplayName = "SetRequest"),
-    TryToTakeBasket UMETA(DisplayName = "TryToTakeBasket"),
-    StartGrieving   UMETA(DisplayName = "StartGrieving"),
+    None                    UMETA(DisplayName = "None"),
+    Go                      UMETA(DisplayName = "Go"),
+    GoToMarket              UMETA(DisplayName = "GoToMarket"),
+    SetRequest              UMETA(DisplayName = "SetRequest"),
+    TryToTakeBasket         UMETA(DisplayName = "TryToTakeBasket"),
+    StopTryingToTakeBasket  UMETA(DisplayName = "StopTryingToTakeBasket"),
+    StartGrieving           UMETA(DisplayName = "StartGrieving"),
+    CheckFruitsCount        UMETA(DisplayName = "CheckFruitsCount"),
 };
 
 const TMap<ECommand, FString> Commands = {
-    { ECommand::Start, "cmdStart" },
-    { ECommand::NewCharacterSpawned, "cmdNewCharacterSpawned" },
-    { ECommand::ReachedMarket, "cmdReachedMarket" },
+    { ECommand::Start,                       "cmdStart" },
+    { ECommand::NewCharacterSpawned,         "cmdNewCharacterSpawned" },
+    { ECommand::ReachedMarket,               "cmdReachedMarket" },
     { ECommand::BasketOverlapCharacterBegin, "cmdBasketOverlapCharacterBegin" },
-    { ECommand::BasketOverlapCharacterEnd, "cmdBasketOverlapCharacterEnd" },
+    { ECommand::BasketOverlapCharacterEnd,   "cmdBasketOverlapCharacterEnd" },
+    { ECommand::CorrectFruitsCount,          "cmdCorrectFruitsCount" },
+    { ECommand::IncorrectFruitsCount,        "cmdIncorrectFruitsCount" },
 };
 
 //const TMap<EJsonField, FString> JsonFields = {
@@ -48,11 +54,13 @@ const TMap<ECommand, FString> Commands = {
 //};
 
 const TMap<FString, EAction> Actions = {
-    { "Go",              EAction::Go },
-    { "GoToMarket",      EAction::GoToMarket },
-    { "SetRequest",      EAction::SetRequest },
-    { "TryToTakeBasket", EAction::TryToTakeBasket },
-    { "StartGrieving",   EAction::StartGrieving },
+    { "Go",                     EAction::Go },
+    { "GoToMarket",             EAction::GoToMarket },
+    { "SetRequest",             EAction::SetRequest },
+    { "TryToTakeBasket",        EAction::TryToTakeBasket },
+    { "StartGrieving",          EAction::StartGrieving },
+    { "CheckFruitsCount",       EAction::CheckFruitsCount },
+    { "StopTryingToTakeBasket", EAction::StopTryingToTakeBasket },
 };
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))

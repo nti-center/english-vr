@@ -75,14 +75,36 @@ void AMarketLevelScriptActor::PlayAction(EAction Action, TArray<FString> ParamAr
         Character->AnimationState = EAnimationState::Taking;
         break;
     }
+    case EAction::StopTryingToTakeBasket: {
+        Character->AnimationState = EAnimationState::None;
+        break;
+    }
     case EAction::StartGrieving: {
         Character->AnimationState = EAnimationState::Grieving;
+        break;
+    }
+    case EAction::CheckFruitsCount: {
+        if (IsCorrectFruitsCount())
+            BotRequest->Request(ECommand::CorrectFruitsCount);
+        else
+            BotRequest->Request(ECommand::IncorrectFruitsCount);
         break;
     }
     default: {
         break;
     }
     }
+}
+
+bool AMarketLevelScriptActor::IsCorrectFruitsCount() {
+    if (Character->FruitsCount.Num() != Basket->FruitCounts.Num())
+        return false;
+
+    for (auto& Item : Character->FruitsCount)
+        if (!Basket->FruitCounts.Contains(Item.Key) || Item.Value != Basket->FruitCounts[Item.Key])
+            return false;
+
+    return true;
 }
 
 void AMarketLevelScriptActor::PlayAudio(TArray<FString> PhraseArray) {

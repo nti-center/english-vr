@@ -55,6 +55,9 @@ public:
     void SpawnBasket();
 
     UFUNCTION()
+    bool IsCorrectFruitsCount();
+
+    UFUNCTION()
     void OnBotResponseReceived(EAction Action, TArray<FString> ParamArray, TArray<FString> PhraseArray);
 
     UFUNCTION()
