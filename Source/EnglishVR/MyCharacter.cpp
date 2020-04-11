@@ -519,64 +519,14 @@ void AMyCharacter::BeginPlay() {
     name.Add("goodbye");
 	name.Add("errors");
  
-   RandomDialogGenerator(name);
-
-   //PlaySoundWithCrossfade("Can_I_Have_Male Five_male Apples_male Please_Male");
-   GoToMarket();
+    RandomDialogGenerator(name);
+    
+    //PlaySoundWithCrossfade("Can_I_Have_Male Five_male Apples_male Please_Male");
 }
 
 // Called every frame
 void AMyCharacter::Tick(float DeltaTime) {
     Super::Tick(DeltaTime);
-
-    if (Audio->IsPlaying())
-        return;
-
-    if (EComeState == EStatesEnum::Active) {
-        PlayDialog(DialogList.FindRef("greetings"), IsCheck);
-
-        EComeState = EStatesEnum::Process;
-        //EComeState = EStatesEnum::Finished;
-    }
-
-    if ((EComeState == EStatesEnum::Process) && (Counter < RequestCount)) {
-
-        RandomRequestGenerator();
-        PlayRequestList(RequestFullPhrasesArray, RequestFullPhrasesArray.Num(), IsCheck);
-
-        for (TActorIterator<ABasket> ActorItr(GetWorld()); ActorItr; ++ActorItr)
-        {
-            Basket = Cast<ABasket>(*ActorItr);
-        }
-        EComeState = EStatesEnum::Whaiting;
-    }
-    else if ((Basket) && (EComeState == EStatesEnum::Whaiting)) {
-        if (IsCorrectFruitsCount()) {
-
-            //UE_LOG(LogTemp, Warning, TEXT("CorrectFruitCount"));
-
-            FruitsCount.Empty();
-            Basket->FruitCounts.Empty();
-
-            Counter++;
-            EComeState = EStatesEnum::Process;
-        }
-    }
-    else if (Counter == RequestCount) {
-        if (EComeState != EStatesEnum::Finished)
-            PlayDialog(DialogList.FindRef("payment"), IsCheck);
-        EComeState = EStatesEnum::Finished;
-    }
-
-    if (EPickupState == EStatesEnum::Finished && !IsEnd) {
-        TakeBasket();
-    }
-
-    if (!IsTmp && IsEnd && IsNotPlaying()) {
-        GoAway();
-    }
-
-       
 }
 
 void AMyCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)  {
