@@ -438,6 +438,22 @@ void AMyCharacter::TakeBasket() {
     IsEnd = true;
 }
 
+bool AMyCharacter::TakeBasket(ABasket* NewBasket) {
+    if (NewBasket == nullptr) {
+        UE_LOG(LogTemp, Warning, TEXT("Can't take basket: basket is null"));
+        return false;
+    }
+    UE_LOG(LogTemp, Warning, TEXT("TakeBasket"));
+
+    NewBasket->Mesh->SetSimulatePhysics(false);
+    NewBasket->Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    NewBasket->AttachOverlappingActors();
+    FAttachmentTransformRules Atr(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepWorld, true);
+    NewBasket->AttachToComponent(GetMesh(), Atr, "RightHandSocket");
+
+    return true;
+}
+
 // Called when the game starts or when spawned
 void AMyCharacter::BeginPlay() {
     Super::BeginPlay();

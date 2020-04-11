@@ -39,6 +39,7 @@ void AMarketLevelScriptActor::SpawnCharacter() {
     Character->OutPath = OutPath;
     Character->Box->OnComponentBeginOverlap.AddDynamic(this, &AMarketLevelScriptActor::OnPickupBoxOverlapBegin);
     Character->Box->OnComponentEndOverlap.AddDynamic(this, &AMarketLevelScriptActor::OnPickupBoxOverlapEnd);
+    Character->OnCanTakeBasket.AddDynamic(this, &AMarketLevelScriptActor::OnCharacterCanTakeBasket);
 
     BotRequest->Request(ECommand::NewCharacterSpawned);
 
@@ -52,6 +53,10 @@ void AMarketLevelScriptActor::SpawnBasket() {
     //BasketSpawnPoint->GetActorTransform();
 
     Basket = Cast<ABasket>(GetWorld()->SpawnActor(ToBasketSpawn, &BasketSpawnPoint->GetActorTransform()));
+}
+
+void AMarketLevelScriptActor::OnCharacterCanTakeBasket() {
+    BotRequest->Request(ECommand::CanTakeBasket);
 }
 
 void AMarketLevelScriptActor::OnBotResponseReceived(EAction Action, TArray<FString> ParamArray, TArray<FString> PhraseArray) {
@@ -89,6 +94,15 @@ void AMarketLevelScriptActor::PlayAction(EAction Action, TArray<FString> ParamAr
             BotRequest->Request(ECommand::CorrectFruitsCount);
         else
             BotRequest->Request(ECommand::IncorrectFruitsCount);
+        break;
+    }
+    case EAction::TakeBasket: {
+        if (Character->TakeBasket(Basket))
+            BotRequest->Request(ECommand::BasketTaken);
+    }
+    case EAction::GoToHome: {
+        Character->SetPath(OutPath);
+        Character->Go();
         break;
     }
     default: {

@@ -18,6 +18,8 @@ enum class ECommand : uint8 {
     BasketOverlapCharacterEnd   UMETA(DisplayName = "BasketOverlapCharacterEnd"),
     CorrectFruitsCount          UMETA(DisplayName = "CorrectFruitsCount"),
     IncorrectFruitsCount        UMETA(DisplayName = "IncorrectFruitsCount"),
+    CanTakeBasket               UMETA(DisplayName = "CanTakeBasket"),
+    BasketTaken                 UMETA(DisplayName = "BasketTaken"),
 };
 
 //UENUM(BlueprintType)
@@ -28,14 +30,16 @@ enum class ECommand : uint8 {
 
 UENUM(BlueprintType)
 enum class EAction : uint8 {
-    None                    UMETA(DisplayName = "None"),
-    Go                      UMETA(DisplayName = "Go"),
-    GoToMarket              UMETA(DisplayName = "GoToMarket"),
-    SetRequest              UMETA(DisplayName = "SetRequest"),
-    TryToTakeBasket         UMETA(DisplayName = "TryToTakeBasket"),
-    StopTryingToTakeBasket  UMETA(DisplayName = "StopTryingToTakeBasket"),
-    StartGrieving           UMETA(DisplayName = "StartGrieving"),
-    CheckFruitsCount        UMETA(DisplayName = "CheckFruitsCount"),
+    None                   UMETA(DisplayName = "None"),
+    Go                     UMETA(DisplayName = "Go"),
+    GoToMarket             UMETA(DisplayName = "GoToMarket"),
+    SetRequest             UMETA(DisplayName = "SetRequest"),
+    TryToTakeBasket        UMETA(DisplayName = "TryToTakeBasket"),
+    StopTryingToTakeBasket UMETA(DisplayName = "StopTryingToTakeBasket"),
+    StartGrieving          UMETA(DisplayName = "StartGrieving"),
+    CheckFruitsCount       UMETA(DisplayName = "CheckFruitsCount"),
+    TakeBasket             UMETA(DisplayName = "TakeBasket"),
+    GoToHome               UMETA(DisplayName = "GoToHome"),
 };
 
 const TMap<ECommand, FString> Commands = {
@@ -46,6 +50,8 @@ const TMap<ECommand, FString> Commands = {
     { ECommand::BasketOverlapCharacterEnd,   "cmdBasketOverlapCharacterEnd" },
     { ECommand::CorrectFruitsCount,          "cmdCorrectFruitsCount" },
     { ECommand::IncorrectFruitsCount,        "cmdIncorrectFruitsCount" },
+    { ECommand::CanTakeBasket,               "cmdCanTakeBasket" },
+    { ECommand::BasketTaken,                 "cmdBasketTaken" },
 };
 
 //const TMap<EJsonField, FString> JsonFields = {
@@ -61,6 +67,8 @@ const TMap<FString, EAction> Actions = {
     { "StartGrieving",          EAction::StartGrieving },
     { "CheckFruitsCount",       EAction::CheckFruitsCount },
     { "StopTryingToTakeBasket", EAction::StopTryingToTakeBasket },
+    { "TakeBasket",             EAction::TakeBasket },
+    { "GoToHome",               EAction::GoToHome },
 };
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
