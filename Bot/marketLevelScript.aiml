@@ -54,50 +54,52 @@
     <category>
         <pattern>cmdBasketOverlapCharacterBegin</pattern>
         <template>
+            <think><set name = "topic">startChecking</set></think>
             {
-            <think><set name = "overlapState">startChecking</set></think>
                 "Actions": "CheckFruitsCount"
             }
         </template>
     </category>
-    
-    <category>
-        <pattern>cmdBasketOverlapCharacterEnd</pattern>
-        <template>
-            {
-            <condition name = "overlapState" value = "startChecking">
-                <think><set name = "overlapState">stopChecking</set></think>
-            </condition>
-            <condition name = "overlapState" value = "startTryTaking">
-                "Actions": "StopTryingToTakeBasket"
-            </condition>
-            }
-        </template>
-    </category>
-    
-    <category>
-        <pattern>cmdCorrectFruitsCount</pattern>
-        <template>
-            {
-            <condition name = "overlapState" value = "startChecking">
-                <think><set name = "overlapState">startTryTaking</set></think>
-                    "Actions": "TryToTakeBasket"   
-            </condition>
-            }
-        </template>
-    </category>
-    
-    <category>
-        <pattern>cmdIncorrectFruitsCount</pattern>
-        <template>
-            {
-            <condition name = "overlapState" value = "startChecking">
-                <think><set name = "overlapState">startGrieving</set></think>
-                "Actions": "StartGrieving"
-            </condition>
-            }
-        </template>
-    </category>
+
+    <topic name = "startChecking">
+        <category>
+            <pattern>cmdBasketOverlapCharacterEnd</pattern>
+            <template>
+                <think><set name = "topic">stopChecking</set></think>
+            </template>
+        </category>
+
+        <category>
+            <pattern>cmdCorrectFruitsCount</pattern>
+            <template>
+                <think><set name = "topic">startTryTaking</set></think>
+                {
+                    "Actions": "TryToTakeBasket"
+                }
+            </template>
+        </category>
+
+        <category>
+            <pattern>cmdIncorrectFruitsCount</pattern>
+            <template>
+                <think><set name = "topic">startGrieving</set></think>
+                {
+                    "Actions": "StartGrieving"
+                }
+            </template>
+        </category>
+    </topic>
+
+    <topic name = "startTryTaking">
+        <category>
+            <pattern>cmdBasketOverlapCharacterEnd</pattern>
+            <template>
+                {
+                    "Actions": "StopTryingToTakeBasket"
+                }
+            </template>
+        </category>
+    </topic>
     
     <category>
         <pattern>cmdCanTakeBasket</pattern>
