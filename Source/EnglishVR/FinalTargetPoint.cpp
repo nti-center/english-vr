@@ -20,7 +20,6 @@ void AFinalTargetPoint::OnOverlapBegin(UPrimitiveComponent * OverlappedComp, AAc
     if (OtherActor && OtherActor != this) {
         Character = Cast<AMyCharacter>(OtherActor);
         if (Character) {
-            Character->EComeState = EStatesEnum::Active;
             Character->WalkingCount = 0;
         }
     }

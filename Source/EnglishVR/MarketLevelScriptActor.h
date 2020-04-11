@@ -7,6 +7,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "MyCharacter.h"
 #include "Basket.h"
+#include "BotRequest.h"
+#include "FinalTargetPoint.h"
 #include "MarketLevelScriptActor.generated.h"
 
 UCLASS()
@@ -35,16 +37,46 @@ public:
     ATargetPoint* CharacterSpawnPoint;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    AFinalTargetPoint* MarketPoint;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TArray<AActor*> ToPath;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TArray<AActor*> OutPath;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    UBotRequest* BotRequest;
 
     UFUNCTION(BlueprintCallable)
     void SpawnCharacter();
 
     UFUNCTION(BlueprintCallable)
     void SpawnBasket();
+
+    UFUNCTION()
+    bool IsCorrectFruitsCount();
+
+    UFUNCTION()
+    void OnBotResponseReceived(EAction Action, TArray<FString> ParamArray, TArray<FString> PhraseArray);
+
+    UFUNCTION()
+    void OnTargetPointOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+    UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+    UFUNCTION()
+    void OnPickupBoxOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, 
+        UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+    UFUNCTION()
+    void OnPickupBoxOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+    UFUNCTION()
+    void OnCharacterCanTakeBasket();
+
+private:
+    void PlayAction(EAction Action, TArray<FString> ParamArray);
+    void PlayAudio(TArray<FString> PhraseArray);
 
 protected:
     virtual void BeginPlay() override;

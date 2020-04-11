@@ -12,11 +12,10 @@
 //#include <format>
 #include "RecognitionComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FResponseReceivedDelegate, FString, Response);
-
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class ENGLISHVR_API URecognitionComponent : public USceneComponent {
     GENERATED_BODY()
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FResponseReceivedDelegate, FString, Response);
 
 public:
     //DECLARE_DYNAMIC_MULTICAST_DELEGATE(FYourDelegate, FChangedEvent)
