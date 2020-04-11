@@ -62,7 +62,8 @@ void AMarketLevelScriptActor::OnBotResponseReceived(EAction Action, TArray<FStri
 void AMarketLevelScriptActor::PlayAction(EAction Action, TArray<FString> ParamArray) {
     switch (Action) {
     case EAction::GoToMarket: {
-        Character->GoToMarket();
+        Character->SetPath(ToPath);
+        Character->Go();
         break;
     }
     case EAction::SetRequest: {

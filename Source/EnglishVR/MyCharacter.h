@@ -55,7 +55,7 @@ public:
     EAnimationState AnimationState;
 
 #pragma region DataTable
-    //Таблицы для генерации общей части диалога
+    //пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     UDataTable* GreetingsTable;
 
@@ -71,7 +71,7 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     UDataTable* ErrorsTable;
 
-    //Таблицы для генерации составного запроса
+    //пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     UDataTable* RequestTable;
 
@@ -107,6 +107,9 @@ public:
     TArray<AActor*> ToPath;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<AActor*> CurrentPath;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TArray<AActor*> OutPath;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -121,7 +124,7 @@ public:
     UPROPERTY(BlueprintReadWrite)
     int32 WalkingCount;
 
-    //Для проигрывания звука
+    //пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TArray<FName> PathArray;
 
@@ -130,32 +133,32 @@ public:
 
 #pragma region VariablesForRandomRequestGeneration
 
-    //Переменная для генерации количества запросов NPC
+    //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ NPC
     UPROPERTY(BlueprintReadWrite)
     int32 RequestCount;
 
-    //Переменная для подсчета, какой сейчас идет запрос
+    //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
     UPROPERTY(BlueprintReadWrite)
     int32 Counter = 1;
 
-    //Переменная для задания длины массива фраз запросов, используется для того
-    //что бы данные фразы не повторялись
+    //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+    //пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     UPROPERTY(BlueprintReadWrite)
     int32 RequestPhrasesArrayLength = 0;
 
-    //Тип фрукта запрашиваемого на предыдущем шаге
+    //пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
     UPROPERTY(BlueprintReadWrite)
     FString PreviousFruit;
 
-    //Хранит тип и количество фруктов ожидаемых на данном шаге
+    //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TMap<FString, int32> FruitsCount;
 
-    //Массив путей к фразам полного запроса
+    //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     UPROPERTY(BlueprintReadWrite)
     TArray <FName> RequestFullPhrasesArray;
 
-    //Массив названий всех запросов, полученных из таблицы request
+    //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ request
     UPROPERTY(BlueprintReadWrite)
     TArray<FName> RequestPhrasesArray;
 
@@ -171,6 +174,9 @@ public:
     TMap<FName, FName> DialogList;
 
     UFUNCTION(BlueprintCallable)
+    void SetPath(TArray<AActor*> Path);
+
+    UFUNCTION(BlueprintCallable)
     void GoToMarket();
 
     UFUNCTION(BlueprintCallable)
@@ -181,6 +187,9 @@ public:
 
     UFUNCTION(BlueprintCallable)
     void GoAway();
+
+    UFUNCTION(BlueprintCallable)
+    void Go();
 
     UFUNCTION(BlueprintCallable)
     void TakeBasket();

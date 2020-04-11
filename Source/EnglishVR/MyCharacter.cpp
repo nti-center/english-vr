@@ -401,6 +401,9 @@ void AMyCharacter::PlaySound() {
         return;
 }
 
+void AMyCharacter::SetPath(TArray<AActor*> Path) {
+    CurrentPath = Path;
+}
 
 void AMyCharacter::GoAway() {
 
@@ -409,6 +412,12 @@ void AMyCharacter::GoAway() {
             Cast<AAIController>(GetController())->MoveToActor(OutPath[WalkingCount], -1.f, true, true);
 
     IsTmp = false;
+}
+
+void AMyCharacter::Go() {
+    if (WalkingCount < CurrentPath.Num())
+        if (GetController() && Cast<AAIController>(GetController()))
+            Cast<AAIController>(GetController())->MoveToActor(CurrentPath[WalkingCount], -1.f, true, true);
 }
 
 void AMyCharacter::TakeBasket() {
