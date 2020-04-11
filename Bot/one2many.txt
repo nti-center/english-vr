@@ -1,0 +1,2 @@
+Apple:Apples
+Potatoe:Potatoes
