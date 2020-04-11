@@ -11,15 +11,15 @@
 
 UENUM(BlueprintType)
 enum class ECommand : uint8 {
-    Start                       UMETA(DisplayName = "Start"),
-    NewCharacterSpawned         UMETA(DisplayName = "NewCharacterSpawned"),
-    ReachedMarket               UMETA(DisplayName = "ReachedMarket"),
     BasketOverlapCharacterBegin UMETA(DisplayName = "BasketOverlapCharacterBegin"),
     BasketOverlapCharacterEnd   UMETA(DisplayName = "BasketOverlapCharacterEnd"),
+    BasketTaken                 UMETA(DisplayName = "BasketTaken"),
+    CanTakeBasket               UMETA(DisplayName = "CanTakeBasket"),
     CorrectFruitsCount          UMETA(DisplayName = "CorrectFruitsCount"),
     IncorrectFruitsCount        UMETA(DisplayName = "IncorrectFruitsCount"),
-    CanTakeBasket               UMETA(DisplayName = "CanTakeBasket"),
-    BasketTaken                 UMETA(DisplayName = "BasketTaken"),
+    NewCharacterSpawned         UMETA(DisplayName = "NewCharacterSpawned"),
+    ReachedMarket               UMETA(DisplayName = "ReachedMarket"),
+    Start                       UMETA(DisplayName = "Start"),
 };
 
 //UENUM(BlueprintType)
@@ -30,28 +30,28 @@ enum class ECommand : uint8 {
 
 UENUM(BlueprintType)
 enum class EAction : uint8 {
-    None                   UMETA(DisplayName = "None"),
-    Go                     UMETA(DisplayName = "Go"),
-    GoToMarket             UMETA(DisplayName = "GoToMarket"),
-    SetRequest             UMETA(DisplayName = "SetRequest"),
-    TryToTakeBasket        UMETA(DisplayName = "TryToTakeBasket"),
-    StopTryingToTakeBasket UMETA(DisplayName = "StopTryingToTakeBasket"),
-    StartGrieving          UMETA(DisplayName = "StartGrieving"),
     CheckFruitsCount       UMETA(DisplayName = "CheckFruitsCount"),
-    TakeBasket             UMETA(DisplayName = "TakeBasket"),
+    Go                     UMETA(DisplayName = "Go"),
     GoToHome               UMETA(DisplayName = "GoToHome"),
+    GoToMarket             UMETA(DisplayName = "GoToMarket"),
+    None                   UMETA(DisplayName = "None"),
+    SetRequest             UMETA(DisplayName = "SetRequest"),
+    StartGrieving          UMETA(DisplayName = "StartGrieving"),
+    StopTryingToTakeBasket UMETA(DisplayName = "StopTryingToTakeBasket"),
+    TakeBasket             UMETA(DisplayName = "TakeBasket"),
+    TryToTakeBasket        UMETA(DisplayName = "TryToTakeBasket"),
 };
 
 const TMap<ECommand, FString> Commands = {
-    { ECommand::Start,                       "cmdStart" },
-    { ECommand::NewCharacterSpawned,         "cmdNewCharacterSpawned" },
-    { ECommand::ReachedMarket,               "cmdReachedMarket" },
     { ECommand::BasketOverlapCharacterBegin, "cmdBasketOverlapCharacterBegin" },
     { ECommand::BasketOverlapCharacterEnd,   "cmdBasketOverlapCharacterEnd" },
+    { ECommand::BasketTaken,                 "cmdBasketTaken" },
+    { ECommand::CanTakeBasket,               "cmdCanTakeBasket" },
     { ECommand::CorrectFruitsCount,          "cmdCorrectFruitsCount" },
     { ECommand::IncorrectFruitsCount,        "cmdIncorrectFruitsCount" },
-    { ECommand::CanTakeBasket,               "cmdCanTakeBasket" },
-    { ECommand::BasketTaken,                 "cmdBasketTaken" },
+    { ECommand::NewCharacterSpawned,         "cmdNewCharacterSpawned" },
+    { ECommand::ReachedMarket,               "cmdReachedMarket" },
+    { ECommand::Start,                       "cmdStart" },
 };
 
 //const TMap<EJsonField, FString> JsonFields = {
@@ -60,15 +60,15 @@ const TMap<ECommand, FString> Commands = {
 //};
 
 const TMap<FString, EAction> Actions = {
-    { "Go",                     EAction::Go },
+    { "CheckFruitsCount",       EAction::CheckFruitsCount },
+    { "GoToHome",               EAction::GoToHome },
     { "GoToMarket",             EAction::GoToMarket },
     { "SetRequest",             EAction::SetRequest },
-    { "TryToTakeBasket",        EAction::TryToTakeBasket },
     { "StartGrieving",          EAction::StartGrieving },
-    { "CheckFruitsCount",       EAction::CheckFruitsCount },
     { "StopTryingToTakeBasket", EAction::StopTryingToTakeBasket },
     { "TakeBasket",             EAction::TakeBasket },
-    { "GoToHome",               EAction::GoToHome },
+    { "TryToTakeBasket",        EAction::TryToTakeBasket },
+    { "Go",                     EAction::Go },
 };
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
