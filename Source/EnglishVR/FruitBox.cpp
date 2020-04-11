@@ -21,8 +21,21 @@ UFruitBox::UFruitBox() {
     FruitClass = AFruit::StaticClass();
 }
 
+template <typename ObjClass>
+static FORCEINLINE ObjClass* LoadObjFromPath(const FName& Path) {
+    if (Path == NAME_None) return NULL;
+    return Cast<ObjClass>(StaticLoadObject(ObjClass::StaticClass(), NULL, *Path.ToString()));
+}
+
 void UFruitBox::BeginPlay() {
     Super::BeginPlay();
+
+    if (!Controller)
+        return;
+
+    TArray<FString> tmp = Controller->RandomFruitGeneration();
+    FruitMesh = LoadObjFromPath<UStaticMesh>(FName(*tmp[0]));
+    FruitType = tmp[1];
 
     if (!FruitMesh) {
         UE_LOG(LogTemp, Warning, TEXT("Cant find Mesh"));

@@ -67,11 +67,6 @@ AMyCharacter::AMyCharacter() {
     if (_DataTableEnding.Succeeded()) {
         EndingTable = _DataTableEnding.Object;
     }
-
-    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTable(TEXT("DataTable'/Game/CSV/TestFromAIML.TestFromAIML'"));
-    if (_DataTable.Succeeded()) {
-        DataTable = _DataTable.Object;
-    }
 #pragma endregion
 }
 
@@ -352,50 +347,95 @@ void AMyCharacter::GoToMarket() {
 	}
 }
 
-void AMyCharacter::PlaySoundFromAIML(FString SoundNameString){
+void AMyCharacter::CreateCue(TArray<FString>InputArray) {
 
-    FString ContextString;
-    TArray<FString> InputArray;
+    TArray<struct FDistanceDatum> Datum;
+    FString SoundCueName = "CueWithCrossfade";
+    SoundCue = NewObject<USoundCue>(this, *SoundCueName);
+    int32 NodeIndex = 0;
 
-    PathArray.Empty();
-    PlayingSoundNumber = 0;
+    USoundNodeParamCrossFade* Crossfade = SoundCue->ConstructSoundNode<USoundNodeParamCrossFade>();
+    USoundNodeConcatenator* Concatenator = SoundCue->ConstructSoundNode<USoundNodeConcatenator>();
 
-    SoundNameString.ParseIntoArray(InputArray, TEXT(" "), true);
-    
-   for(FString name : InputArray) {
+    Crossfade->ParamName = "CrossfadeParam";
 
-       //¬ данный момент не будет работать, так как сейчас все звуки хран€тс€ в разных папках,
-       //а необходимо, что бы хранились в одной
-       //FString path = "SoundCue'/Game/Sounds/AllSounds/" + name + "_Cue." + name + "_Cue'";
-       //PathArray.Add(FName(*path));
+    Crossfade->GraphNode->NodePosX = -130;
+    Crossfade->GraphNode->NodePosY = 50 * InputArray.Num() / 2;
 
-       FSoundDataTableStruct* Row = DataTable->FindRow<FSoundDataTableStruct>(FName(*name), ContextString, true);
-       if (Row) {
-          PathArray.Add(*Row->Path);
-       }
-   }
-   PlaySound();
-}
+   // SoundCue->FirstNode = Crossfade;
+    SoundCue->FirstNode = Concatenator;
+    SoundCue->LinkGraphNodesFromSoundNodes();
 
-void AMyCharacter::PlaySound() {
-    if (PlayingSoundNumber < PathArray.Num()) {
-        if ((Audio->IsPlaying())) {
-            Audio->OnAudioFinished.AddDynamic(this, &AMyCharacter::PlaySound);
+    for (FString name : InputArray) {
+        FString path = "SoundWave'/Game/Sounds/TestSound/" + name + "." + name + "'";
+        USoundWave* SoundWave = LoadObjFromPath<USoundWave>(FName(*path));
+        FDistanceDatum TempDatum;
+
+        if (NodeIndex == 0) {
+            TempDatum.FadeInDistanceStart = 0;
+            TempDatum.FadeInDistanceEnd = 0;
+
+            TempDatum.FadeOutDistanceStart = SoundWave->GetDuration() + 0.3f;
+            TempDatum.FadeOutDistanceEnd = SoundWave->GetDuration() + 0.4f;
         }
         else {
-            USoundCue* Sound = LoadObjFromPath<USoundCue>(PathArray[PlayingSoundNumber]);
-
-            Audio->SetSound(Sound);
-            Audio->Play();
-
-            PlayingSoundNumber++;
-            PlaySound();
+            TempDatum.FadeInDistanceStart = Datum[NodeIndex - 1].FadeOutDistanceStart;
+            TempDatum.FadeInDistanceEnd = Datum[NodeIndex - 1].FadeOutDistanceEnd;
+            TempDatum.FadeOutDistanceStart = TempDatum.FadeInDistanceStart + SoundWave->GetDuration();
+            TempDatum.FadeOutDistanceEnd = TempDatum.FadeInDistanceEnd + SoundWave->GetDuration();
         }
+
+        Datum.Add(TempDatum);
+
+        USoundNodeWavePlayer* WavePlayer = SoundCue->ConstructSoundNode<USoundNodeWavePlayer>();
+
+        WavePlayer->SetSoundWave(SoundWave);
+        WavePlayer->GraphNode->NodePosX = -650;
+        WavePlayer->GraphNode->NodePosY = -100 * NodeIndex;
+       // WavePlayer->bLooping = true;
+
+        SummaryDuration += SoundWave->GetDuration();
+
+        //Crossfade->CreateStartingConnectors();
+        Concatenator->CreateStartingConnectors();
+        Concatenator->ChildNodes[NodeIndex] = WavePlayer;
+        //Crossfade->ChildNodes[NodeIndex] = WavePlayer;
+        SoundCue->LinkGraphNodesFromSoundNodes();
+        NodeIndex++;
     }
-    else
-        return;
+    //Crossfade->CrossFadeInput = Datum;
 }
 
+void AMyCharacter::PlaySoundWithCrossfade(FString SoundNameString) {
+
+    TArray<FString> InputArray;
+
+    SoundNameString.ParseIntoArray(InputArray, TEXT(" "), true);
+
+    CreateCue(InputArray);
+
+    Audio->SetSound(SoundCue);
+
+    UWorld* World = GetWorld();
+    if (World)
+       // World->GetTimerManager().SetTimer(FuzeTimerHandle, this, &AMyCharacter::SetCrossfadeParametr, 0.1f, true);
+
+   Audio->Play();
+}
+
+void AMyCharacter::SetCrossfadeParametr() {
+    if (Audio->IsPlaying()) {
+        if (TimerCount >= SummaryDuration) {
+            Audio->Stop();
+            GetWorld()->GetTimerManager().ClearTimer(FuzeTimerHandle);
+        }
+        else {
+            TimerCount += 0.1;
+            UE_LOG(LogTemp, Warning, TEXT("Timer count %f"), TimerCount);
+            Audio->SetFloatParameter("CrossfadeParam", TimerCount);
+        }
+    } 
+}
 
 void AMyCharacter::GoAway() {
 
@@ -420,7 +460,12 @@ void AMyCharacter::TakeBasket() {
     FAttachmentTransformRules Atr(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepWorld, true);
     Basket->AttachToComponent(GetMesh(), Atr, "RightHandSocket");
     PlayDialog(DialogList.FindRef("gratitude"), IsCheck);
-    PlayDialog(DialogList.FindRef("goodbye"), IsCheck);
+    
+    //¬ременна€ заплатка, код удалитс€ при переходе к AIML
+    TArray<FName> tmp;
+    tmp.Add(DialogList.FindRef("goodbye"));
+    PlayRequestList(tmp, 1 ,IsCheck);
+
     IsEnd = true;
 }
 
@@ -442,22 +487,18 @@ void AMyCharacter::BeginPlay() {
     name.Add("payment");
     name.Add("goodbye");
 	name.Add("errors");
-
+ 
    RandomDialogGenerator(name);
-   //PlaySoundFromAIML("Can_I_Have_Male One_male Apple_male Please_Male");
-   GoToMarket();
-}
 
-void AMyCharacter::EndPlay(const EEndPlayReason::Type EndPlayReasonType) {
-    Audio->OnAudioFinished.RemoveDynamic(this, &AMyCharacter::PlaySound);
-    Super::EndPlay(EndPlayReasonType);
+   //PlaySoundWithCrossfade("Can_I_Have_Male Five_male Apples_male Please_Male");
+   GoToMarket();
 }
 
 // Called every frame
 void AMyCharacter::Tick(float DeltaTime) {
     Super::Tick(DeltaTime);
 
-    if (!IsNotPlaying())
+    if (Audio->IsPlaying())
         return;
 
     if (EComeState == EStatesEnum::Active) {
@@ -467,7 +508,7 @@ void AMyCharacter::Tick(float DeltaTime) {
         //EComeState = EStatesEnum::Finished;
     }
 
-	if((EComeState == EStatesEnum::Process) && (Counter < RequestCount)){
+    if ((EComeState == EStatesEnum::Process) && (Counter < RequestCount)) {
 
         RandomRequestGenerator();
         PlayRequestList(RequestFullPhrasesArray, RequestFullPhrasesArray.Num(), IsCheck);
@@ -475,12 +516,12 @@ void AMyCharacter::Tick(float DeltaTime) {
         for (TActorIterator<ABasket> ActorItr(GetWorld()); ActorItr; ++ActorItr)
         {
             Basket = Cast<ABasket>(*ActorItr);
-        }    
+        }
         EComeState = EStatesEnum::Whaiting;
-	}
+    }
     else if ((Basket) && (EComeState == EStatesEnum::Whaiting)) {
         if (IsCorrectFruitsCount()) {
-            
+
             //UE_LOG(LogTemp, Warning, TEXT("CorrectFruitCount"));
 
             FruitsCount.Empty();
@@ -491,7 +532,7 @@ void AMyCharacter::Tick(float DeltaTime) {
         }
     }
     else if (Counter == RequestCount) {
-        if(EComeState != EStatesEnum::Finished)
+        if (EComeState != EStatesEnum::Finished)
             PlayDialog(DialogList.FindRef("payment"), IsCheck);
         EComeState = EStatesEnum::Finished;
     }
@@ -503,6 +544,8 @@ void AMyCharacter::Tick(float DeltaTime) {
     if (!IsTmp && IsEnd && IsNotPlaying()) {
         GoAway();
     }
+
+       
 }
 
 void AMyCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)  {

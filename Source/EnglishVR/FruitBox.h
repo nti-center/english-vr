@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine.h"
 #include "GameFramework/Actor.h"
+#include "FruitBoxController.h"
 #include "Fruit.h"
 #include "FruitBox.generated.h"
 
@@ -18,14 +19,14 @@ public:
     UPROPERTY(EditAnywhere, Category = "Crate")
     UBoxComponent* Box;
 
-    //UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Fruit")
-    //UStaticMeshComponent* Mesh;
-
-    UPROPERTY(EditAnywhere, Category = "Fruit")
+    UPROPERTY(EditDefaultsOnly)
     UStaticMesh* FruitMesh;
 
-    UPROPERTY(EditAnywhere, Category = "Fruit")
+    UPROPERTY(EditDefaultsOnly)
     FString FruitType;
+
+    UPROPERTY(EditAnywhere, Category = "Fruit")
+    AFruitBoxController* Controller;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fruit")
     TSubclassOf<class AFruit> FruitClass;

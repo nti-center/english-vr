@@ -8,6 +8,10 @@
 #include "AIController.h"
 #include "Basket.h"
 #include "Sound/SoundCue.h"
+#include "EdGraph/EdGraph.h"
+#include "Sound/SoundNodeWavePlayer.h"
+#include "Sound/SoundNodeParamCrossFade.h"
+#include "Sound/SoundNodeConcatenator.h"
 #include "UObject/UObjectGlobals.h"
 #include "AudioDataTableStruct.h"
 #include "FruitSoundDataTableStruct.h"
@@ -39,6 +43,18 @@ public:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Audio Conmponent", meta = (AllowPrivateAccess = "true"))
     UAudioComponent* Audio;
+
+    UPROPERTY(BlueprintReadWrite)
+    USoundCue* SoundCue;
+
+    UPROPERTY(BlueprintReadWrite)
+    FTimerHandle FuzeTimerHandle;
+
+    UPROPERTY(BlueprintReadWrite)
+    float TimerCount = 0;
+
+    UPROPERTY(BlueprintReadWrite)
+    float SummaryDuration = 0;
 
 #pragma region DataTable
     //“аблицы дл€ генерации общей части диалога
@@ -160,10 +176,13 @@ public:
     void GoToMarket();
 
     UFUNCTION(BlueprintCallable)
-    void PlaySoundFromAIML(FString SoundNameString);
+    void CreateCue(TArray<FString>InputArray);
 
     UFUNCTION(BlueprintCallable)
-    void PlaySound();
+    void PlaySoundWithCrossfade(FString SoundNameString);
+
+    UFUNCTION(BlueprintCallable)
+    void SetCrossfadeParametr();
 
     UFUNCTION(BlueprintCallable)
     void GoAway();
@@ -198,7 +217,6 @@ public:
 protected:
     // Called when the game starts or when spawned
     virtual void BeginPlay() override; 
-    virtual void EndPlay(const EEndPlayReason::Type EndPlayReasonType) override;
 
 public:    
     // Called every frame
