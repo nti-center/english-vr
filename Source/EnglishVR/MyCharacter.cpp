@@ -9,11 +9,16 @@ AMyCharacter::AMyCharacter() {
     Box = CreateDefaultSubobject<UBoxComponent>(TEXT("Box"));
     Box->SetupAttachment(RootComponent);
     Box->SetGenerateOverlapEvents(true);
-    Box->OnComponentBeginOverlap.AddDynamic(this, &AMyCharacter::OnOverlapBegin);
-    Box->OnComponentEndOverlap.AddDynamic(this, &AMyCharacter::OnOverlapEnd);
+    //Box->OnComponentBeginOverlap.AddDynamic(this, &AMyCharacter::OnOverlapBegin);
+    //Box->OnComponentEndOverlap.AddDynamic(this, &AMyCharacter::OnOverlapEnd);
 
     Audio = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio"));
     Audio->SetupAttachment(RootComponent);
+
+    PhrasesAudio = CreateDefaultSubobject<UPhrasesAudioComponent>(TEXT("PhrasesAudio"));
+    PhrasesAudio->SetupAttachment(RootComponent);
+
+    AnimationState = EAnimationState::None;
 
 #pragma region DataTableLoading
 
@@ -198,18 +203,18 @@ void AMyCharacter::RandomRequestGenerator() {
 
     bool IsOtherFruit = false;
 
-    //Очищаем массив с путями к звукам и TMap с количеством и типом фруктов
+    //пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ TMap пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     RequestFullPhrasesArray.Empty();
     FruitsCount.Empty();
     
-    //Заполняем массив типами звуков, которые будем искать в таблицах
+    //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     tmp.Add("request");
     tmp.Add("numbers");
-    //Если фруктов больше одного ищем в таблице - Фрукты
+    //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ - пїЅпїЅпїЅпїЅпїЅпїЅ
     if (numbers> 1) {
         tmp.Add("fruits");
     }
-    //Иначе в таблице - Фрукт
+    //пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ - пїЅпїЅпїЅпїЅпїЅ
     else {
         tmp.Add("fruit");
     }
@@ -223,17 +228,17 @@ void AMyCharacter::RandomRequestGenerator() {
 
             FSoundDataTableStruct* Row;
 
-            //Если это первый запрос для данного пресонажа
+            //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
             if (Counter == 0) {
-                //Берем все пути к звука из таблицы reques и записываем их в массив
+                //пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ reques пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
                 for (auto it : RequestTable->GetRowMap()) {
                     Row = TmpTable->FindRow<FSoundDataTableStruct>(it.Key, ContextString, true);
                     if (Row) {
                         RequestPhrasesArray.Add((*Row->Path));
                     }
                 }
-                //Ищем рандомный запрос в массиве и добавляем его в GetPath, после чего удаляем этот элемент из массива
-                //Делаем это, что бы не повторялись звуки запроса
+                //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ GetPath, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+                //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
                 RequestPhrasesArrayLength = RequestPhrasesArray.Num() - 1;
                 Rand = FMath::RandRange(0, RequestPhrasesArrayLength);
 
@@ -242,8 +247,8 @@ void AMyCharacter::RandomRequestGenerator() {
                 //RequestPhrasesArray.RemoveAt(Rand);
                 //RequestPhrasesArrayLength--;
             }
-            //Ищем рандомный запрос в массиве и добавляем его в GetPath, после чего удаляем этот элемент из массива
-            //Делаем это, что бы не повторялись звуки запроса
+            //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ GetPath, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+            //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
             else
             {
                 Rand = FMath::RandRange(0, RequestPhrasesArrayLength);
@@ -270,7 +275,7 @@ void AMyCharacter::RandomRequestGenerator() {
             }
         }
         else if (SoundName == "fruit") {
-            //Идем в цикле, пока не найдем тип фрукта, отличный от того, что был на предыдущем шаге
+            //пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
             while (IsOtherFruit == false) {
                 Rand = FMath::RandRange(1, 5);
                 TmpTable = FruitTable;
@@ -292,7 +297,7 @@ void AMyCharacter::RandomRequestGenerator() {
             }
         }
         else if (SoundName == "fruits") {
-            //Идем в цикле, пока не найдем тип фрукта, отличный от того, что был на предыдущем шаге
+            //пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
             while (IsOtherFruit == false) {
                 Rand = FMath::RandRange(1, 3);
                 TmpTable = FruitsTable;
@@ -331,10 +336,10 @@ void AMyCharacter::RandomRequestGenerator() {
                 GetPath = (*Row->Path);
             }
         }
-        //Заполняем массив путей к звукам
+        //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
         RequestFullPhrasesArray.Add(GetPath);
     } 
-    //Заполняем TMap с типом и количеством фруктов
+    //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ TMap пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
    FruitsCount.Add(FruitType, FruitCount);
    AllRequestsFruitsAndCountList.Add(FruitType, FruitCount);
 }
@@ -406,6 +411,10 @@ void AMyCharacter::CreateCue(TArray<FString>InputArray) {
     //Crossfade->CrossFadeInput = Datum;
 }
 
+void AMyCharacter::SetPath(TArray<AActor*> Path) {
+    CurrentPath = Path;
+}
+
 void AMyCharacter::PlaySoundWithCrossfade(FString SoundNameString) {
 
     TArray<FString> InputArray;
@@ -446,6 +455,12 @@ void AMyCharacter::GoAway() {
     IsTmp = false;
 }
 
+void AMyCharacter::Go() {
+    if (WalkingCount < CurrentPath.Num())
+        if (GetController() && Cast<AAIController>(GetController()))
+            Cast<AAIController>(GetController())->MoveToActor(CurrentPath[WalkingCount], -1.f, true, true);
+}
+
 void AMyCharacter::TakeBasket() {
 
     if (Basket == nullptr) {
@@ -461,12 +476,28 @@ void AMyCharacter::TakeBasket() {
     Basket->AttachToComponent(GetMesh(), Atr, "RightHandSocket");
     PlayDialog(DialogList.FindRef("gratitude"), IsCheck);
     
-    //Временная заплатка, код удалится при переходе к AIML
+    //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ AIML
     TArray<FName> tmp;
     tmp.Add(DialogList.FindRef("goodbye"));
     PlayRequestList(tmp, 1 ,IsCheck);
 
     IsEnd = true;
+}
+
+bool AMyCharacter::TakeBasket(ABasket* NewBasket) {
+    if (NewBasket == nullptr) {
+        UE_LOG(LogTemp, Warning, TEXT("Can't take basket: basket is null"));
+        return false;
+    }
+    UE_LOG(LogTemp, Warning, TEXT("TakeBasket"));
+
+    NewBasket->Mesh->SetSimulatePhysics(false);
+    NewBasket->Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    NewBasket->AttachOverlappingActors();
+    FAttachmentTransformRules Atr(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepWorld, true);
+    NewBasket->AttachToComponent(GetMesh(), Atr, "RightHandSocket");
+
+    return true;
 }
 
 // Called when the game starts or when spawned
@@ -488,64 +519,14 @@ void AMyCharacter::BeginPlay() {
     name.Add("goodbye");
 	name.Add("errors");
  
-   RandomDialogGenerator(name);
-
-   //PlaySoundWithCrossfade("Can_I_Have_Male Five_male Apples_male Please_Male");
-   GoToMarket();
+    RandomDialogGenerator(name);
+    
+    //PlaySoundWithCrossfade("Can_I_Have_Male Five_male Apples_male Please_Male");
 }
 
 // Called every frame
 void AMyCharacter::Tick(float DeltaTime) {
     Super::Tick(DeltaTime);
-
-    if (Audio->IsPlaying())
-        return;
-
-    if (EComeState == EStatesEnum::Active) {
-        PlayDialog(DialogList.FindRef("greetings"), IsCheck);
-
-        EComeState = EStatesEnum::Process;
-        //EComeState = EStatesEnum::Finished;
-    }
-
-    if ((EComeState == EStatesEnum::Process) && (Counter < RequestCount)) {
-
-        RandomRequestGenerator();
-        PlayRequestList(RequestFullPhrasesArray, RequestFullPhrasesArray.Num(), IsCheck);
-
-        for (TActorIterator<ABasket> ActorItr(GetWorld()); ActorItr; ++ActorItr)
-        {
-            Basket = Cast<ABasket>(*ActorItr);
-        }
-        EComeState = EStatesEnum::Whaiting;
-    }
-    else if ((Basket) && (EComeState == EStatesEnum::Whaiting)) {
-        if (IsCorrectFruitsCount()) {
-
-            //UE_LOG(LogTemp, Warning, TEXT("CorrectFruitCount"));
-
-            FruitsCount.Empty();
-            Basket->FruitCounts.Empty();
-
-            Counter++;
-            EComeState = EStatesEnum::Process;
-        }
-    }
-    else if (Counter == RequestCount) {
-        if (EComeState != EStatesEnum::Finished)
-            PlayDialog(DialogList.FindRef("payment"), IsCheck);
-        EComeState = EStatesEnum::Finished;
-    }
-
-    if (EPickupState == EStatesEnum::Finished && !IsEnd) {
-        TakeBasket();
-    }
-
-    if (!IsTmp && IsEnd && IsNotPlaying()) {
-        GoAway();
-    }
-
-       
 }
 
 void AMyCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)  {
@@ -600,3 +581,13 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 }
 
+void AMyCharacter::AddFruitRequest(FString Type, int32 Count) {
+    if (FruitsCount.Contains(Type))
+        FruitsCount[Type] += Count;
+    else if (Count > 0)
+        FruitsCount.Emplace(Type, Count);
+}
+
+void AMyCharacter::ClearFruitRequests() {
+    FruitsCount.Empty();
+}

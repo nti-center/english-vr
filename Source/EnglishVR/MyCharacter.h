@@ -8,6 +8,7 @@
 #include "AIController.h"
 #include "Basket.h"
 #include "Sound/SoundCue.h"
+#include "PhrasesAudioComponent.h"
 #include "EdGraph/EdGraph.h"
 #include "Sound/SoundNodeWavePlayer.h"
 #include "Sound/SoundNodeParamCrossFade.h"
@@ -30,9 +31,17 @@ enum class EStatesEnum : uint8 {
     Finished  UMETA(DisplayName = "Finished"),
 };
 
+UENUM(BlueprintType)
+enum class EAnimationState : uint8 {
+    None     UMETA(DisplayName = "None"),
+    Taking   UMETA(DisplayName = "Taking"),
+    Grieving UMETA(DisplayName = "Grieving"),
+};
+
 UCLASS(Abstract)
 class ENGLISHVR_API AMyCharacter : public ACharacter {
     GENERATED_BODY()
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCanTakeBasketDelegate);
 
 public:
     // Sets default values for this character's properties
@@ -43,6 +52,12 @@ public:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Audio Conmponent", meta = (AllowPrivateAccess = "true"))
     UAudioComponent* Audio;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    UPhrasesAudioComponent* PhrasesAudio;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    EAnimationState AnimationState;
 
     UPROPERTY(BlueprintReadWrite)
     USoundCue* SoundCue;
@@ -57,7 +72,7 @@ public:
     float SummaryDuration = 0;
 
 #pragma region DataTable
-    //Таблицы для генерации общей части диалога
+    //пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     UDataTable* GreetingsTable;
 
@@ -73,7 +88,7 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     UDataTable* ErrorsTable;
 
-    //Таблицы для генерации составного запроса
+    //пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     UDataTable* RequestTable;
 
@@ -109,6 +124,9 @@ public:
     TArray<AActor*> ToPath;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<AActor*> CurrentPath;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TArray<AActor*> OutPath;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -123,7 +141,7 @@ public:
     UPROPERTY(BlueprintReadWrite)
     int32 WalkingCount;
 
-    //Для проигрывания звука
+    //пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TArray<FName> PathArray;
 
@@ -132,32 +150,32 @@ public:
 
 #pragma region VariablesForRandomRequestGeneration
 
-    //Переменная для генерации количества запросов NPC
+    //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ NPC
     UPROPERTY(BlueprintReadWrite)
     int32 RequestCount;
 
-    //Переменная для подсчета, какой сейчас идет запрос
+    //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
     UPROPERTY(BlueprintReadWrite)
     int32 Counter = 1;
 
-    //Переменная для задания длины массива фраз запросов, используется для того
-    //что бы данные фразы не повторялись
+    //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+    //пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     UPROPERTY(BlueprintReadWrite)
     int32 RequestPhrasesArrayLength = 0;
 
-    //Тип фрукта запрашиваемого на предыдущем шаге
+    //пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
     UPROPERTY(BlueprintReadWrite)
     FString PreviousFruit;
 
-    //Хранит тип и количество фруктов ожидаемых на данном шаге
+    //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TMap<FString, int32> FruitsCount;
 
-    //Массив путей к фразам полного запроса
+    //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     UPROPERTY(BlueprintReadWrite)
     TArray <FName> RequestFullPhrasesArray;
 
-    //Массив названий всех запросов, полученных из таблицы request
+    //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ request
     UPROPERTY(BlueprintReadWrite)
     TArray<FName> RequestPhrasesArray;
 
@@ -171,6 +189,12 @@ public:
 
     UPROPERTY(BlueprintReadWrite)
     TMap<FName, FName> DialogList;
+
+    UPROPERTY(BlueprintAssignable, BlueprintCallable)
+    FCanTakeBasketDelegate OnCanTakeBasket;
+
+    UFUNCTION(BlueprintCallable)
+    void SetPath(TArray<AActor*> Path);
 
     UFUNCTION(BlueprintCallable)
     void GoToMarket();
@@ -188,7 +212,12 @@ public:
     void GoAway();
 
     UFUNCTION(BlueprintCallable)
+    void Go();
+
+    UFUNCTION(BlueprintCallable)
     void TakeBasket();
+    
+    bool TakeBasket(ABasket* NewBasket);
 
     UFUNCTION(BlueprintImplementableEvent)
     void PlayDialog(FName DialogName, bool _isCheck);
@@ -207,6 +236,12 @@ public:
 
     UFUNCTION(BlueprintCallable)
     void RandomRequestGenerator();
+
+    UFUNCTION(BlueprintCallable)
+    void AddFruitRequest(FString Type, int32 Count);
+
+    UFUNCTION(BlueprintCallable)
+    void ClearFruitRequests();
 
     UFUNCTION()
     void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

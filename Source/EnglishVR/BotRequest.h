@@ -9,30 +9,89 @@
 #include "Engine.h"
 #include "BotRequest.generated.h"
 
+UENUM(BlueprintType)
+enum class ECommand : uint8 {
+    BasketOverlapCharacterBegin UMETA(DisplayName = "BasketOverlapCharacterBegin"),
+    BasketOverlapCharacterEnd   UMETA(DisplayName = "BasketOverlapCharacterEnd"),
+    BasketTaken                 UMETA(DisplayName = "BasketTaken"),
+    CanTakeBasket               UMETA(DisplayName = "CanTakeBasket"),
+    CorrectFruitsCount          UMETA(DisplayName = "CorrectFruitsCount"),
+    IncorrectFruitsCount        UMETA(DisplayName = "IncorrectFruitsCount"),
+    NewCharacterSpawned         UMETA(DisplayName = "NewCharacterSpawned"),
+    ReachedMarket               UMETA(DisplayName = "ReachedMarket"),
+    Start                       UMETA(DisplayName = "Start"),
+};
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class ENGLISHVR_API UBotRequest : public USceneComponent
-{
-	GENERATED_BODY()
+//UENUM(BlueprintType)
+//enum class EJsonField : uint8 {
+//    Actions      UMETA(DisplayName = "Actions"),
+//    VoicePhrases UMETA(DisplayName = "VoicePhrases")
+//};
 
-public:	
-	
-    void Request();
+UENUM(BlueprintType)
+enum class EAction : uint8 {
+    CheckFruitsCount       UMETA(DisplayName = "CheckFruitsCount"),
+    Go                     UMETA(DisplayName = "Go"),
+    GoToHome               UMETA(DisplayName = "GoToHome"),
+    GoToMarket             UMETA(DisplayName = "GoToMarket"),
+    None                   UMETA(DisplayName = "None"),
+    SetRequest             UMETA(DisplayName = "SetRequest"),
+    StartGrieving          UMETA(DisplayName = "StartGrieving"),
+    StopTryingToTakeBasket UMETA(DisplayName = "StopTryingToTakeBasket"),
+    TakeBasket             UMETA(DisplayName = "TakeBasket"),
+    TryToTakeBasket        UMETA(DisplayName = "TryToTakeBasket"),
+};
 
+const TMap<ECommand, FString> Commands = {
+    { ECommand::BasketOverlapCharacterBegin, "cmdBasketOverlapCharacterBegin" },
+    { ECommand::BasketOverlapCharacterEnd,   "cmdBasketOverlapCharacterEnd" },
+    { ECommand::BasketTaken,                 "cmdBasketTaken" },
+    { ECommand::CanTakeBasket,               "cmdCanTakeBasket" },
+    { ECommand::CorrectFruitsCount,          "cmdCorrectFruitsCount" },
+    { ECommand::IncorrectFruitsCount,        "cmdIncorrectFruitsCount" },
+    { ECommand::NewCharacterSpawned,         "cmdNewCharacterSpawned" },
+    { ECommand::ReachedMarket,               "cmdReachedMarket" },
+    { ECommand::Start,                       "cmdStart" },
+};
+
+//const TMap<EJsonField, FString> JsonFields = {
+//    { EJsonField::Actions,      "Actions" },
+//    { EJsonField::VoicePhrases, "VoicePhrases" }
+//};
+
+const TMap<FString, EAction> Actions = {
+    { "CheckFruitsCount",       EAction::CheckFruitsCount },
+    { "GoToHome",               EAction::GoToHome },
+    { "GoToMarket",             EAction::GoToMarket },
+    { "SetRequest",             EAction::SetRequest },
+    { "StartGrieving",          EAction::StartGrieving },
+    { "StopTryingToTakeBasket", EAction::StopTryingToTakeBasket },
+    { "TakeBasket",             EAction::TakeBasket },
+    { "TryToTakeBasket",        EAction::TryToTakeBasket },
+    { "Go",                     EAction::Go },
+};
+
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
+class ENGLISHVR_API UBotRequest : public USceneComponent {
+    GENERATED_BODY()
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FResponseReceivedDelegate, EAction, Action, TArray<FString>, ParamArray, TArray<FString>, PhraseArray);
+
+public:
+    UBotRequest();
+    void Request(ECommand Command);
     void ResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
-
-	UBotRequest();
+    UPROPERTY(BlueprintAssignable, BlueprintCallable)
+    FResponseReceivedDelegate OnResponseReceived;
 
 private:
     FHttpModule* Http;
 
+    TArray<FString> ParsePhrasesString(const FString& PhrasesString);
+
 protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
+    virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+public:
+    virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-		
 };

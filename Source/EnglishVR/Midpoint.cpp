@@ -28,7 +28,7 @@ void AMidpoint::OnOverlapBegin(UPrimitiveComponent * OverlappedComp, AActor * Ot
         if (Character){
             UE_LOG(LogTemp, Warning, TEXT("Walking count %d"), Character->WalkingCount);
             Character->WalkingCount++;
-            Character->GoToMarket();
+            Character->Go();
         }
     }
 }

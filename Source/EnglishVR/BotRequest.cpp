@@ -3,16 +3,14 @@
 
 
 UBotRequest::UBotRequest() {
-	PrimaryComponentTick.bCanEverTick = true;
+    PrimaryComponentTick.bCanEverTick = true;
 
     Http = &FHttpModule::Get();
-
 }
 
 void UBotRequest::BeginPlay()
 {
-	Super::BeginPlay();
-    Request();
+    Super::BeginPlay();
 }
 
 // Called every frame
@@ -20,16 +18,14 @@ void UBotRequest::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-
-void UBotRequest::Request() {
+void UBotRequest::Request(ECommand Command) {
 
     TSharedRef<IHttpRequest> Request = Http->CreateRequest();
 
-    FString Question = "Hello,+who+are+you?";
-    FString UserID = "1234567890";
+    FString UserID = "Player";
     Request->OnProcessRequestComplete().BindUObject(this, &UBotRequest::ResponseReceived);
 
-    Request->SetURL(TEXT("http://localhost:8989/api/rest/v1.0/ask?question=" + Question + "&userid=" + UserID));
+    Request->SetURL(TEXT("http://localhost:8989/api/rest/v2.0/ask?query=" + Commands[Command] + "&userId=" + UserID));
     Request->SetVerb("GET");
     Request->SetHeader(TEXT("User-Agent"), "X-UnrealEngine-Agent");
     Request->SetHeader("Content-Type", TEXT("application/json"));
@@ -40,23 +36,49 @@ void UBotRequest::Request() {
 
 
 void UBotRequest::ResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful) {
-
-    TArray<TSharedPtr<FJsonValue>> JsonArray;
-
-    if (!bWasSuccessful || !Response.IsValid())
-        return;
-
     UE_LOG(LogTemp, Warning, TEXT("Get Answer %s"), *Response->GetContentAsString());
 
-    TSharedRef<TJsonReader<TCHAR>> Reader = TJsonReaderFactory<TCHAR>::Create(Response->GetContentAsString());
+    TSharedPtr<FJsonObject> JsonObject;
+    FString ResponseString = Response->GetContentAsString().Replace(TEXT("\\n"), TEXT(" "));
+    TSharedRef<TJsonReader<TCHAR>> Reader = TJsonReaderFactory<TCHAR>::Create(ResponseString);
+    
+    if (FJsonSerializer::Deserialize(Reader, JsonObject)) {
+        TSharedPtr<FJsonObject> Response = JsonObject->GetObjectField("response");
+        UE_LOG(LogTemp, Warning, TEXT("Bot answer is: %s"), *Response->GetStringField("text"));
+        FString TextString = Response->GetStringField("text");
+        TextString.RemoveFromEnd(".");
+        Reader = TJsonReaderFactory<TCHAR>::Create(TextString);
+        if (FJsonSerializer::Deserialize(Reader, JsonObject)) {
+            UE_LOG(LogTemp, Warning, TEXT("Actions is: %s"), *JsonObject->GetStringField("Actions"));
+            UE_LOG(LogTemp, Warning, TEXT("VoicePhrases is: %s"), *JsonObject->GetStringField("VoicePhrases"));
+            
+            EAction Action = Action = EAction::None;             
+            if (Actions.Contains(JsonObject->GetStringField("Actions"))) {
+                Action = Actions[JsonObject->GetStringField("Actions")];
+            }
+            else {
+                UE_LOG(LogTemp, Warning, TEXT("Undefine action: %s"), *JsonObject->GetStringField("Actions"));
+            }
 
-    if (FJsonSerializer::Deserialize(Reader, JsonArray)) {
-        TSharedPtr<FJsonObject> obj = JsonArray[0]->AsObject()->GetObjectField("response");
-        UE_LOG(LogTemp, Warning, TEXT("Question is: %s Bot answer is: %s"), *obj->GetStringField("question"), *obj->GetStringField("answer"));
+            TArray<FString> Params;
+            for (auto& Value : JsonObject->GetArrayField("Params")) {
+                Params.Add(Value.Get()->AsString());
+            }
+            OnResponseReceived.Broadcast(Action, Params, ParsePhrasesString(JsonObject->GetStringField("VoicePhrases")));
+        }
+        else {
+            UE_LOG(LogTemp, Warning, TEXT("Cant deserialize text"));
+        }
     }
     else {
-        UE_LOG(LogTemp, Warning, TEXT("Cant deserialize response")); 
+        UE_LOG(LogTemp, Warning, TEXT("Cant deserialize response"));
     }
+}
+
+TArray<FString> UBotRequest::ParsePhrasesString(const FString& PhrasesString) {
+    TArray<FString> PhraseArray;
+    PhrasesString.ParseIntoArray(PhraseArray, TEXT(" "), true);
+    return PhraseArray;
 }
 
 
