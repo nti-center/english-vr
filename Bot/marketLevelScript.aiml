@@ -43,7 +43,7 @@
             {
                 "Actions": "SetRequest",
                 "Params": ["<map name = "string2int"><get name = "fruitCount"></get></map>", "<get name = "fruitType"></get>"],
-                "VoicePhrases": "trc2_greetings_1 Can_I_Have_Male <get name = "fruitCount"></get> <get name = "phraseType"></get>"
+                "VoicePhrases": "trc2_greetings_1 Can_I_Have <get name = "fruitCount"></get> <get name = "phraseType"></get>"
             }
         </template>
     </category>
