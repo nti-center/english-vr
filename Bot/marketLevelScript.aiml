@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aiml version="2.1">
+    
+    <category>
+        <pattern>cmdNewCharacterSpawned</pattern>
+        <template>
+            {
+                "Actions": "GoToMarket"
+            }
+        </template>
+    </category>
+
+    <category>
+        <pattern>cmdReachedMarket</pattern>
+        <template>
+            <random>
+                <li>
+                    <think><set name = "fruitType">
+                        Apple
+                    </set></think>
+                    <think><set name = "fruitCount">
+                        3
+                    </set></think>
+                    <think><set name = "phraseAboutType">
+                        Apples_male
+                    </set></think>
+                    <think><set name = "phraseAboutCount">
+                        Three_male
+                    </set></think>
+                </li>
+                <li>
+                    <think><set name = "fruitType">
+                        Melon
+                    </set></think>
+                    <think><set name = "fruitCount">
+                        1
+                    </set></think>
+                    <think><set name = "phraseAboutType">
+                        Melon_male
+                    </set></think>
+                    <think><set name = "phraseAboutCount">
+                        One_male
+                    </set></think>
+                </li>
+            </random>
+            {
+                "Actions": "SetRequest",
+                "Params": ["<get name = "fruitCount"></get>", "<get name = "fruitType"></get>"],
+                "VoicePhrases": "trc2_greetings_1 Can_I_Have_Male <get name = "phraseAboutCount"></get> <get name = "phraseAboutType"></get>"
+            }
+        </template>
+    </category>
+    
+    <category>
+        <pattern>cmdBasketOverlapCharacterBegin</pattern>
+        <template>
+            {
+            <think><set name = "overlapState">startChecking</set></think>
+                "Actions": "CheckFruitsCount"
+            }
+        </template>
+    </category>
+    
+    <category>
+        <pattern>cmdBasketOverlapCharacterEnd</pattern>
+        <template>
+            {
+            <condition name = "overlapState" value = "startChecking">
+                <think><set name = "overlapState">stopChecking</set></think>
+            </condition>
+            <condition name = "overlapState" value = "startTryTaking">
+                "Actions": "StopTryingToTakeBasket"
+            </condition>
+            }
+        </template>
+    </category>
+    
+    <category>
+        <pattern>cmdCorrectFruitsCount</pattern>
+        <template>
+            {
+            <condition name = "overlapState" value = "startChecking">
+                <think><set name = "overlapState">startTryTaking</set></think>
+                    "Actions": "TryToTakeBasket"   
+            </condition>
+            }
+        </template>
+    </category>
+    
+    <category>
+        <pattern>cmdIncorrectFruitsCount</pattern>
+        <template>
+            {
+            <condition name = "overlapState" value = "startChecking">
+                <think><set name = "overlapState">startGrieving</set></think>
+                "Actions": "StartGrieving"
+            </condition>
+            }
+        </template>
+    </category>
+    
+    <category>
+        <pattern>cmdCanTakeBasket</pattern>
+        <template>
+            {
+                "Actions": "TakeBasket"
+            }
+        </template>
+    </category>
+    
+    <category>
+        <pattern>cmdBasketTaken</pattern>
+        <template>
+            {
+                "Actions": "GoToHome",
+                "VoicePhrases": "trc2_goodbye_1"
+            }
+        </template>
+    </category>
+
+</aiml>
