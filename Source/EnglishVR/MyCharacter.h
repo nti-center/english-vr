@@ -9,10 +9,6 @@
 #include "Basket.h"
 #include "Sound/SoundCue.h"
 #include "PhrasesAudioComponent.h"
-#include "EdGraph/EdGraph.h"
-#include "Sound/SoundNodeWavePlayer.h"
-#include "Sound/SoundNodeParamCrossFade.h"
-#include "Sound/SoundNodeConcatenator.h"
 #include "UObject/UObjectGlobals.h"
 #include "AudioDataTableStruct.h"
 #include "FruitSoundDataTableStruct.h"
@@ -60,58 +56,6 @@ public:
     EAnimationState AnimationState;
 
     UPROPERTY(BlueprintReadWrite)
-    USoundCue* SoundCue;
-
-    UPROPERTY(BlueprintReadWrite)
-    FTimerHandle FuzeTimerHandle;
-
-    UPROPERTY(BlueprintReadWrite)
-    float TimerCount = 0;
-
-    UPROPERTY(BlueprintReadWrite)
-    float SummaryDuration = 0;
-
-#pragma region DataTable
-    //������� ��� ��������� ����� ����� �������
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-    UDataTable* GreetingsTable;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-    UDataTable* GratitudeTable;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-    UDataTable* PaymentTable;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-    UDataTable* GoodbyeTable;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-    UDataTable* ErrorsTable;
-
-    //������� ��� ��������� ���������� �������
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-    UDataTable* RequestTable;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-    UDataTable* NumberTable;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-    UDataTable* FruitTable;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-    UDataTable* FruitsTable;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-    UDataTable* EndingTable;
-
-    UPROPERTY(EditDefaultsOnly)
-    UDataTable* TmpTable;
-
-    UPROPERTY(EditDefaultsOnly)
-    UDataTable* DataTable;
-#pragma endregion
-
-    UPROPERTY(BlueprintReadWrite)
     bool IsCheck = false;
 
     UPROPERTY(BlueprintReadWrite)
@@ -119,6 +63,12 @@ public:
 
     UPROPERTY(BlueprintReadWrite)
     bool IsEnd = false;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TMap<FString, int32> FruitsCount;
+
+    UPROPERTY(BlueprintReadWrite)
+    TMap<FString, int32> AllRequestsFruitsAndCountList;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TArray<AActor*> ToPath;
@@ -141,49 +91,6 @@ public:
     UPROPERTY(BlueprintReadWrite)
     int32 WalkingCount;
 
-    //��� ������������ �����
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TArray<FName> PathArray;
-
-    UPROPERTY(BlueprintReadWrite)
-    int32 PlayingSoundNumber = 0;
-
-#pragma region VariablesForRandomRequestGeneration
-
-    //���������� ��� ��������� ���������� �������� NPC
-    UPROPERTY(BlueprintReadWrite)
-    int32 RequestCount;
-
-    //���������� ��� ��������, ����� ������ ���� ������
-    UPROPERTY(BlueprintReadWrite)
-    int32 Counter = 1;
-
-    //���������� ��� ������� ����� ������� ���� ��������, ������������ ��� ����
-    //��� �� ������ ����� �� �����������
-    UPROPERTY(BlueprintReadWrite)
-    int32 RequestPhrasesArrayLength = 0;
-
-    //��� ������ �������������� �� ���������� ����
-    UPROPERTY(BlueprintReadWrite)
-    FString PreviousFruit;
-
-    //������ ��� � ���������� ������� ��������� �� ������ ����
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TMap<FString, int32> FruitsCount;
-
-    //������ ����� � ������ ������� �������
-    UPROPERTY(BlueprintReadWrite)
-    TArray <FName> RequestFullPhrasesArray;
-
-    //������ �������� ���� ��������, ���������� �� ������� request
-    UPROPERTY(BlueprintReadWrite)
-    TArray<FName> RequestPhrasesArray;
-
-    UPROPERTY(BlueprintReadWrite)
-    TMap<FString, int32> AllRequestsFruitsAndCountList;
-
-#pragma  endregion
-
     UPROPERTY(BlueprintReadWrite)
     ABasket* Basket;
 
@@ -200,15 +107,6 @@ public:
     void GoToMarket();
 
     UFUNCTION(BlueprintCallable)
-    void CreateCue(TArray<FString>InputArray);
-
-    UFUNCTION(BlueprintCallable)
-    void PlaySoundWithCrossfade(FString SoundNameString);
-
-    UFUNCTION(BlueprintCallable)
-    void SetCrossfadeParametr();
-
-    UFUNCTION(BlueprintCallable)
     void GoAway();
 
     UFUNCTION(BlueprintCallable)
@@ -219,23 +117,8 @@ public:
     
     bool TakeBasket(ABasket* NewBasket);
 
-    UFUNCTION(BlueprintImplementableEvent)
-    void PlayDialog(FName DialogName, bool _isCheck);
-
-    UFUNCTION(BlueprintImplementableEvent)
-    bool IsNotPlaying();
-
-    UFUNCTION(BlueprintImplementableEvent)
-    void PlayRequestList(const TArray<FName>& RequestList, int32 ListLength,  bool check);
-
     UFUNCTION(BlueprintCallable)
     bool IsCorrectFruitsCount();
-
-    UFUNCTION(BlueprintCallable)
-    void RandomDialogGenerator(TArray<FName> SoundsName);
-
-    UFUNCTION(BlueprintCallable)
-    void RandomRequestGenerator();
 
     UFUNCTION(BlueprintCallable)
     void AddFruitRequest(FString Type, int32 Count);

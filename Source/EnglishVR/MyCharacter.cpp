@@ -12,67 +12,10 @@ AMyCharacter::AMyCharacter() {
     //Box->OnComponentBeginOverlap.AddDynamic(this, &AMyCharacter::OnOverlapBegin);
     //Box->OnComponentEndOverlap.AddDynamic(this, &AMyCharacter::OnOverlapEnd);
 
-    Audio = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio"));
-    Audio->SetupAttachment(RootComponent);
-
     PhrasesAudio = CreateDefaultSubobject<UPhrasesAudioComponent>(TEXT("PhrasesAudio"));
     PhrasesAudio->SetupAttachment(RootComponent);
 
     AnimationState = EAnimationState::None;
-
-#pragma region DataTableLoading
-
-
-    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTableGreetings(TEXT("DataTable'/Game/CSV/Greetings_phrases_table.Greetings_phrases_table'"));
-    if (_DataTableGreetings.Succeeded()) {
-        GreetingsTable = _DataTableGreetings.Object;
-    }
-
-    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTableGratitude(TEXT("DataTable'/Game/CSV/Gratitude_phrases_table.Gratitude_phrases_table'"));
-    if (_DataTableGratitude.Succeeded()) {
-        GratitudeTable = _DataTableGratitude.Object;
-    }
-
-    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTablePayment(TEXT("DataTable'/Game/CSV/payment_phrases_table.Payment_phrases_table'"));
-    if (_DataTablePayment.Succeeded()) {
-        PaymentTable = _DataTablePayment.Object;
-    }
-
-    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTableGoodbye(TEXT("DataTable'/Game/CSV/Goodbye_phrases_table.Goodbye_phrases_table'"));
-    if (_DataTableGoodbye.Succeeded()) {
-        GoodbyeTable = _DataTableGoodbye.Object;
-    }
-
-    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTableErrors(TEXT("DataTable'/Game/CSV/Error_phrases_table.Error_phrases_table'"));
-    if (_DataTableErrors.Succeeded()) {
-        ErrorsTable = _DataTableErrors.Object;
-    }
-
-    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTableRequest(TEXT("DataTable'/Game/CSV/Request_phrases_table.Request_phrases_table'"));
-    if (_DataTableRequest.Succeeded()) {
-        RequestTable = _DataTableRequest.Object;
-    }
-
-    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTableNumber(TEXT("DataTable'/Game/CSV/Numbers_phrases_table.Numbers_phrases_table'"));
-    if (_DataTableNumber.Succeeded()) {
-        NumberTable = _DataTableNumber.Object;
-    }
-
-    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTableFruit(TEXT("DataTable'/Game/CSV/Fruit_phrases_table.Fruit_phrases_table'"));
-    if (_DataTableFruit.Succeeded()) {
-        FruitTable = _DataTableFruit.Object;
-    }
-
-    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTableFruits(TEXT("DataTable'/Game/CSV/Fruits_phrases_table.Fruits_phrases_table'"));
-    if (_DataTableFruits.Succeeded()) {
-        FruitsTable = _DataTableFruits.Object;
-    }
-
-    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTableEnding(TEXT("DataTable'/Game/CSV/Ending_phrases_table.Ending_phrases_table'"));
-    if (_DataTableEnding.Succeeded()) {
-        EndingTable = _DataTableEnding.Object;
-    }
-#pragma endregion
 }
 
 template <typename ObjClass>
@@ -92,258 +35,6 @@ bool AMyCharacter::IsCorrectFruitsCount() {
     return true;
 }
 
-void AMyCharacter::RandomDialogGenerator(TArray<FName> SoundsName) {
-
-    FString ContextString;
-    FString base = "";
-
-    int32 Rand = 0;
-
-    FName SoundName = "";
-    FName GetPath = "";
-    FName ConcatName = "";
-
-    for (int i = 0; i < SoundsName.Num(); i++) {
-
-        SoundName = SoundsName[i];
-
-        if (SoundName == "greetings") {
-            Rand = FMath::RandRange(1, 7);
-            TmpTable = GreetingsTable;
-
-            base = SoundName.ToString();
-            base.Append(FString::FromInt(Rand));
-
-            ConcatName = FName(*base);
-
-            FSoundDataTableStruct* Row = TmpTable->FindRow<FSoundDataTableStruct>(ConcatName, ContextString, true);
-            if (Row) {
-                GetPath = (*Row->Path);
-            }
-        }
-        else if (SoundName == "gratitude") {
-            Rand = FMath::RandRange(1, 6);
-            TmpTable = GratitudeTable;
-
-            base = SoundName.ToString();
-            base.Append(FString::FromInt(Rand));
-
-            ConcatName = FName(*base);
-
-            FSoundDataTableStruct* Row = TmpTable->FindRow<FSoundDataTableStruct>(ConcatName, ContextString, true);
-            if (Row) {
-                GetPath = (*Row->Path);
-            }
-        }
-        else if (SoundName == "payment") {
-            Rand = FMath::RandRange(1, 1);
-
-            TmpTable = PaymentTable;
-
-            base = SoundName.ToString();
-            base.Append(FString::FromInt(Rand));
-
-            ConcatName = FName(*base);
-
-            FSoundDataTableStruct* Row = TmpTable->FindRow<FSoundDataTableStruct>(ConcatName, ContextString, true);
-            if (Row) {
-                GetPath = (*Row->Path);
-            }
-        }
-        else if (SoundName == "goodbye") {
-            Rand = FMath::RandRange(1, 4);
-
-            TmpTable = GoodbyeTable;
-
-            base = SoundName.ToString();
-            base.Append(FString::FromInt(Rand));
-
-            ConcatName = FName(*base);
-
-            FSoundDataTableStruct* Row = TmpTable->FindRow<FSoundDataTableStruct>(ConcatName, ContextString, true);
-            if (Row) {
-                GetPath = (*Row->Path);
-            }
-        }
-        else if (SoundName == "errors") {
-            Rand = FMath::RandRange(4, 4);
-
-            TmpTable = ErrorsTable;
-
-            base = SoundName.ToString();
-            base.Append(FString::FromInt(Rand));
-
-            ConcatName = FName(*base);
-
-            FSoundDataTableStruct* Row = TmpTable->FindRow<FSoundDataTableStruct>(ConcatName, ContextString, true);
-            if (Row) {
-                GetPath = (*Row->Path);
-            }
-        }
-
-        DialogList.Add(SoundName, GetPath);
-    }
-}
-
-void AMyCharacter::RandomRequestGenerator() {
-
-    FString ContextString = "";
-    FString base = "";
-    FString FruitType = "";
-
-    int32 Rand = 0;
-    int32 FruitCount;
-    int32 numbers = FMath::RandRange(1, 5);
-
-    FName SoundName = "";
-    FName GetPath = "";
-    FName ConcatName = "";
-
-    TArray<FName> tmp;
-
-    bool IsOtherFruit = false;
-
-    //������� ������ � ������ � ������ � TMap � ����������� � ����� �������
-    RequestFullPhrasesArray.Empty();
-    FruitsCount.Empty();
-    
-    //��������� ������ ������ ������, ������� ����� ������ � ��������
-    tmp.Add("request");
-    tmp.Add("numbers");
-    //���� ������� ������ ������ ���� � ������� - ������
-    if (numbers> 1) {
-        tmp.Add("fruits");
-    }
-    //����� � ������� - �����
-    else {
-        tmp.Add("fruit");
-    }
-    tmp.Add("ending");
-
-    for (int i = 0; i < tmp.Num(); i++) {
-        SoundName = tmp[i];
-
-        if (SoundName == "request") {
-            TmpTable = RequestTable;
-
-            FSoundDataTableStruct* Row;
-
-            //���� ��� ������ ������ ��� ������� ���������
-            if (Counter == 0) {
-                //����� ��� ���� � ����� �� ������� reques � ���������� �� � ������
-                for (auto it : RequestTable->GetRowMap()) {
-                    Row = TmpTable->FindRow<FSoundDataTableStruct>(it.Key, ContextString, true);
-                    if (Row) {
-                        RequestPhrasesArray.Add((*Row->Path));
-                    }
-                }
-                //���� ��������� ������ � ������� � ��������� ��� � GetPath, ����� ���� ������� ���� ������� �� �������
-                //������ ���, ��� �� �� ����������� ����� �������
-                RequestPhrasesArrayLength = RequestPhrasesArray.Num() - 1;
-                Rand = FMath::RandRange(0, RequestPhrasesArrayLength);
-
-                GetPath = RequestPhrasesArray[Rand];
-
-                //RequestPhrasesArray.RemoveAt(Rand);
-                //RequestPhrasesArrayLength--;
-            }
-            //���� ��������� ������ � ������� � ��������� ��� � GetPath, ����� ���� ������� ���� ������� �� �������
-            //������ ���, ��� �� �� ����������� ����� �������
-            else
-            {
-                Rand = FMath::RandRange(0, RequestPhrasesArrayLength);
-
-                GetPath = RequestPhrasesArray[Rand];
-
-                //RequestPhrasesArray.RemoveAt(Rand);
-               // RequestPhrasesArrayLength--;
-            }
-        }
-        else if (SoundName == "numbers") {
-            Rand = numbers;
-            TmpTable = NumberTable;
-
-            base = SoundName.ToString();
-            base.Append(FString::FromInt(Rand));
-
-            ConcatName = FName(*base);
-
-            FNumbersSoundDataTableStruct* Row = TmpTable->FindRow<FNumbersSoundDataTableStruct>(ConcatName, ContextString, true);
-            if (Row) {
-                GetPath = (*Row->Path);
-                FruitCount = Row->Count;
-            }
-        }
-        else if (SoundName == "fruit") {
-            //���� � �����, ���� �� ������ ��� ������, �������� �� ����, ��� ��� �� ���������� ����
-            while (IsOtherFruit == false) {
-                Rand = FMath::RandRange(1, 5);
-                TmpTable = FruitTable;
-
-                base = SoundName.ToString();
-                base.Append(FString::FromInt(Rand));
-
-                ConcatName = FName(*base);
-
-                FFruitSoundDataTableStruct* Row = TmpTable->FindRow<FFruitSoundDataTableStruct>(ConcatName, ContextString, true);
-                if (Row) {
-                    GetPath = (*Row->Path);
-                    FruitType = *Row->FruitType;
-                }
-                if (FruitType != PreviousFruit) {
-                    PreviousFruit = FruitType;
-                    IsOtherFruit = true;
-                }
-            }
-        }
-        else if (SoundName == "fruits") {
-            //���� � �����, ���� �� ������ ��� ������, �������� �� ����, ��� ��� �� ���������� ����
-            while (IsOtherFruit == false) {
-                Rand = FMath::RandRange(1, 3);
-                TmpTable = FruitsTable;
-
-                base = SoundName.ToString();
-                base.Append(FString::FromInt(Rand));
-
-                ConcatName = FName(*base);
-
-                FFruitSoundDataTableStruct* Row = TmpTable->FindRow< FFruitSoundDataTableStruct>(ConcatName, ContextString, true);
-                if (Row) {
-                    GetPath = (*Row->Path);
-                    FruitType = *Row->FruitType; 
-                }
-                if ((FruitType != PreviousFruit) && !((numbers > 2) && ((FruitType == "Melon") || (FruitType == "Watermelon"))) ) {
-                    PreviousFruit = FruitType;
-                    IsOtherFruit = true;
-                }
-            }
-        }
-        else if (SoundName == "ending") {
-            if (Counter == 0)
-                Rand = 1;
-            else
-                Rand = FMath::RandRange(1, 2);
-
-            TmpTable = EndingTable;
-
-            base = SoundName.ToString();
-            base.Append(FString::FromInt(Rand));
-
-            ConcatName = FName(*base);
-
-            FSoundDataTableStruct* Row = TmpTable->FindRow<FSoundDataTableStruct>(ConcatName, ContextString, true);
-            if (Row) {
-                GetPath = (*Row->Path);
-            }
-        }
-        //��������� ������ ����� � ������
-        RequestFullPhrasesArray.Add(GetPath);
-    } 
-    //��������� TMap � ����� � ����������� �������
-   FruitsCount.Add(FruitType, FruitCount);
-   AllRequestsFruitsAndCountList.Add(FruitType, FruitCount);
-}
-
 void AMyCharacter::GoToMarket() {
 	if (WalkingCount < ToPath.Num()) {
         if (GetController() && Cast<AAIController>(GetController())) {
@@ -352,98 +43,8 @@ void AMyCharacter::GoToMarket() {
 	}
 }
 
-void AMyCharacter::CreateCue(TArray<FString>InputArray) {
-
-    TArray<struct FDistanceDatum> Datum;
-    FString SoundCueName = "CueWithCrossfade";
-    SoundCue = NewObject<USoundCue>(this, *SoundCueName);
-    int32 NodeIndex = 0;
-
-    USoundNodeParamCrossFade* Crossfade = SoundCue->ConstructSoundNode<USoundNodeParamCrossFade>();
-    USoundNodeConcatenator* Concatenator = SoundCue->ConstructSoundNode<USoundNodeConcatenator>();
-
-    Crossfade->ParamName = "CrossfadeParam";
-
-    Crossfade->GraphNode->NodePosX = -130;
-    Crossfade->GraphNode->NodePosY = 50 * InputArray.Num() / 2;
-
-   // SoundCue->FirstNode = Crossfade;
-    SoundCue->FirstNode = Concatenator;
-    SoundCue->LinkGraphNodesFromSoundNodes();
-
-    for (FString name : InputArray) {
-        FString path = "SoundWave'/Game/Sounds/TestSound/" + name + "." + name + "'";
-        USoundWave* SoundWave = LoadObjFromPath<USoundWave>(FName(*path));
-        FDistanceDatum TempDatum;
-
-        if (NodeIndex == 0) {
-            TempDatum.FadeInDistanceStart = 0;
-            TempDatum.FadeInDistanceEnd = 0;
-
-            TempDatum.FadeOutDistanceStart = SoundWave->GetDuration() + 0.3f;
-            TempDatum.FadeOutDistanceEnd = SoundWave->GetDuration() + 0.4f;
-        }
-        else {
-            TempDatum.FadeInDistanceStart = Datum[NodeIndex - 1].FadeOutDistanceStart;
-            TempDatum.FadeInDistanceEnd = Datum[NodeIndex - 1].FadeOutDistanceEnd;
-            TempDatum.FadeOutDistanceStart = TempDatum.FadeInDistanceStart + SoundWave->GetDuration();
-            TempDatum.FadeOutDistanceEnd = TempDatum.FadeInDistanceEnd + SoundWave->GetDuration();
-        }
-
-        Datum.Add(TempDatum);
-
-        USoundNodeWavePlayer* WavePlayer = SoundCue->ConstructSoundNode<USoundNodeWavePlayer>();
-
-        WavePlayer->SetSoundWave(SoundWave);
-        WavePlayer->GraphNode->NodePosX = -650;
-        WavePlayer->GraphNode->NodePosY = -100 * NodeIndex;
-       // WavePlayer->bLooping = true;
-
-        SummaryDuration += SoundWave->GetDuration();
-
-        //Crossfade->CreateStartingConnectors();
-        Concatenator->CreateStartingConnectors();
-        Concatenator->ChildNodes[NodeIndex] = WavePlayer;
-        //Crossfade->ChildNodes[NodeIndex] = WavePlayer;
-        SoundCue->LinkGraphNodesFromSoundNodes();
-        NodeIndex++;
-    }
-    //Crossfade->CrossFadeInput = Datum;
-}
-
 void AMyCharacter::SetPath(TArray<AActor*> Path) {
     CurrentPath = Path;
-}
-
-void AMyCharacter::PlaySoundWithCrossfade(FString SoundNameString) {
-
-    TArray<FString> InputArray;
-
-    SoundNameString.ParseIntoArray(InputArray, TEXT(" "), true);
-
-    CreateCue(InputArray);
-
-    Audio->SetSound(SoundCue);
-
-    UWorld* World = GetWorld();
-    if (World)
-       // World->GetTimerManager().SetTimer(FuzeTimerHandle, this, &AMyCharacter::SetCrossfadeParametr, 0.1f, true);
-
-   Audio->Play();
-}
-
-void AMyCharacter::SetCrossfadeParametr() {
-    if (Audio->IsPlaying()) {
-        if (TimerCount >= SummaryDuration) {
-            Audio->Stop();
-            GetWorld()->GetTimerManager().ClearTimer(FuzeTimerHandle);
-        }
-        else {
-            TimerCount += 0.1;
-            UE_LOG(LogTemp, Warning, TEXT("Timer count %f"), TimerCount);
-            Audio->SetFloatParameter("CrossfadeParam", TimerCount);
-        }
-    } 
 }
 
 void AMyCharacter::GoAway() {
@@ -474,12 +75,11 @@ void AMyCharacter::TakeBasket() {
     Basket->AttachOverlappingActors();
     FAttachmentTransformRules Atr(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepWorld, true);
     Basket->AttachToComponent(GetMesh(), Atr, "RightHandSocket");
-    PlayDialog(DialogList.FindRef("gratitude"), IsCheck);
+   // PlayDialog(DialogList.FindRef("gratitude"), IsCheck);
     
-    //��������� ��������, ��� �������� ��� �������� � AIML
-    TArray<FName> tmp;
-    tmp.Add(DialogList.FindRef("goodbye"));
-    PlayRequestList(tmp, 1 ,IsCheck);
+   // TArray<FName> tmp;
+   // tmp.Add(DialogList.FindRef("goodbye"));
+   // PlayRequestList(tmp, 1 ,IsCheck);
 
     IsEnd = true;
 }
@@ -507,21 +107,6 @@ void AMyCharacter::BeginPlay() {
     IsCheck = true;
     WalkingCount = 0;
 
-    RequestCount = 0;
-    RequestCount = 2;//FMath::RandRange(2,3);
-
-    Counter = 0;
-
-    TArray<FName> name;
-    name.Add("greetings");
-    name.Add("gratitude");
-    name.Add("payment");
-    name.Add("goodbye");
-	name.Add("errors");
- 
-    RandomDialogGenerator(name);
-    
-    //PlaySoundWithCrossfade("Can_I_Have_Male Five_male Apples_male Please_Male");
 }
 
 // Called every frame
@@ -532,7 +117,7 @@ void AMyCharacter::Tick(float DeltaTime) {
 void AMyCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)  {
     if (OtherActor == nullptr || OtherActor == this || OtherComp == nullptr)
         return;
-    if (!IsNotPlaying() || EPickupState == EStatesEnum::Finished || !Cast<ABasket>(OtherActor))
+    if (/*!IsNotPlaying() ||*/ EPickupState == EStatesEnum::Finished || !Cast<ABasket>(OtherActor))
         return;
 
     int32 count = 0;
@@ -556,9 +141,6 @@ void AMyCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* O
        EPickupState = EStatesEnum::Active;   
    }
    else {
-       PlayDialog(DialogList.FindRef("errors"), IsCheck);
-       PlayRequestList(RequestFullPhrasesArray, RequestFullPhrasesArray.Num(), IsCheck);
-   
        ENegativeState = EStatesEnum::Active;
    }
 }
@@ -568,7 +150,7 @@ void AMyCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* Oth
     if (OtherActor == nullptr || OtherActor == this || OtherComp == nullptr)
         return;
 
-    if (!IsNotPlaying() || EPickupState == EStatesEnum::Finished || !Cast<ABasket>(OtherActor))
+    if (/*!IsNotPlaying() ||*/ EPickupState == EStatesEnum::Finished || !Cast<ABasket>(OtherActor))
         return;
 
     EPickupState = EStatesEnum::NotActive;
