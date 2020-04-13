@@ -123,10 +123,11 @@ bool AMarketLevelScriptActor::IsCorrectFruitsCount() {
 }
 
 void AMarketLevelScriptActor::PlayAudio(TArray<FString> PhraseArray) {
-    for (auto& Phrase : PhraseArray) {
-        Character->PhrasesAudio->SoundQueue.Enqueue(Phrase);
-    }
-    Character->PhrasesAudio->StartPlayingQueue();
+    //for (auto& Phrase : PhraseArray) {
+    //    Character->PhrasesAudio->SoundQueue.Enqueue(Phrase); 
+    //}
+    //Character->PhrasesAudio->StartPlayingQueue();
+    Character->PhrasesAudio->PlaySoundWithCrossfade(PhraseArray);
 }
 
 void AMarketLevelScriptActor::OnTargetPointOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
