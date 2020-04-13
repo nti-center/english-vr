@@ -21,6 +21,99 @@ void UPhrasesAudioComponent::StartPlayingQueue() {
     PlayNextSound();
 }
 
+template <typename ObjClass>
+static FORCEINLINE ObjClass* LoadObjFromPath(const FName& Path) {
+    if (Path == NAME_None) return NULL;
+    return Cast<ObjClass>(StaticLoadObject(ObjClass::StaticClass(), NULL, *Path.ToString()));
+}
+
+void UPhrasesAudioComponent::CreateCue(TArray<FString> InputArray) {
+    TArray<struct FDistanceDatum> Datum;
+    FString SoundCueName = "CueWithCrossfade";
+    SoundCue = NewObject<USoundCue>(this, *SoundCueName);
+    int32 NodeIndex = 0;
+
+    USoundNodeParamCrossFade* Crossfade = SoundCue->ConstructSoundNode<USoundNodeParamCrossFade>();
+    USoundNodeConcatenator* Concatenator = SoundCue->ConstructSoundNode<USoundNodeConcatenator>();
+
+    Crossfade->ParamName = "CrossfadeParam";
+
+    Crossfade->GraphNode->NodePosX = -130;
+    Crossfade->GraphNode->NodePosY = 50 * InputArray.Num() / 2;
+
+    // SoundCue->FirstNode = Crossfade;
+    SoundCue->FirstNode = Concatenator;
+    SoundCue->LinkGraphNodesFromSoundNodes();
+
+    for (FString name : InputArray) {
+
+        FString path = "SoundWave'/Game/Sounds/All_phrases/" + name + "." + name + "'";
+        USoundWave* SoundWave = LoadObjFromPath<USoundWave>(FName(*path));
+        FDistanceDatum TempDatum;
+
+        if (NodeIndex == 0) {
+            TempDatum.FadeInDistanceStart = 0;
+            TempDatum.FadeInDistanceEnd = 0;
+
+            TempDatum.FadeOutDistanceStart = SoundWave->GetDuration() + 0.3f;
+            TempDatum.FadeOutDistanceEnd = SoundWave->GetDuration() + 0.4f;
+        }
+        else {
+            TempDatum.FadeInDistanceStart = Datum[NodeIndex - 1].FadeOutDistanceStart;
+            TempDatum.FadeInDistanceEnd = Datum[NodeIndex - 1].FadeOutDistanceEnd;
+            TempDatum.FadeOutDistanceStart = TempDatum.FadeInDistanceStart + SoundWave->GetDuration();
+            TempDatum.FadeOutDistanceEnd = TempDatum.FadeInDistanceEnd + SoundWave->GetDuration();
+        }
+
+        Datum.Add(TempDatum);
+
+        USoundNodeWavePlayer* WavePlayer = SoundCue->ConstructSoundNode<USoundNodeWavePlayer>();
+
+        WavePlayer->SetSoundWave(SoundWave);
+        WavePlayer->GraphNode->NodePosX = -650;
+        WavePlayer->GraphNode->NodePosY = -100 * NodeIndex;
+        // WavePlayer->bLooping = true;
+
+        SummaryDuration += SoundWave->GetDuration();
+
+        //Crossfade->CreateStartingConnectors();
+        Concatenator->CreateStartingConnectors();
+        Concatenator->ChildNodes[NodeIndex] = WavePlayer;
+        //Crossfade->ChildNodes[NodeIndex] = WavePlayer;
+        SoundCue->LinkGraphNodesFromSoundNodes();
+        NodeIndex++;
+    }
+    //Crossfade->CrossFadeInput = Datum;
+}
+
+void UPhrasesAudioComponent::PlaySoundWithCrossfade(TArray<FString> InputArray) {
+    if (InputArray.Num() <= 0)
+        return;
+
+   CreateCue(InputArray);
+   SetSound(SoundCue);
+   
+   UWorld* World = GetWorld();
+   if (World) {
+     //  World->GetTimerManager().SetTimer(FuzeTimerHandle, this, &UPhrasesAudioComponent::SetCrossfadeParametr, 0.1f, true);
+   } 
+   Play();
+}
+
+void UPhrasesAudioComponent::SetCrossfadeParametr() {
+    if (IsPlaying()) {
+        if (TimerCount >= SummaryDuration) {
+            Stop();
+           // GetWorld()->GetTimerManager().ClearTimer(FuzeTimerHandle);
+        }
+        else {
+            TimerCount += 0.1;
+            UE_LOG(LogTemp, Warning, TEXT("Timer count %f"), TimerCount);
+            SetFloatParameter("CrossfadeParam", TimerCount);
+        }
+    }
+}
+
 void UPhrasesAudioComponent::PlayNextSound() {
     if (SoundQueue.IsEmpty())
         return;
@@ -36,12 +129,12 @@ void UPhrasesAudioComponent::PlayNextSound() {
         return;
     }
 
-    USoundCue* SoundCue = Cast<USoundCue>(StaticLoadObject(USoundCue::StaticClass(), NULL, *FullSoundName.ToString()));
-    if (!SoundCue) {
+    USoundCue* _SoundCue = Cast<USoundCue>(StaticLoadObject(USoundCue::StaticClass(), NULL, *FullSoundName.ToString()));
+    if (!_SoundCue) {
         UE_LOG(LogTemp, Warning, TEXT("Cant load sound cue: %s"), *FullSoundName.ToString());
         return;
     }
 
-    SetSound(SoundCue);
+    SetSound(_SoundCue);
     Play();
 }
