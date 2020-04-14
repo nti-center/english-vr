@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/AudioComponent.h"
-#include "Engine/World.h"
+#include "Engine.h"
 #include "Sound/SoundCue.h"
 #include "EdGraph/EdGraph.h"
 #include "Sound/SoundNodeWavePlayer.h"
