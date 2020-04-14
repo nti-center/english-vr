@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "MyCharacter.h"
 #include "Basket.h"
+#include "Fruit.h"
 #include "BotRequest.h"
 #include "FinalTargetPoint.h"
 #include "MarketLevelScriptActor.generated.h"
@@ -48,11 +49,39 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     UBotRequest* BotRequest;
 
+    UPROPERTY(EditDefaultsOnly)
+    UDataTable* DataTable;
+
+    UPROPERTY(EditDefaultsOnly)
+    UStaticMesh* FruitMesh;
+
+    UPROPERTY(EditDefaultsOnly)
+    TArray<FString> FruitType;
+
+    UPROPERTY(EditDefaultsOnly)
+    TArray <FString> FruitPath;
+
+    UPROPERTY(EditDefaultsOnly)
+    int32 counter;
+
+    UPROPERTY(EditDefaultsOnly)
+    TMap<FString, int32> AllFruits;
+
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fruit")
+    TSubclassOf<class AFruit> FruitClass;
+
     UFUNCTION(BlueprintCallable)
     void SpawnCharacter();
 
     UFUNCTION(BlueprintCallable)
     void SpawnBasket();
+
+    UFUNCTION(BlueprintCallable)
+    void SpawnFruits();
+
+    UFUNCTION(BlueprintCallable)
+    TArray<FString> RandomFruitGeneration();
 
     UFUNCTION()
     bool IsCorrectFruitsCount();
