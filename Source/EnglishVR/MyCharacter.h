@@ -8,6 +8,7 @@
 #include "AIController.h"
 #include "Basket.h"
 #include "Sound/SoundCue.h"
+#include "Components/WidgetComponent.h"
 #include "PhrasesAudioComponent.h"
 #include "UObject/UObjectGlobals.h"
 #include "AudioDataTableStruct.h"
@@ -48,6 +49,9 @@ public:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     UPhrasesAudioComponent* PhrasesAudio;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    UWidgetComponent* WidgetComponent;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     EAnimationState AnimationState;

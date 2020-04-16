@@ -15,6 +15,9 @@ AMyCharacter::AMyCharacter() {
     PhrasesAudio = CreateDefaultSubobject<UPhrasesAudioComponent>(TEXT("PhrasesAudio"));
     PhrasesAudio->SetupAttachment(RootComponent);
 
+    WidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("WidgetComponent"));
+    WidgetComponent->SetupAttachment(RootComponent);
+
     AnimationState = EAnimationState::None;
 }
 
