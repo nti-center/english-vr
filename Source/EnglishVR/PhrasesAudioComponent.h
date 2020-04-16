@@ -5,11 +5,13 @@
 #include "CoreMinimal.h"
 #include "Components/AudioComponent.h"
 #include "Engine.h"
+#include "BubleTextWidgetClass.h"
 #include "Sound/SoundCue.h"
 #include "EdGraph/EdGraph.h"
 #include "Sound/SoundNodeWavePlayer.h"
 #include "Sound/SoundNodeParamCrossFade.h"
 #include "Sound/SoundNodeConcatenator.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Containers/Queue.h"
 #include "PhrasesAudioComponent.generated.h"
 
@@ -42,7 +44,7 @@ public:
     void CreateCue(TArray<FString>InputArray);
 
     UFUNCTION(BlueprintCallable)
-    void PlaySoundWithCrossfade(TArray<FString> InputArray);
+    void PlaySoundWithCrossfade(TArray<FString> InputArray, UBubleTextWidgetClass* Widget);
 
     UFUNCTION(BlueprintCallable)
     void SetCrossfadeParametr();

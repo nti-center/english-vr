@@ -86,7 +86,7 @@ void UPhrasesAudioComponent::CreateCue(TArray<FString> InputArray) {
     //Crossfade->CrossFadeInput = Datum;
 }
 
-void UPhrasesAudioComponent::PlaySoundWithCrossfade(TArray<FString> InputArray) {
+void UPhrasesAudioComponent::PlaySoundWithCrossfade(TArray<FString> InputArray, UBubleTextWidgetClass* Widget) {
     if (InputArray.Num() <= 0)
         return;
 
@@ -97,6 +97,8 @@ void UPhrasesAudioComponent::PlaySoundWithCrossfade(TArray<FString> InputArray) 
    if (World) {
      //  World->GetTimerManager().SetTimer(FuzeTimerHandle, this, &UPhrasesAudioComponent::SetCrossfadeParametr, 0.1f, true);
    } 
+
+   Widget->SeeBotAnswer(InputArray);
    Play();
 }
 
