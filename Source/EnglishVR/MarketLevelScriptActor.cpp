@@ -58,6 +58,8 @@ void AMarketLevelScriptActor::SpawnCharacter() {
 
     BotRequest->Request(ECommand::NewCharacterSpawned);
 
+    WidgetText = Cast<UBubleTextWidgetClass>(Character->WidgetComponent->GetUserWidgetObject());
+
     //Character->GoToMarket();
 }
 
@@ -198,7 +200,7 @@ void AMarketLevelScriptActor::OnCharacterCanTakeBasket() {
 
 void AMarketLevelScriptActor::OnBotResponseReceived(EAction Action, TArray<FString> ParamArray, TArray<FString> PhraseArray) {
     PlayAction(Action, ParamArray);
-    PlayAudio(PhraseArray);
+    PlayAudio(PhraseArray, WidgetText);
 }
 
 void AMarketLevelScriptActor::PlayAction(EAction Action, TArray<FString> ParamArray) {
@@ -259,12 +261,12 @@ bool AMarketLevelScriptActor::IsCorrectFruitsCount() {
     return true;
 }
 
-void AMarketLevelScriptActor::PlayAudio(TArray<FString> PhraseArray) {
+void AMarketLevelScriptActor::PlayAudio(TArray<FString> PhraseArray, UBubleTextWidgetClass* Widget) {
     //for (auto& Phrase : PhraseArray) {
     //    Character->PhrasesAudio->SoundQueue.Enqueue(Phrase); 
     //}
     //Character->PhrasesAudio->StartPlayingQueue();
-    Character->PhrasesAudio->PlaySoundWithCrossfade(PhraseArray);
+    Character->PhrasesAudio->PlaySoundWithCrossfade(PhraseArray,Widget);
 }
 
 void AMarketLevelScriptActor::OnTargetPointOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
