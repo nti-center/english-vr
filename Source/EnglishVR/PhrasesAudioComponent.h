@@ -41,7 +41,7 @@ public:
     void StartPlayingQueue();
 
     UFUNCTION(BlueprintCallable)
-    void CreateCue(TArray<FString>InputArray);
+    int CreateCue(TArray<FString>InputArray);
 
     UFUNCTION(BlueprintCallable)
     void PlaySoundWithCrossfade(TArray<FString> InputArray, UBubleTextWidgetClass* Widget);

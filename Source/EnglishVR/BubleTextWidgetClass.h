@@ -17,25 +17,21 @@ public:
     virtual void NativeConstruct() override;
 
     UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-        class UTextBlock* BubleText = nullptr;
+    class UTextBlock* BubleText = nullptr;
 
     UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-        class UImage* BubleImage = nullptr;
+    class UImage* BubleImage = nullptr;
 
     UPROPERTY()
-        UWorld* World;
+    UWorld* World;
 
     UPROPERTY(BlueprintReadWrite)
-        FTimerHandle FuzeTimerHandle;
+    FTimerHandle FuzeTimerHandle;
 
     UFUNCTION(BlueprintCallable)
-        void HideWidget();
+    void HideWidget();
 
     UFUNCTION(BlueprintCallable)
-        void SeeBotAnswer(TArray<FString> InputArray);
-
-    UFUNCTION(BlueprintCallable)
-        void SeeBotErrorAnswer(FString InputString);
-
+    void SeeBotAnswer(TArray<FString> InputArray, int32 ErrorIndex);
 
 };

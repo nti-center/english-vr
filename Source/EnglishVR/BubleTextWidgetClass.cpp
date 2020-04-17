@@ -22,24 +22,33 @@ void UBubleTextWidgetClass::HideWidget() {
     }
 }
 
-void UBubleTextWidgetClass::SeeBotAnswer(TArray<FString> InputArray) {
+void UBubleTextWidgetClass::SeeBotAnswer(TArray<FString> InputArray, int32 ErrorIndex) {
     FString TmpString;
+    int32 Counter = 0;
 
-    for (auto& name : InputArray) {
-        TmpString += name + " ";
+    for (auto& name : InputArray) { 
+        if (!((ErrorIndex > 0) && ((Counter+1) == ErrorIndex))) {
+            name.ReplaceInline(TEXT("_"), TEXT(" "));
+            if(Counter != 0)
+                TmpString += name.ToLower() + " ";
+            else {
+                TmpString += name;
+                TmpString += ", ";
+            }
+        }
+        else {
+            TmpString += name.ToUpper() + " ";
+        }
+        if((Counter+1) == InputArray.Num())
+            TmpString += "?";
+        Counter++;
     }
 
     BubleImage->SetOpacity(1);
     BubleText->SetText(FText::FromString(TmpString));
 
-    World->GetTimerManager().SetTimer(FuzeTimerHandle, this, &UBubleTextWidgetClass::HideWidget, 2.0f);
+    World->GetTimerManager().SetTimer(FuzeTimerHandle, this, &UBubleTextWidgetClass::HideWidget, 5.0f);
 }
 
-void UBubleTextWidgetClass::SeeBotErrorAnswer(FString InputString) {
-    BubleImage->SetOpacity(1);
-    BubleText->SetText(FText::FromString("Not Found sound: " + InputString));
-
-    World->GetTimerManager().SetTimer(FuzeTimerHandle, this, &UBubleTextWidgetClass::HideWidget, 2.0f);
-}
 
 
