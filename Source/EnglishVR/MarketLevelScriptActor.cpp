@@ -223,6 +223,11 @@ void AMarketLevelScriptActor::PlayAction(EAction Action, TArray<FString> ParamAr
             Character->AddFruitRequest(ParamArray[i + 1], FCString::Atoi(*ParamArray[i]));
         break;
     }
+    case EAction::AddRequest: {
+        for (int i = 0; i < ParamArray.Num(); i += 2)
+            Character->AddFruitRequest(ParamArray[i + 1], FCString::Atoi(*ParamArray[i]));
+        break;
+    }
     case EAction::TryToTakeBasket: {
         Character->AnimationState = EAnimationState::Taking;
         break;

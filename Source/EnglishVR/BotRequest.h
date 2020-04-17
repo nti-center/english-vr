@@ -30,6 +30,7 @@ enum class ECommand : uint8 {
 
 UENUM(BlueprintType)
 enum class EAction : uint8 {
+    AddRequest             UMETA(DisplayName = "AddRequest"),
     CheckFruitsCount       UMETA(DisplayName = "CheckFruitsCount"),
     Go                     UMETA(DisplayName = "Go"),
     GoToHome               UMETA(DisplayName = "GoToHome"),
@@ -60,6 +61,7 @@ const TMap<ECommand, FString> Commands = {
 //};
 
 const TMap<FString, EAction> Actions = {
+    { "AddRequest",             EAction::AddRequest },
     { "CheckFruitsCount",       EAction::CheckFruitsCount },
     { "GoToHome",               EAction::GoToHome },
     { "GoToMarket",             EAction::GoToMarket },
