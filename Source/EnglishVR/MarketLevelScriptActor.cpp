@@ -224,8 +224,8 @@ void AMarketLevelScriptActor::PlayAction(EAction Action, TArray<FString> ParamAr
         Character->AnimationState = EAnimationState::None;
         break;
     }
-    case EAction::StartGrieving: {
-        Character->AnimationState = EAnimationState::Grieving;
+    case EAction::StartDisappointing: {
+        Character->AnimationState = EAnimationState::Disappointing;
         break;
     }
     case EAction::CheckFruitsCount: {

@@ -79,9 +79,9 @@
         <category>
             <pattern>cmdIncorrectFruitsCount</pattern>
             <template>
-                <think><set name = "topic">startGrieving</set></think>
+                <think><set name = "topic">startDisappointing</set></think>
                 {
-                    "Actions": "StartGrieving"
+                    "Actions": "StartDisappointing"
                 }
             </template>
         </category>
