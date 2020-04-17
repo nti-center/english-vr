@@ -13,13 +13,40 @@
     <category>
         <pattern>cmdReachedMarket</pattern>
         <template>
-            <think><set name = "fruitType">
+            <think><srai>_generateRandomRequest</srai></think>
+            {
+                "Actions": "SetRequest",
+                "Params": ["<map name = "string2int"><get name = "fruitCount"></get></map>", "<get name = "fruitType"></get>"],
+                "VoicePhrases": "trc2_greetings_1 Can_I_Have <get name = "fruitCount"></get> <get name = "phraseType"></get>"
+            }
+        </template>
+    </category>
+    
+    <category>
+        <pattern>_generateRandomRequest</pattern>
+        <template>
+            <srai>_setRandomFruitType</srai>
+            <srai>_setRandomFruitCount</srai>
+            <srai>_setPhraseType</srai>
+        </template>
+    </category>
+    
+    <category>
+        <pattern>_setRandomFruitType</pattern>
+        <template>
+            <set name = "fruitType">
                 <random>
                     <li>Apple</li>
                     <li>Potatoe</li>
                 </random>
-            </set></think>
-            <think><set name = "fruitCount">
+            </set>
+        </template>
+    </category>
+    
+    <category>
+        <pattern>_setRandomFruitCount</pattern>
+        <template>
+            <set name = "fruitCount">
                 <random>
                     <li>One</li>
                     <li>Two</li>
@@ -27,24 +54,25 @@
                     <li>Four</li>
                     <li>Five</li>
                 </random>
-            </set></think>
+            </set>
+        </template>
+    </category>
+    
+    <category>
+        <pattern>_setPhraseType</pattern>
+        <template>
             <condition name="fruitCount">
                 <li value="One">
-                    <think><set name = "phraseType">
+                    <set name = "phraseType">
                         <get name = "fruitType"></get>
-                    </set></think>
+                    </set>
                 </li>
                 <li>
-                    <think><set name = "phraseType">
+                    <set name = "phraseType">
                         <map name = "one2many"><get name = "fruitType"></get></map>
-                    </set></think>
+                    </set>
                 </li>
             </condition>
-            {
-                "Actions": "SetRequest",
-                "Params": ["<map name = "string2int"><get name = "fruitCount"></get></map>", "<get name = "fruitType"></get>"],
-                "VoicePhrases": "trc2_greetings_1 Can_I_Have <get name = "fruitCount"></get> <get name = "phraseType"></get>"
-            }
         </template>
     </category>
     
