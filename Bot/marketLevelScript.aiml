@@ -141,11 +141,15 @@
                         {
                             "Actions": "AddRequest",
                             "Params": ["<map name="string2int"><get name="fruitCount"></get></map>", "<get name="fruitType"></get>"],
-                            "VoicePhrases": "Can_i_Have <get name="fruitCount"></get> <get name="phraseType"></get>"
+                            "VoicePhrases": "Actaully_please_add <get name="fruitCount"></get> <get name="phraseType"></get>"
                         }
                     </li>
-                    <li></li>
-                    <li></li>
+                    <li>
+                        <think><set name="topic">readyToTakeBasket</set></think>
+                        {
+                            "VoicePhrases": "Great"
+                        }
+                    </li>
                 </random>
             </template>
         </category>
