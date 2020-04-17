@@ -93,6 +93,15 @@
     </category>
     
     <category>
+        <pattern>cmdHit</pattern>
+        <template>
+            {
+                "Actions": "Hide"
+            }
+        </template>
+    </category>
+    
+    <category>
         <pattern>cmdBasketOverlapCharacterBegin</pattern>
         <template>
             <think><set name="topic">startChecking</set></think>

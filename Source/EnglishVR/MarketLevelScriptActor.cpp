@@ -56,6 +56,7 @@ void AMarketLevelScriptActor::SpawnCharacter() {
     Character->Box->OnComponentEndOverlap.AddDynamic(this, &AMarketLevelScriptActor::OnPickupBoxOverlapEnd);
     Character->OnCanTakeBasket.AddDynamic(this, &AMarketLevelScriptActor::OnCharacterCanTakeBasket);
     Character->PhrasesAudio->OnAudioFinished.AddDynamic(this, &AMarketLevelScriptActor::OnCharacterAudioFinished);
+    Character->GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &AMarketLevelScriptActor::OnCharacterHit);
 
     BotRequest->Request(ECommand::NewCharacterSpawned);
 
@@ -75,6 +76,14 @@ void AMarketLevelScriptActor::SpawnBasket() {
     Basket->OnFruitRemoved.AddDynamic(this, &AMarketLevelScriptActor::OnBasketFruitCountChanged);
 }
 
+void AMarketLevelScriptActor::OnCharacterHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) {
+    if (OtherActor == nullptr || OtherActor == this || OtherComp == nullptr || !Cast<AFruit>(OtherActor))
+        return;
+
+    if (NormalImpulse.Size() > 50) 
+        BotRequest->Request(ECommand::Hit);
+}
+
 void AMarketLevelScriptActor::OnCharacterAudioFinished() {
     BotRequest->Request(ECommand::AudioFinished);
 }
@@ -82,6 +91,8 @@ void AMarketLevelScriptActor::OnCharacterAudioFinished() {
 void AMarketLevelScriptActor::OnBasketFruitCountChanged() {
     if (IsCorrectFruitsCount())
         BotRequest->Request(ECommand::CorrectFruitsCount);
+    else
+        BotRequest->Request(ECommand::IncorrectFruitsCount);
 }
 
 void AMarketLevelScriptActor::SpawnFruits() {
@@ -226,6 +237,10 @@ void AMarketLevelScriptActor::PlayAction(EAction Action, TArray<FString> ParamAr
         Character->ClearFruitRequests();
         for (int i = 0; i < ParamArray.Num(); i += 2)
             Character->AddFruitRequest(ParamArray[i + 1], FCString::Atoi(*ParamArray[i]));
+        break;
+    }
+    case EAction::Hide: {
+        Character->AnimationState = EAnimationState::Hiding;
         break;
     }
     case EAction::AddRequest: {
