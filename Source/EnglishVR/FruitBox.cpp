@@ -30,21 +30,15 @@ static FORCEINLINE ObjClass* LoadObjFromPath(const FName& Path) {
 void UFruitBox::BeginPlay() {
     Super::BeginPlay();
 
-    if (!Controller)
-        return;
+    if (!FruitMesh || !FruitClass) {
+        if (!Controller) {
+            UE_LOG(LogTemp, Warning, TEXT("Cant find controller"));
+            return;
+        }
 
-    TArray<FString> tmp = Controller->RandomFruitGeneration();
-    FruitMesh = LoadObjFromPath<UStaticMesh>(FName(*tmp[0]));
-    FruitType = tmp[1];
-
-    if (!FruitMesh) {
-        UE_LOG(LogTemp, Warning, TEXT("Cant find Mesh"));
-        return;
-    }
-
-    if (!FruitClass) {
-        UE_LOG(LogTemp, Warning, TEXT("Cant find fruit class"));
-        return;
+        TArray<FString> tmp = Controller->RandomFruitGeneration();
+        FruitMesh = LoadObjFromPath<UStaticMesh>(FName(*tmp[0]));
+        FruitType = tmp[1];
     }
 
     UWorld* World = GetWorld();

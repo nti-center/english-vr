@@ -19,10 +19,10 @@ public:
     UPROPERTY(EditAnywhere, Category = "Crate")
     UBoxComponent* Box;
 
-    UPROPERTY(EditDefaultsOnly)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fruit")
     UStaticMesh* FruitMesh;
 
-    UPROPERTY(EditDefaultsOnly)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fruit")
     FString FruitType;
 
     UPROPERTY(EditAnywhere, Category = "Fruit")
