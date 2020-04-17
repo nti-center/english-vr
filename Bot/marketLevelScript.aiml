@@ -37,7 +37,7 @@
             <set name = "fruitType">
                 <random>
                     <li>Apple</li>
-                    <li>Potatoe</li>
+                    <li>Potato</li>
                 </random>
             </set>
         </template>
