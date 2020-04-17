@@ -56,20 +56,8 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     EAnimationState AnimationState;
 
-    UPROPERTY(BlueprintReadWrite)
-    bool IsCheck = false;
-
-    UPROPERTY(BlueprintReadWrite)
-    bool IsTmp = false;
-
-    UPROPERTY(BlueprintReadWrite)
-    bool IsEnd = false;
-
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TMap<FString, int32> FruitsCount;
-
-    UPROPERTY(BlueprintReadWrite)
-    TMap<FString, int32> AllRequestsFruitsAndCountList;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TArray<AActor*> ToPath;
@@ -80,23 +68,8 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TArray<AActor*> OutPath;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    EStatesEnum EComeState;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    EStatesEnum ENegativeState;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    EStatesEnum EPickupState;
-
     UPROPERTY(BlueprintReadWrite)
     int32 WalkingCount;
-
-    UPROPERTY(BlueprintReadWrite)
-    ABasket* Basket;
-
-    UPROPERTY(BlueprintReadWrite)
-    TMap<FName, FName> DialogList;
 
     UPROPERTY(BlueprintAssignable, BlueprintCallable)
     FCanTakeBasketDelegate OnCanTakeBasket;
@@ -105,33 +78,15 @@ public:
     void SetPath(TArray<AActor*> Path);
 
     UFUNCTION(BlueprintCallable)
-    void GoToMarket();
-
-    UFUNCTION(BlueprintCallable)
-    void GoAway();
-
-    UFUNCTION(BlueprintCallable)
     void Go();
 
-    UFUNCTION(BlueprintCallable)
-    void TakeBasket();
-    
     bool TakeBasket(ABasket* NewBasket);
-
-    UFUNCTION(BlueprintCallable)
-    bool IsCorrectFruitsCount();
 
     UFUNCTION(BlueprintCallable)
     void AddFruitRequest(FString Type, int32 Count);
 
     UFUNCTION(BlueprintCallable)
     void ClearFruitRequests();
-
-    UFUNCTION()
-    void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-    UFUNCTION()
-    void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 protected:
     // Called when the game starts or when spawned
