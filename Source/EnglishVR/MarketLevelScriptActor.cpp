@@ -70,6 +70,13 @@ void AMarketLevelScriptActor::SpawnBasket() {
     //BasketSpawnPoint->GetActorTransform();
 
     Basket = Cast<ABasket>(GetWorld()->SpawnActor(ToBasketSpawn, &BasketSpawnPoint->GetActorTransform()));
+    Basket->OnFruitAdded.AddDynamic(this, &AMarketLevelScriptActor::OnBasketFruitCountChanged);
+    Basket->OnFruitRemoved.AddDynamic(this, &AMarketLevelScriptActor::OnBasketFruitCountChanged);
+}
+
+void AMarketLevelScriptActor::OnBasketFruitCountChanged() {
+    if (IsCorrectFruitsCount())
+        BotRequest->Request(ECommand::CorrectFruitsCount);
 }
 
 void AMarketLevelScriptActor::SpawnFruits() {
