@@ -5,6 +5,7 @@
         <pattern>cmdNewCharacterSpawned</pattern>
         <template>
             <think><set name = "state">none</set></think>
+            <think><set name = "topic">none</set></think>
             {
                 "Actions": "GoToMarket"
             }
@@ -130,6 +131,26 @@
         </category>
     </topic>
 
+    <topic name = "none">
+        <category>
+            <pattern>cmdCorrectFruitsCount</pattern>
+            <template>
+                <random>
+                    <li>
+                        <think><srai>generateRandomRequest</srai></think>
+                        {
+                            "Actions": "AddRequest",
+                            "Params": ["<map name = "string2int"><get name = "fruitCount"></get></map>", "<get name = "fruitType"></get>"],
+                            "VoicePhrases": "Can_i_Have <get name = "fruitCount"></get> <get name = "phraseType"></get>"
+                        }
+                    </li>
+                    <li></li>
+                    <li></li>
+                </random>
+            </template>
+        </category>
+    </topic>
+    
     <topic name = "startTryTaking">
         <category>
             <pattern>cmdBasketOverlapCharacterEnd</pattern>
