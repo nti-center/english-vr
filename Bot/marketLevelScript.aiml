@@ -13,7 +13,7 @@
     <category>
         <pattern>cmdReachedMarket</pattern>
         <template>
-            <think><srai>_generateRandomRequest</srai></think>
+            <think><srai>generateRandomRequest</srai></think>
             {
                 "Actions": "SetRequest",
                 "Params": ["<map name = "string2int"><get name = "fruitCount"></get></map>", "<get name = "fruitType"></get>"],
@@ -23,16 +23,16 @@
     </category>
     
     <category>
-        <pattern>_generateRandomRequest</pattern>
+        <pattern>generateRandomRequest</pattern>
         <template>
-            <srai>_setRandomFruitType</srai>
-            <srai>_setRandomFruitCount</srai>
-            <srai>_setPhraseType</srai>
+            <srai>setRandomFruitType</srai>
+            <srai>setRandomFruitCount</srai>
+            <srai>setPhraseType</srai>
         </template>
     </category>
     
     <category>
-        <pattern>_setRandomFruitType</pattern>
+        <pattern>setRandomFruitType</pattern>
         <template>
             <set name = "fruitType">
                 <random>
@@ -44,7 +44,7 @@
     </category>
     
     <category>
-        <pattern>_setRandomFruitCount</pattern>
+        <pattern>setRandomFruitCount</pattern>
         <template>
             <set name = "fruitCount">
                 <random>
@@ -59,7 +59,7 @@
     </category>
     
     <category>
-        <pattern>_setPhraseType</pattern>
+        <pattern>setPhraseType</pattern>
         <template>
             <condition name="fruitCount">
                 <li value="One">
