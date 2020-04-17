@@ -49,6 +49,10 @@ void UPhrasesAudioComponent::CreateCue(TArray<FString> InputArray) {
 
         FString path = "SoundWave'/Game/Sounds/All_phrases/" + name + "." + name + "'";
         USoundWave* SoundWave = LoadObjFromPath<USoundWave>(FName(*path));
+        if (!SoundWave) {
+            UE_LOG(LogTemp, Warning, TEXT("Cant load sound wave: %s"), *path);
+            return;
+        }
         FDistanceDatum TempDatum;
 
         if (NodeIndex == 0) {
