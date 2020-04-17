@@ -27,9 +27,10 @@ enum class EStatesEnum : uint8 {
 
 UENUM(BlueprintType)
 enum class EAnimationState : uint8 {
-    None     UMETA(DisplayName = "None"),
-    Taking   UMETA(DisplayName = "Taking"),
-    Grieving UMETA(DisplayName = "Grieving"),
+    None          UMETA(DisplayName = "None"),
+    Taking        UMETA(DisplayName = "Taking"),
+    Disappointing UMETA(DisplayName = "Disappointing"),
+    Hiding        UMETA(DisplayName = "Hiding"),
 };
 
 UCLASS(Abstract)

@@ -13,6 +13,8 @@
 UCLASS(Abstract)
 class ENGLISHVR_API ABasket : public AActor, public IPickableActor {
     GENERATED_BODY()
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE(FFruitAddedDelegate);
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE(FFruitRemovedDelegate);
 
     UFUNCTION()
     void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -46,6 +48,12 @@ public:
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
     TMap<FString, int32> AllFruitCounts;
+
+    UPROPERTY(BlueprintAssignable, BlueprintCallable)
+    FFruitAddedDelegate OnFruitAdded;
+
+    UPROPERTY(BlueprintAssignable, BlueprintCallable)
+    FFruitRemovedDelegate OnFruitRemoved;
 
 protected:
     virtual void BeginPlay() override;

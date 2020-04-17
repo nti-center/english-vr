@@ -104,7 +104,16 @@ public:
     void OnPickupBoxOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
     UFUNCTION()
+    void OnCharacterHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+    UFUNCTION()
     void OnCharacterCanTakeBasket();
+
+    UFUNCTION()
+    void OnBasketFruitCountChanged();
+
+    UFUNCTION()
+    void OnCharacterAudioFinished();
 
 private:
     void PlayAction(EAction Action, TArray<FString> ParamArray);
