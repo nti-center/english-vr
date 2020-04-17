@@ -238,6 +238,7 @@ void AMarketLevelScriptActor::PlayAction(EAction Action, TArray<FString> ParamAr
     case EAction::TakeBasket: {
         if (Character->TakeBasket(Basket))
             BotRequest->Request(ECommand::BasketTaken);
+        break;
     }
     case EAction::GoToHome: {
         Character->SetPath(OutPath);
