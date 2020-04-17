@@ -45,7 +45,7 @@ enum class EAction : uint8 {
 };
 
 const TMap<ECommand, FString> Commands = {
-    { ECommand::AudioFinished,               "AudioFinished" },
+    { ECommand::AudioFinished,               "cmdAudioFinished" },
     { ECommand::BasketOverlapCharacterBegin, "cmdBasketOverlapCharacterBegin" },
     { ECommand::BasketOverlapCharacterEnd,   "cmdBasketOverlapCharacterEnd" },
     { ECommand::BasketTaken,                 "cmdBasketTaken" },
