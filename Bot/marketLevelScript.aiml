@@ -4,6 +4,7 @@
     <category>
         <pattern>cmdNewCharacterSpawned</pattern>
         <template>
+            <think><set name = "state">none</set></think>
             {
                 "Actions": "GoToMarket"
             }
@@ -138,10 +139,22 @@
     <category>
         <pattern>cmdBasketTaken</pattern>
         <template>
+            <think><set name = "state">startSayingGoodbye</set></think>
             {
-                "Actions": "GoToHome",
                 "VoicePhrases": "trc2_goodbye_1"
             }
+        </template>
+    </category>
+    
+    <category>
+        <pattern>cmdAudioFinished</pattern>
+        <template>
+            <condition name = "state" value="startSayingGoodbye">
+                <think><set name = "state">none</set></think>
+                {
+                    "Actions": "GoToHome"
+                }
+            </condition>            
         </template>
     </category>
 
