@@ -4,8 +4,8 @@
     <category>
         <pattern>cmdNewCharacterSpawned</pattern>
         <template>
-            <think><set name = "state">none</set></think>
-            <think><set name = "topic">none</set></think>
+            <think><set name="state">none</set></think>
+            <think><set name="topic">none</set></think>
             {
                 "Actions": "GoToMarket"
             }
@@ -19,8 +19,8 @@
             <think><srai>generateRandomGreeting</srai></think>
             {
                 "Actions": "SetRequest",
-                "Params": ["<map name = "string2int"><get name = "fruitCount"></get></map>", "<get name = "fruitType"></get>"],
-                "VoicePhrases": "<get name = "phraseGreeting"></get> Can_i_Have <get name = "fruitCount"></get> <get name = "phraseType"></get>"
+                "Params": ["<map name="string2int"><get name="fruitCount"></get></map>", "<get name="fruitType"></get>"],
+                "VoicePhrases": "<get name="phraseGreeting"></get> Can_i_Have <get name="fruitCount"></get> <get name="phraseType"></get>"
             }
         </template>
     </category>
@@ -28,7 +28,7 @@
     <category>
         <pattern>generateRandomGreeting</pattern>
         <template>
-            <set name = "phraseGreeting">
+            <set name="phraseGreeting">
                 <random>
                     <li>Hello</li>
                     <li>Hi</li>
@@ -50,7 +50,7 @@
     <category>
         <pattern>generateRandomFruitType</pattern>
         <template>
-            <set name = "fruitType">
+            <set name="fruitType">
                 <random>
                     <li>Apple</li>
                     <li>Potato</li>
@@ -62,7 +62,7 @@
     <category>
         <pattern>generateRandomFruitCount</pattern>
         <template>
-            <set name = "fruitCount">
+            <set name="fruitCount">
                 <random>
                     <li>One</li>
                     <li>Two</li>
@@ -79,13 +79,13 @@
         <template>
             <condition name="fruitCount">
                 <li value="One">
-                    <set name = "phraseType">
-                        <get name = "fruitType"></get>
+                    <set name="phraseType">
+                        <get name="fruitType"></get>
                     </set>
                 </li>
                 <li>
-                    <set name = "phraseType">
-                        <map name = "one2many"><get name = "fruitType"></get></map>
+                    <set name="phraseType">
+                        <map name="one2many"><get name="fruitType"></get></map>
                     </set>
                 </li>
             </condition>
@@ -95,25 +95,25 @@
     <category>
         <pattern>cmdBasketOverlapCharacterBegin</pattern>
         <template>
-            <think><set name = "topic">startChecking</set></think>
+            <think><set name="topic">startChecking</set></think>
             {
                 "Actions": "CheckFruitsCount"
             }
         </template>
     </category>
 
-    <topic name = "startChecking">
+    <topic name="startChecking">
         <category>
             <pattern>cmdBasketOverlapCharacterEnd</pattern>
             <template>
-                <think><set name = "topic">stopChecking</set></think>
+                <think><set name="topic">stopChecking</set></think>
             </template>
         </category>
 
         <category>
             <pattern>cmdCorrectFruitsCount</pattern>
             <template>
-                <think><set name = "topic">startTryTaking</set></think>
+                <think><set name="topic">startTryTaking</set></think>
                 {
                     "Actions": "TryToTakeBasket"
                 }
@@ -123,7 +123,7 @@
         <category>
             <pattern>cmdIncorrectFruitsCount</pattern>
             <template>
-                <think><set name = "topic">startDisappointing</set></think>
+                <think><set name="topic">startDisappointing</set></think>
                 {
                     "Actions": "StartDisappointing"
                 }
@@ -131,7 +131,7 @@
         </category>
     </topic>
 
-    <topic name = "none">
+    <topic name="none">
         <category>
             <pattern>cmdCorrectFruitsCount</pattern>
             <template>
@@ -140,8 +140,8 @@
                         <think><srai>generateRandomRequest</srai></think>
                         {
                             "Actions": "AddRequest",
-                            "Params": ["<map name = "string2int"><get name = "fruitCount"></get></map>", "<get name = "fruitType"></get>"],
-                            "VoicePhrases": "Can_i_Have <get name = "fruitCount"></get> <get name = "phraseType"></get>"
+                            "Params": ["<map name="string2int"><get name="fruitCount"></get></map>", "<get name="fruitType"></get>"],
+                            "VoicePhrases": "Can_i_Have <get name="fruitCount"></get> <get name="phraseType"></get>"
                         }
                     </li>
                     <li></li>
@@ -151,7 +151,7 @@
         </category>
     </topic>
     
-    <topic name = "startTryTaking">
+    <topic name="startTryTaking">
         <category>
             <pattern>cmdBasketOverlapCharacterEnd</pattern>
             <template>
@@ -174,8 +174,8 @@
     <category>
         <pattern>cmdBasketTaken</pattern>
         <template>
-            <think><set name = "state">startSayingGoodbye</set></think>
-            <think><set name = "phraseFarewell">
+            <think><set name="state">startSayingGoodbye</set></think>
+            <think><set name="phraseFarewell">
                 <random>
                     <li>Have_great_day</li>
                     <li>Goodbye</li>
@@ -183,7 +183,7 @@
                 </random>
             </set></think>
             {
-                "VoicePhrases": "<get name = "phraseFarewell"></get>"
+                "VoicePhrases": "<get name="phraseFarewell"></get>"
             }
         </template>
     </category>
@@ -191,12 +191,12 @@
     <category>
         <pattern>cmdAudioFinished</pattern>
         <template>
-            <condition name = "state" value="startSayingGoodbye">
-                <think><set name = "state">none</set></think>
+            <condition name="state" value="startSayingGoodbye">
+                <think><set name="state">none</set></think>
                 {
                     "Actions": "GoToHome"
                 }
-            </condition>            
+            </condition>
         </template>
     </category>
 
