@@ -26,14 +26,14 @@
     <category>
         <pattern>generateRandomRequest</pattern>
         <template>
-            <srai>setRandomFruitType</srai>
-            <srai>setRandomFruitCount</srai>
-            <srai>setPhraseType</srai>
+            <srai>generateRandomFruitType</srai>
+            <srai>generateRandomFruitCount</srai>
+            <srai>generatePhraseType</srai>
         </template>
     </category>
     
     <category>
-        <pattern>setRandomFruitType</pattern>
+        <pattern>generateRandomFruitType</pattern>
         <template>
             <set name = "fruitType">
                 <random>
@@ -45,7 +45,7 @@
     </category>
     
     <category>
-        <pattern>setRandomFruitCount</pattern>
+        <pattern>generateRandomFruitCount</pattern>
         <template>
             <set name = "fruitCount">
                 <random>
@@ -60,7 +60,7 @@
     </category>
     
     <category>
-        <pattern>setPhraseType</pattern>
+        <pattern>generatePhraseType</pattern>
         <template>
             <condition name="fruitCount">
                 <li value="One">
