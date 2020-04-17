@@ -5,14 +5,29 @@
 
 AMarketLevelScriptActor::AMarketLevelScriptActor() {
     PrimaryActorTick.bCanEverTick = true;
-    
+
+    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTable(TEXT("DataTable'/Game/CSV/FruitsAndPath.FruitsAndPath'"));
+    if (_DataTable.Succeeded()) {
+        DataTable = _DataTable.Object;
+    }
+
+    FruitClass = AFruit::StaticClass();
+
     BotRequest = CreateDefaultSubobject<UBotRequest>(TEXT("BotRequest"));
     BotRequest->OnResponseReceived.AddDynamic(this, &AMarketLevelScriptActor::OnBotResponseReceived);
     BotRequest->SetupAttachment(RootComponent);
 }
 
+template <typename ObjClass>
+static FORCEINLINE ObjClass* LoadObjFromPath(const FName& Path) {
+    if (Path == NAME_None) return NULL;
+    return Cast<ObjClass>(StaticLoadObject(ObjClass::StaticClass(), NULL, *Path.ToString()));
+}
+
 void AMarketLevelScriptActor::BeginPlay() {
     Super::BeginPlay();
+
+    //SpawnFruits();
 
     if (MarketPoint) {
         MarketPoint->FillSphere->OnComponentBeginOverlap.AddDynamic(this, &AMarketLevelScriptActor::OnTargetPointOverlapBegin);
@@ -43,6 +58,8 @@ void AMarketLevelScriptActor::SpawnCharacter() {
 
     BotRequest->Request(ECommand::NewCharacterSpawned);
 
+    WidgetText = Cast<UBubleTextWidgetClass>(Character->WidgetComponent->GetUserWidgetObject());
+
     //Character->GoToMarket();
 }
 
@@ -55,13 +72,135 @@ void AMarketLevelScriptActor::SpawnBasket() {
     Basket = Cast<ABasket>(GetWorld()->SpawnActor(ToBasketSpawn, &BasketSpawnPoint->GetActorTransform()));
 }
 
+void AMarketLevelScriptActor::SpawnFruits() {
+    TArray<AActor*> MarketActor;
+    TArray<UStaticMeshComponent*> children;
+    FString ContextString;
+
+    for (auto it : DataTable->GetRowMap()) {
+        FAudioDataTableStruct* Row = DataTable->FindRow<FAudioDataTableStruct>(it.Key, ContextString, true);
+        if (Row) {
+            FruitType.Add(Row->FruitType);
+            FruitPath.Add(Row->Path);
+        }
+    }
+
+    UWorld* World = GetWorld();
+    if (World) {
+        UGameplayStatics::GetAllActorsWithTag(World, "Market", MarketActor);
+    }
+
+    if (MarketActor.Num() <= 0) { 
+        UE_LOG(LogTemp, Warning, TEXT("NotFindMarket"));
+        return;
+    }
+
+    MarketActor[0]->GetComponents<UStaticMeshComponent>(children);
+
+    if (children.Num() < 0)
+        return;
+
+    children.RemoveAt(0, 18, true);
+       
+    for (auto& it : children) {
+
+        TArray<FString> tmp = RandomFruitGeneration();
+        UStaticMesh* CurrentFruitMesh = LoadObjFromPath<UStaticMesh>(FName(*tmp[0]));
+        FString CurrentFruitType = tmp[1];
+
+        if (!CurrentFruitMesh) {
+            UE_LOG(LogTemp, Warning, TEXT("Cant find Mesh"));
+            return;
+        }
+
+        if (!FruitClass) {
+            UE_LOG(LogTemp, Warning, TEXT("Cant find fruit class"));
+            return;
+        }
+
+        FActorSpawnParameters SpawnParams;
+        SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+        FVector FruitBoxBE = it->GetStaticMesh()->GetBounds().BoxExtent;
+        FVector FruitBoxOrigin = it->GetComponentLocation() - FruitBoxBE;
+
+        FVector FruitBE = CurrentFruitMesh->GetBounds().BoxExtent;
+        FVector FruitOffset = FruitBE / 3.0f;
+
+        FVector MaxSize = FruitBoxBE * 2;
+        FIntVector Count(MaxSize / (FruitBE * 2));
+        FVector OriginOffset = FruitBoxBE - FVector(Count) * FruitBE;
+
+        for (int i = 0;; i++) {
+            float ROffsetX = FMath::RandRange(-FruitOffset.X, FruitOffset.X);
+            float CurrX = FruitBE.X + FruitBE.X * 2 * i;
+            if (CurrX + FruitBE.X + ROffsetX > MaxSize.X)
+                break;
+
+            for (int j = 0;; j++) {
+                float ROffsetY = FMath::RandRange(-FruitOffset.Y, FruitOffset.Y);
+                float CurrY = FruitBE.Y + FruitBE.Y * 2 * j;
+                if (CurrY + FruitBE.Y + ROffsetY > MaxSize.Y)
+                    break;
+
+                for (int k = 0;; k++) {
+                    float ROffsetZ = FMath::RandRange(-FruitOffset.Z, FruitOffset.Z);
+                    float CurrZ = FruitBE.Z + FruitBE.Z * 2 * k;
+                    if (CurrZ + FruitBE.Z + ROffsetZ > MaxSize.Z)
+                        break;
+
+                    FRotator RRotator(FMath::RandRange(-40, 40), FMath::RandRange(-40, 40), FMath::RandRange(-40, 40));
+                    FVector FruitLocation = FVector(CurrX + ROffsetX, CurrY + ROffsetY, CurrZ + ROffsetZ);
+                    FVector Location = it->GetComponentLocation() + OriginOffset + it->GetComponentRotation().RotateVector(FruitLocation - FruitBoxBE);
+
+                    AFruit* Fruit = World->SpawnActor<AFruit>(FruitClass, Location, RRotator, SpawnParams);
+
+                    if (Fruit) {
+                        Fruit->Mesh->SetStaticMesh(CurrentFruitMesh);
+                        Fruit->Type = CurrentFruitType;
+                    }
+                }
+            }
+        }
+    }
+}
+
+TArray<FString> AMarketLevelScriptActor::RandomFruitGeneration()
+{
+    TArray<FString> tmp;
+    int32 Rand = FMath::RandRange(0, FruitType.Num() - 1);
+
+    counter++;
+
+    if (!AllFruits.Contains(FruitPath[Rand])) {
+        AllFruits.Add(FruitPath[Rand], 1);
+
+        tmp.Add(FruitPath[Rand]);
+        tmp.Add(FruitType[Rand]);
+        UE_LOG(LogTemp, Warning, TEXT("Mesh ¹ %d is %s %s"), counter, *tmp[0], *tmp[1]);
+        return tmp;
+    }
+
+    int32 count = AllFruits.FindRef(FruitPath[Rand]);
+    if (count >= 2)
+        return tmp = RandomFruitGeneration();
+
+    AllFruits.Add(FruitPath[Rand], 2);
+
+    tmp.Add(FruitPath[Rand]);
+    tmp.Add(FruitType[Rand]);
+    UE_LOG(LogTemp, Warning, TEXT("Mesh%d is %s %s"), counter, *tmp[0], *tmp[1]);
+
+    return tmp;
+}
+
 void AMarketLevelScriptActor::OnCharacterCanTakeBasket() {
     BotRequest->Request(ECommand::CanTakeBasket);
 }
 
 void AMarketLevelScriptActor::OnBotResponseReceived(EAction Action, TArray<FString> ParamArray, TArray<FString> PhraseArray) {
     PlayAction(Action, ParamArray);
-    PlayAudio(PhraseArray);
+    PlayAudio(PhraseArray, WidgetText);
 }
 
 void AMarketLevelScriptActor::PlayAction(EAction Action, TArray<FString> ParamArray) {
@@ -122,11 +261,12 @@ bool AMarketLevelScriptActor::IsCorrectFruitsCount() {
     return true;
 }
 
-void AMarketLevelScriptActor::PlayAudio(TArray<FString> PhraseArray) {
-    for (auto& Phrase : PhraseArray) {
-        Character->PhrasesAudio->SoundQueue.Enqueue(Phrase);
-    }
-    Character->PhrasesAudio->StartPlayingQueue();
+void AMarketLevelScriptActor::PlayAudio(TArray<FString> PhraseArray, UBubleTextWidgetClass* Widget) {
+    //for (auto& Phrase : PhraseArray) {
+    //    Character->PhrasesAudio->SoundQueue.Enqueue(Phrase); 
+    //}
+    //Character->PhrasesAudio->StartPlayingQueue();
+    Character->PhrasesAudio->PlaySoundWithCrossfade(PhraseArray,Widget);
 }
 
 void AMarketLevelScriptActor::OnTargetPointOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
