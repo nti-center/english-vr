@@ -15,14 +15,28 @@
         <pattern>cmdReachedMarket</pattern>
         <template>
             <think><srai>generateRandomRequest</srai></think>
+            <think><srai>generateRandomGreeting</srai></think>
             {
                 "Actions": "SetRequest",
                 "Params": ["<map name = "string2int"><get name = "fruitCount"></get></map>", "<get name = "fruitType"></get>"],
-                "VoicePhrases": "trc2_greetings_1 Can_I_Have <get name = "fruitCount"></get> <get name = "phraseType"></get>"
+                "VoicePhrases": "<get name = "phraseGreeting"></get> Can_i_Have <get name = "fruitCount"></get> <get name = "phraseType"></get>"
             }
         </template>
     </category>
     
+    <category>
+        <pattern>generateRandomGreeting</pattern>
+        <template>
+            <set name = "phraseGreeting">
+                <random>
+                    <li>Hello</li>
+                    <li>Hi</li>
+                    <li>Good_morning</li>
+                </random>
+            </set>
+        </template>
+    </category>
+            
     <category>
         <pattern>generateRandomRequest</pattern>
         <template>
@@ -140,8 +154,15 @@
         <pattern>cmdBasketTaken</pattern>
         <template>
             <think><set name = "state">startSayingGoodbye</set></think>
+            <think><set name = "phraseFarewell">
+                <random>
+                    <li>Have_great_day</li>
+                    <li>Goodbye</li>
+                    <li>Bye_bye</li>
+                </random>
+            </set></think>
             {
-                "VoicePhrases": "trc2_goodbye_1"
+                "VoicePhrases": "<get name = "phraseFarewell"></get>"
             }
         </template>
     </category>
