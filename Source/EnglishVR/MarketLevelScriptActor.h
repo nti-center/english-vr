@@ -109,6 +109,9 @@ public:
     UFUNCTION()
     void OnBasketFruitCountChanged();
 
+    UFUNCTION()
+    void OnCharacterAudioFinished();
+
 private:
     void PlayAction(EAction Action, TArray<FString> ParamArray);
     void PlayAudio(TArray<FString> PhraseArray, UBubleTextWidgetClass* Widget);

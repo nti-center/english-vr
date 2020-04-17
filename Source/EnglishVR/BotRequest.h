@@ -11,6 +11,7 @@
 
 UENUM(BlueprintType)
 enum class ECommand : uint8 {
+    AudioFinished               UMETA(DisplayName = "AudioFinished"),
     BasketOverlapCharacterBegin UMETA(DisplayName = "BasketOverlapCharacterBegin"),
     BasketOverlapCharacterEnd   UMETA(DisplayName = "BasketOverlapCharacterEnd"),
     BasketTaken                 UMETA(DisplayName = "BasketTaken"),
@@ -44,6 +45,7 @@ enum class EAction : uint8 {
 };
 
 const TMap<ECommand, FString> Commands = {
+    { ECommand::AudioFinished,               "AudioFinished" },
     { ECommand::BasketOverlapCharacterBegin, "cmdBasketOverlapCharacterBegin" },
     { ECommand::BasketOverlapCharacterEnd,   "cmdBasketOverlapCharacterEnd" },
     { ECommand::BasketTaken,                 "cmdBasketTaken" },

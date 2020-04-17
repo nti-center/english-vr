@@ -55,6 +55,7 @@ void AMarketLevelScriptActor::SpawnCharacter() {
     Character->Box->OnComponentBeginOverlap.AddDynamic(this, &AMarketLevelScriptActor::OnPickupBoxOverlapBegin);
     Character->Box->OnComponentEndOverlap.AddDynamic(this, &AMarketLevelScriptActor::OnPickupBoxOverlapEnd);
     Character->OnCanTakeBasket.AddDynamic(this, &AMarketLevelScriptActor::OnCharacterCanTakeBasket);
+    Character->PhrasesAudio->OnAudioFinished.AddDynamic(this, &AMarketLevelScriptActor::OnCharacterAudioFinished);
 
     BotRequest->Request(ECommand::NewCharacterSpawned);
 
@@ -72,6 +73,10 @@ void AMarketLevelScriptActor::SpawnBasket() {
     Basket = Cast<ABasket>(GetWorld()->SpawnActor(ToBasketSpawn, &BasketSpawnPoint->GetActorTransform()));
     Basket->OnFruitAdded.AddDynamic(this, &AMarketLevelScriptActor::OnBasketFruitCountChanged);
     Basket->OnFruitRemoved.AddDynamic(this, &AMarketLevelScriptActor::OnBasketFruitCountChanged);
+}
+
+void AMarketLevelScriptActor::OnCharacterAudioFinished() {
+    BotRequest->Request(ECommand::AudioFinished);
 }
 
 void AMarketLevelScriptActor::OnBasketFruitCountChanged() {
