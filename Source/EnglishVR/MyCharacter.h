@@ -30,6 +30,7 @@ enum class EAnimationState : uint8 {
     None          UMETA(DisplayName = "None"),
     Taking        UMETA(DisplayName = "Taking"),
     Disappointing UMETA(DisplayName = "Disappointing"),
+    Hiding        UMETA(DisplayName = "Hiding"),
 };
 
 UCLASS(Abstract)
