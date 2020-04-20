@@ -42,7 +42,7 @@ int UPhrasesAudioComponent::CreateCue(TArray<FString> InputArray) {
     Crossfade->GraphNode->NodePosX = -130;
     Crossfade->GraphNode->NodePosY = 50 * InputArray.Num() / 2;
 
-    // SoundCue->FirstNode = Crossfade;
+    //SoundCue->FirstNode = Crossfade;
     SoundCue->FirstNode = Concatenator;
     SoundCue->LinkGraphNodesFromSoundNodes();
 
@@ -52,6 +52,7 @@ int UPhrasesAudioComponent::CreateCue(TArray<FString> InputArray) {
 
         if (!SoundWave) {
             ErrorIndex = NodeIndex + 1;
+            UE_LOG(LogTemp, Warning, TEXT("Can not find audio file!"));
         }
         else {
             FDistanceDatum TempDatum;
@@ -77,14 +78,18 @@ int UPhrasesAudioComponent::CreateCue(TArray<FString> InputArray) {
             WavePlayer->SetSoundWave(SoundWave);
             WavePlayer->GraphNode->NodePosX = -650;
             WavePlayer->GraphNode->NodePosY = -100 * NodeIndex;
-            // WavePlayer->bLooping = true;
+
+            //if(NodeIndex != 0)
+               // WavePlayer->bLooping = true;
 
             SummaryDuration += SoundWave->GetDuration();
 
-            //Crossfade->CreateStartingConnectors();
             Concatenator->CreateStartingConnectors();
             Concatenator->ChildNodes[NodeIndex] = WavePlayer;
+
+            //Crossfade->CreateStartingConnectors();
             //Crossfade->ChildNodes[NodeIndex] = WavePlayer;
+
             SoundCue->LinkGraphNodesFromSoundNodes();
             NodeIndex++;
         }
@@ -102,7 +107,7 @@ void UPhrasesAudioComponent::PlaySoundWithCrossfade(TArray<FString> InputArray, 
 
    UWorld* World = GetWorld();
    if (World) {
-       //  World->GetTimerManager().SetTimer(FuzeTimerHandle, this, &UPhrasesAudioComponent::SetCrossfadeParametr, 0.1f, true);
+       //World->GetTimerManager().SetTimer(FuzeTimerHandle, this, &UPhrasesAudioComponent::SetCrossfadeParametr, 0.1f, true);
    }
 
    Widget->SeeBotAnswer(InputArray, Error);
@@ -113,7 +118,8 @@ void UPhrasesAudioComponent::SetCrossfadeParametr() {
     if (IsPlaying()) {
         if (TimerCount >= SummaryDuration) {
             Stop();
-           // GetWorld()->GetTimerManager().ClearTimer(FuzeTimerHandle);
+            GetWorld()->GetTimerManager().ClearTimer(FuzeTimerHandle);
+            TimerCount = 0;
         }
         else {
             TimerCount += 0.1;
