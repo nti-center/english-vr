@@ -32,14 +32,14 @@ void UBubleTextWidgetClass::SeeBotAnswer(TArray<FString> InputArray, int32 Error
             if(Counter != 0)
                 TmpString += name.ToLower() + " ";
             else {
-                TmpString += name;
-                TmpString += ", ";
+                TmpString += name + " ";
+                //TmpString += ", ";
             }
         }
         else {
             TmpString += name.ToUpper() + " ";
         }
-        if((Counter+1) == InputArray.Num())
+        if((Counter+1) == InputArray.Num() && InputArray.Num() > 2)
             TmpString += "?";
         Counter++;
     }
