@@ -7,6 +7,7 @@
 #include "Engine/DataTable.h"
 #include "AIController.h"
 #include "Basket.h"
+#include "VRPawn.h"
 #include "Sound/SoundCue.h"
 #include "Components/WidgetComponent.h"
 #include "PhrasesAudioComponent.h"
@@ -72,6 +73,9 @@ public:
     UPROPERTY(BlueprintReadWrite)
     int32 WalkingCount;
 
+    UPROPERTY(BlueprintReadWrite)
+    AVRPawn* Pawn;
+
     UPROPERTY(BlueprintAssignable, BlueprintCallable)
     FCanTakeBasketDelegate OnCanTakeBasket;
 
@@ -88,6 +92,9 @@ public:
 
     UFUNCTION(BlueprintCallable)
     void ClearFruitRequests();
+
+    UFUNCTION(BlueprintCallable)
+    FRotator MyLookRotation(FVector lookAt, FVector upDirection);
 
 protected:
     // Called when the game starts or when spawned
