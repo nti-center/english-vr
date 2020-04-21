@@ -17,6 +17,12 @@ public:
     virtual void NativeConstruct() override;
 
     UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+    class UScaleBox* ImageScaleBox = nullptr;
+
+    UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+    class UScaleBox* TextScaleBox = nullptr;
+
+    UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
     class UTextBlock* BubleText = nullptr;
 
     UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
@@ -33,5 +39,8 @@ public:
 
     UFUNCTION(BlueprintCallable)
     void SeeBotAnswer(TArray<FString> InputArray, int32 ErrorIndex);
+
+    UFUNCTION(BlueprintCallable)
+    FRotator MyLookRotation(FVector lookAt, FVector upDirection, FVector Location);
 
 };
