@@ -25,7 +25,7 @@ void UBotRequest::Request(ECommand Command) {
 void UBotRequest::Request(ECommand Command, TArray<FString> Params) {
     FString RequestString = Commands[Command];
     for (auto& Param: Params)
-        RequestString += " " + Param;
+        RequestString += "+" + Param;
     Request(RequestString);
 }
 
