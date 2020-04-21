@@ -16,6 +16,10 @@ AMarketLevelScriptActor::AMarketLevelScriptActor() {
     BotRequest = CreateDefaultSubobject<UBotRequest>(TEXT("BotRequest"));
     BotRequest->OnResponseReceived.AddDynamic(this, &AMarketLevelScriptActor::OnBotResponseReceived);
     BotRequest->SetupAttachment(RootComponent);
+
+    SpeechRecognition = CreateDefaultSubobject<USpeechRecognitionMS>(TEXT("SpeechRecognition"));
+    SpeechRecognition->OnRecognized.AddDynamic(this, &AMarketLevelScriptActor::OnSpeechRecognized);
+    SpeechRecognition->SetupAttachment(RootComponent);
 }
 
 template <typename ObjClass>
@@ -215,6 +219,12 @@ TArray<FString> AMarketLevelScriptActor::RandomFruitGeneration()
     UE_LOG(LogTemp, Warning, TEXT("Mesh%d is %s %s"), counter, *tmp[0], *tmp[1]);
 
     return tmp;
+}
+
+void AMarketLevelScriptActor::OnSpeechRecognized(FString Text, int Reason) {
+    if ((int)Microsoft::CognitiveServices::Speech::ResultReason::RecognizedSpeech == Reason) {
+        
+    }
 }
 
 void AMarketLevelScriptActor::OnCharacterCanTakeBasket() {

@@ -11,6 +11,7 @@
 #include "Fruit.h"
 #include "BotRequest.h"
 #include "FinalTargetPoint.h"
+#include "SpeechRecognitionMS.h"
 #include "MarketLevelScriptActor.generated.h"
 
 UCLASS()
@@ -74,6 +75,9 @@ public:
     UPROPERTY(EditAnywhere)
     UBubleTextWidgetClass* WidgetText;
 
+    UPROPERTY(EditDefaultsOnly)
+    USpeechRecognitionMS* SpeechRecognition;
+
     UFUNCTION(BlueprintCallable)
     void SpawnCharacter();
 
@@ -114,6 +118,9 @@ public:
 
     UFUNCTION()
     void OnCharacterAudioFinished();
+
+    UFUNCTION()
+    void OnSpeechRecognized(FString Text, int Reason);
 
 private:
     void PlayAction(EAction Action, TArray<FString> ParamArray);
