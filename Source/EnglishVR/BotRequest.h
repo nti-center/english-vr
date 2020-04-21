@@ -20,6 +20,7 @@ enum class ECommand : uint8 {
     IncorrectFruitsCount        UMETA(DisplayName = "IncorrectFruitsCount"),
     NewCharacterSpawned         UMETA(DisplayName = "NewCharacterSpawned"),
     ReachedMarket               UMETA(DisplayName = "ReachedMarket"),
+    SpeechRecognized            UMETA(DisplayName = "SpeechRecognized"),
     Start                       UMETA(DisplayName = "Start"),
     Hit                         UMETA(DisplayName = "Hit"),
 };
@@ -56,6 +57,7 @@ const TMap<ECommand, FString> Commands = {
     { ECommand::IncorrectFruitsCount,        "cmdIncorrectFruitsCount" },
     { ECommand::NewCharacterSpawned,         "cmdNewCharacterSpawned" },
     { ECommand::ReachedMarket,               "cmdReachedMarket" },
+    { ECommand::SpeechRecognized,            "cmdSpeechRecognized" },
     { ECommand::Start,                       "cmdStart" },
     { ECommand::Hit,                         "cmdHit" },
 };
