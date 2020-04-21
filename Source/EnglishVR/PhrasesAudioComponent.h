@@ -8,6 +8,8 @@
 #include "BubleTextWidgetClass.h"
 #include "Sound/SoundCue.h"
 #include "EdGraph/EdGraph.h"
+#include "Engine/DataTable.h"
+#include "CrossfadeDataTableStruct.h"
 #include "Sound/SoundNodeWavePlayer.h"
 #include "Sound/SoundNodeParamCrossFade.h"
 #include "Sound/SoundNodeConcatenator.h"
@@ -31,11 +33,26 @@ public:
     UPROPERTY(BlueprintReadWrite)
     FTimerHandle FuzeTimerHandle;
 
+    UPROPERTY(EditDefaultsOnly)
+    UDataTable* CrossfadeParametrsDataTable;
+
     UPROPERTY(BlueprintReadWrite)
     float TimerCount = 0;
 
     UPROPERTY(BlueprintReadWrite)
+    float StepCount = 0;
+
+    UPROPERTY(BlueprintReadWrite)
     float SummaryDuration = 0;
+
+    UPROPERTY(BlueprintReadWrite)
+    float CurrentDuration = 0;
+
+    UPROPERTY(BlueprintReadWrite)
+    TArray<float> SoundDuration;
+
+    UPROPERTY(BlueprintReadWrite)
+    TArray<USoundNodeWavePlayer*> PlayersArray;
 
     UFUNCTION(BlueprintCallable)
     void StartPlayingQueue();
