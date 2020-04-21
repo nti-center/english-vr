@@ -14,28 +14,8 @@ void USpeechRecognitionMS::BeginPlay() {
     
     UE_LOG(LogTemp, Warning, TEXT("Start recognition"));
 
-    Recognizer->Recognized.Connect([](const SpeechRecognitionEventArgs& e) {
-            UE_LOG(LogTemp, Warning, TEXT("EVENT"));
-            auto Result = e.Result;
-            if (Result->Reason == ResultReason::RecognizedSpeech) {
-                FString Recognized(Result->Text.c_str());
-                UE_LOG(LogTemp, Warning, TEXT("We recognized: %s"), *Recognized);
-            }
-            else if (Result->Reason == ResultReason::NoMatch) {
-                UE_LOG(LogTemp, Warning, TEXT("NOMATCH: Speech could not be recognized."));
-            }
-            else if (Result->Reason == ResultReason::Canceled) {
-                auto Cancellation = CancellationDetails::FromResult(Result);
-                UE_LOG(LogTemp, Warning, TEXT("CANCELED: Reason = %d"), (int)Cancellation->Reason);
-                
-                if (Cancellation->Reason == CancellationReason::Error) {
-                    UE_LOG(LogTemp, Warning, TEXT("CANCELED: ErrorCode = %d"), (int)Cancellation->ErrorCode);
-                    FString Details(Cancellation->ErrorDetails.c_str());
-                    UE_LOG(LogTemp, Warning, TEXT("CANCELED: ErrorDetails ="), *Details);
-                }
-            }
-            
-        });
+    std::function<void(const SpeechRecognitionEventArgs& E)> RecognizedFunction = std::bind(&USpeechRecognitionMS::Recognized, this, std::placeholders::_1);
+    Recognizer->Recognized.Connect(RecognizedFunction);
 
     Recognizer->StartContinuousRecognitionAsync().get();
 }
@@ -46,5 +26,28 @@ void USpeechRecognitionMS::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 void USpeechRecognitionMS::StopRecognition() {
     Recognizer->StopContinuousRecognitionAsync().get();
+}
+
+void USpeechRecognitionMS::Recognized(const SpeechRecognitionEventArgs& E) {
+    auto Result = E.Result;
+    OnRecognized.Broadcast(FString(Result->Text.c_str()), (int)Result->Reason);
+
+    if (Result->Reason == ResultReason::RecognizedSpeech) {
+        FString RecognizedString(Result->Text.c_str());
+        UE_LOG(LogTemp, Warning, TEXT("We recognized: %s"), *RecognizedString);
+    }
+    else if (Result->Reason == ResultReason::NoMatch) {
+        UE_LOG(LogTemp, Warning, TEXT("NOMATCH: Speech could not be recognized."));
+    }
+    else if (Result->Reason == ResultReason::Canceled) {
+        auto Cancellation = CancellationDetails::FromResult(Result);
+        UE_LOG(LogTemp, Warning, TEXT("CANCELED: Reason = %d"), (int)Cancellation->Reason);
+
+        if (Cancellation->Reason == CancellationReason::Error) {
+            UE_LOG(LogTemp, Warning, TEXT("CANCELED: ErrorCode = %d"), (int)Cancellation->ErrorCode);
+            FString Details(Cancellation->ErrorDetails.c_str());
+            UE_LOG(LogTemp, Warning, TEXT("CANCELED: ErrorDetails ="), *Details);
+        }
+    }
 }
 
