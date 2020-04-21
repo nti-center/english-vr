@@ -223,7 +223,7 @@ TArray<FString> AMarketLevelScriptActor::RandomFruitGeneration()
 
 void AMarketLevelScriptActor::OnSpeechRecognized(FString Text, int Reason) {
     if ((int)Microsoft::CognitiveServices::Speech::ResultReason::RecognizedSpeech == Reason) {
-        
+        BotRequest->Request(ECommand::SpeechRecognized, TArray<FString>({Text.Replace(TEXT(" "), TEXT("+"))}));
     }
 }
 
