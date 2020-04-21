@@ -71,8 +71,9 @@ void AMyCharacter::Tick(float DeltaTime) {
         return;
 
     FVector LocationVector = Pawn->GetActorLocation();
-    FVector UpVector = Pawn->GetActorUpVector();
-    FRotator Rotator = BubbleText->MyLookRotation(LocationVector, UpVector, GetActorLocation());
+    //FVector UpVector = Pawn->GetActorUpVector();
+    FVector WorldUp = FVector::UpVector;
+    FRotator Rotator = BubbleText->MyLookRotation(GetActorLocation(),LocationVector, WorldUp);
     WidgetComponent->SetRelativeRotation(Rotator);
 }
 

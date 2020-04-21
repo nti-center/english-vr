@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Math/Color.h"
 #include "Engine.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "BubleTextWidgetClass.generated.h"
 
 
@@ -41,6 +42,6 @@ public:
     void SeeBotAnswer(TArray<FString> InputArray, int32 ErrorIndex);
 
     UFUNCTION(BlueprintCallable)
-    FRotator MyLookRotation(FVector lookAt, FVector upDirection, FVector Location);
+    FRotator MyLookRotation(FVector LookingActor, FVector TargetPosition, FVector WorldUp);
 
 };
