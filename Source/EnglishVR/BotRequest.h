@@ -87,7 +87,9 @@ class ENGLISHVR_API UBotRequest : public USceneComponent {
 public:
     UBotRequest();
     void Request(ECommand Command);
+    void Request(ECommand Command, TArray<FString> Params);
     void ResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+
     UPROPERTY(BlueprintAssignable, BlueprintCallable)
     FResponseReceivedDelegate OnResponseReceived;
 
@@ -95,6 +97,7 @@ private:
     FHttpModule* Http;
 
     TArray<FString> ParsePhrasesString(const FString& PhrasesString);
+    void Request(FString RequestString);
 
 protected:
     virtual void BeginPlay() override;
