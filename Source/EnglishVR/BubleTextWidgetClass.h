@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Math/Color.h"
 #include "Engine.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "BubleTextWidgetClass.generated.h"
 
 
@@ -15,6 +16,12 @@ class UBubleTextWidgetClass : public UUserWidget {
 
 public:
     virtual void NativeConstruct() override;
+
+    UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+    class UScaleBox* ImageScaleBox = nullptr;
+
+    UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+    class UScaleBox* TextScaleBox = nullptr;
 
     UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
     class UTextBlock* BubleText = nullptr;
@@ -33,5 +40,8 @@ public:
 
     UFUNCTION(BlueprintCallable)
     void SeeBotAnswer(TArray<FString> InputArray, int32 ErrorIndex);
+
+    UFUNCTION(BlueprintCallable)
+    FRotator MyLookRotation(FVector LookingActor, FVector TargetPosition, FVector WorldUp);
 
 };

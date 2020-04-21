@@ -3,6 +3,7 @@
 
 #include "BubleTextWidgetClass.h"
 #include "Components/TextBlock.h"
+#include "Components/ScaleBox.h"
 #include "Components/Image.h"
 
 void UBubleTextWidgetClass::NativeConstruct() {
@@ -49,6 +50,13 @@ void UBubleTextWidgetClass::SeeBotAnswer(TArray<FString> InputArray, int32 Error
 
     World->GetTimerManager().SetTimer(FuzeTimerHandle, this, &UBubleTextWidgetClass::HideWidget, 5.0f);
 }
+
+FRotator UBubleTextWidgetClass::MyLookRotation(FVector LookingActor, FVector TargetPosition, FVector WorldUp){
+    FVector Forward = TargetPosition - LookingActor;
+    FRotator Rot = UKismetMathLibrary::MakeRotFromXZ(Forward, WorldUp);
+    return Rot;
+}
+
 
 
 

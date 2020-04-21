@@ -1,12 +1,15 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "PhrasesAudioComponent.h"
 
 UPhrasesAudioComponent::UPhrasesAudioComponent() {
     PrimaryComponentTick.bCanEverTick = true;
 
-    OnAudioFinished.AddDynamic(this, &UPhrasesAudioComponent::PlayNextSound);
+    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTable(TEXT("DataTable'/Game/CSV/CrossfadeParametrs.CrossfadeParametrs'"));
+    if (_DataTable.Succeeded()) {
+        CrossfadeParametrsDataTable = _DataTable.Object;
+    }
+
+    //OnAudioFinished.AddDynamic(this, &UPhrasesAudioComponent::PlayNextSound);
 }
 
 void UPhrasesAudioComponent::BeginPlay() {
@@ -29,10 +32,15 @@ static FORCEINLINE ObjClass* LoadObjFromPath(const FName& Path) {
 
 int UPhrasesAudioComponent::CreateCue(TArray<FString> InputArray) {
     TArray<struct FDistanceDatum> Datum;
+
     FString SoundCueName = "CueWithCrossfade";
+    FString ContextString;
     SoundCue = NewObject<USoundCue>(this, *SoundCueName);
+
     int32 NodeIndex = 0;
     int32 ErrorIndex = 0;
+    PlayersArray.Reset();
+    SoundDuration.Reset();
 
     USoundNodeParamCrossFade* Crossfade = SoundCue->ConstructSoundNode<USoundNodeParamCrossFade>();
     USoundNodeConcatenator* Concatenator = SoundCue->ConstructSoundNode<USoundNodeConcatenator>();
@@ -42,8 +50,8 @@ int UPhrasesAudioComponent::CreateCue(TArray<FString> InputArray) {
     Crossfade->GraphNode->NodePosX = -130;
     Crossfade->GraphNode->NodePosY = 50 * InputArray.Num() / 2;
 
-    //SoundCue->FirstNode = Crossfade;
-    SoundCue->FirstNode = Concatenator;
+    SoundCue->FirstNode = Crossfade;
+    //SoundCue->FirstNode = Concatenator;
     SoundCue->LinkGraphNodesFromSoundNodes();
 
     for (FString name : InputArray) {
@@ -57,19 +65,39 @@ int UPhrasesAudioComponent::CreateCue(TArray<FString> InputArray) {
         else {
             FDistanceDatum TempDatum;
 
-            if (NodeIndex == 0) {
-                TempDatum.FadeInDistanceStart = 0;
-                TempDatum.FadeInDistanceEnd = 0;
+            FCrossfadeDataTableStruct* Row = CrossfadeParametrsDataTable->FindRow<FCrossfadeDataTableStruct>(FName(*name), ContextString, true);
+            //if (Row) {
+            //    if (NodeIndex == 0) {
+            //        TempDatum.FadeInDistanceStart = Row->FadeInStart;
+            //        TempDatum.FadeInDistanceEnd = Row->FadeInEnd;
+            //
+            //        TempDatum.FadeOutDistanceStart = Row->FadeOutStart;
+            //        TempDatum.FadeOutDistanceEnd = Row->FadeOutEnd;
+            //    }
+            //    else {
+            //        TempDatum.FadeInDistanceStart = SummaryDuration + Row->FadeInStart -(Row->FadeInEnd - Row->FadeInStart );
+            //        TempDatum.FadeInDistanceEnd = SummaryDuration + Row->FadeInEnd - (Row->FadeInEnd - Row->FadeInStart);
+            //
+            //        TempDatum.FadeOutDistanceStart = SummaryDuration + Row->FadeOutStart + (Row->FadeOutEnd - Row->FadeOutStart );
+            //        TempDatum.FadeOutDistanceEnd = SummaryDuration + Row->FadeOutEnd + (Row->FadeOutEnd - Row->FadeOutStart);
+            //    }
+            //}
+            //else {
+                if (NodeIndex == 0) {
+                    TempDatum.FadeInDistanceStart = 0;
+                    TempDatum.FadeInDistanceEnd = 0;
 
-                TempDatum.FadeOutDistanceStart = SoundWave->GetDuration() + 0.3f;
-                TempDatum.FadeOutDistanceEnd = SoundWave->GetDuration() + 0.4f;
-            }
-            else {
-                TempDatum.FadeInDistanceStart = Datum[NodeIndex - 1].FadeOutDistanceStart;
-                TempDatum.FadeInDistanceEnd = Datum[NodeIndex - 1].FadeOutDistanceEnd;
-                TempDatum.FadeOutDistanceStart = TempDatum.FadeInDistanceStart + SoundWave->GetDuration();
-                TempDatum.FadeOutDistanceEnd = TempDatum.FadeInDistanceEnd + SoundWave->GetDuration();
-            }
+                    TempDatum.FadeOutDistanceStart = SoundWave->GetDuration();// +0.3f;
+                    TempDatum.FadeOutDistanceEnd = SoundWave->GetDuration();// +0.4f;
+                }
+                else {
+                    TempDatum.FadeInDistanceStart = Datum[NodeIndex - 1].FadeOutDistanceStart;
+                    TempDatum.FadeInDistanceEnd = Datum[NodeIndex - 1].FadeOutDistanceEnd;
+                    TempDatum.FadeOutDistanceStart = TempDatum.FadeInDistanceStart + SoundWave->GetDuration();
+                    TempDatum.FadeOutDistanceEnd = TempDatum.FadeInDistanceEnd + SoundWave->GetDuration();
+                }
+           // }
+                
 
             Datum.Add(TempDatum);
 
@@ -79,22 +107,24 @@ int UPhrasesAudioComponent::CreateCue(TArray<FString> InputArray) {
             WavePlayer->GraphNode->NodePosX = -650;
             WavePlayer->GraphNode->NodePosY = -100 * NodeIndex;
 
-            //if(NodeIndex != 0)
-               // WavePlayer->bLooping = true;
+            WavePlayer->bLooping = true;
 
             SummaryDuration += SoundWave->GetDuration();
 
-            Concatenator->CreateStartingConnectors();
-            Concatenator->ChildNodes[NodeIndex] = WavePlayer;
+            //Concatenator->CreateStartingConnectors();
+            //Concatenator->ChildNodes[NodeIndex] = WavePlayer;
 
-            //Crossfade->CreateStartingConnectors();
-            //Crossfade->ChildNodes[NodeIndex] = WavePlayer;
+            Crossfade->CreateStartingConnectors();
+            Crossfade->ChildNodes[NodeIndex] = WavePlayer;
 
             SoundCue->LinkGraphNodesFromSoundNodes();
+
+            PlayersArray.Add(WavePlayer);
+            SoundDuration.Add(SoundWave->GetDuration());
             NodeIndex++;
         }
     }
-    //Crossfade->CrossFadeInput = Datum;
+    Crossfade->CrossFadeInput = Datum;
     return ErrorIndex;
 }
 
@@ -105,9 +135,12 @@ void UPhrasesAudioComponent::PlaySoundWithCrossfade(TArray<FString> InputArray, 
    int32 Error = CreateCue(InputArray);
    SetSound(SoundCue);
 
+   StepCount = 0;
+   CurrentDuration = SoundDuration[StepCount];
+
    UWorld* World = GetWorld();
    if (World) {
-       //World->GetTimerManager().SetTimer(FuzeTimerHandle, this, &UPhrasesAudioComponent::SetCrossfadeParametr, 0.1f, true);
+       World->GetTimerManager().SetTimer(FuzeTimerHandle, this, &UPhrasesAudioComponent::SetCrossfadeParametr, 0.1f, true);
    }
 
    Widget->SeeBotAnswer(InputArray, Error);
@@ -117,13 +150,22 @@ void UPhrasesAudioComponent::PlaySoundWithCrossfade(TArray<FString> InputArray, 
 void UPhrasesAudioComponent::SetCrossfadeParametr() {
     if (IsPlaying()) {
         if (TimerCount >= SummaryDuration) {
-            Stop();
-            GetWorld()->GetTimerManager().ClearTimer(FuzeTimerHandle);
             TimerCount = 0;
+            SummaryDuration = 0;
+
+            GetWorld()->GetTimerManager().ClearTimer(FuzeTimerHandle);
+            Stop();
         }
         else {
             TimerCount += 0.1;
-            UE_LOG(LogTemp, Warning, TEXT("Timer count %f"), TimerCount);
+
+            if (TimerCount >= CurrentDuration - 0.2f && StepCount < PlayersArray.Num()-1) {
+                PlayersArray[StepCount]->bLooping = false;
+                StepCount++;
+                CurrentDuration = CurrentDuration + SoundDuration[StepCount];
+            }
+
+            //UE_LOG(LogTemp, Warning, TEXT("Timer count %f"), TimerCount);
             SetFloatParameter("CrossfadeParam", TimerCount);
         }
     }
