@@ -9,6 +9,7 @@
 #include "Basket.h"
 #include "VRPawn.h"
 #include "Sound/SoundCue.h"
+#include "BubleTextWidgetClass.h"
 #include "Components/WidgetComponent.h"
 #include "PhrasesAudioComponent.h"
 #include "UObject/UObjectGlobals.h"
@@ -55,6 +56,9 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     UWidgetComponent* WidgetComponent;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    UBubleTextWidgetClass* BubbleText;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     EAnimationState AnimationState;
 
@@ -92,9 +96,6 @@ public:
 
     UFUNCTION(BlueprintCallable)
     void ClearFruitRequests();
-
-    UFUNCTION(BlueprintCallable)
-    FRotator MyLookRotation(FVector lookAt, FVector upDirection);
 
 protected:
     // Called when the game starts or when spawned
