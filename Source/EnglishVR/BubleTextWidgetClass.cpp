@@ -3,6 +3,7 @@
 
 #include "BubleTextWidgetClass.h"
 #include "Components/TextBlock.h"
+#include "Components/CanvasPanel.h"
 #include "Components/ScaleBox.h"
 #include "Components/Image.h"
 
@@ -14,18 +15,23 @@ void UBubleTextWidgetClass::NativeConstruct() {
 }
 
 void UBubleTextWidgetClass::HideWidget() {
-    if (BubleText) {
-        BubleText->SetText(FText::FromString(FString(TEXT(""))));
+    if (BubbleText) {
+        BubbleText->SetText(FText::FromString(FString(TEXT(""))));
     }
 
-    if (BubleImage) {
-        BubleImage->SetOpacity(0);
+    if (BubbleImage) {
+        BubbleImage->SetOpacity(0);
     }
 }
 
 void UBubleTextWidgetClass::SeeBotAnswer(TArray<FString> InputArray, int32 ErrorIndex) {
     FString TmpString;
     int32 Counter = 0;
+
+   // if (InputArray.Num() > 2) {
+   //     BubbleCanvas->SetRenderScale(FVector2D(2180.0f, 2560.0f));
+   //     ImageScaleBox->SetRenderScale(FVector2D(2180.0f, 2560.0f));
+   // }
 
     for (auto& name : InputArray) { 
         if (!((ErrorIndex > 0) && ((Counter+1) == ErrorIndex))) {
@@ -45,8 +51,8 @@ void UBubleTextWidgetClass::SeeBotAnswer(TArray<FString> InputArray, int32 Error
         Counter++;
     }
 
-    BubleImage->SetOpacity(1);
-    BubleText->SetText(FText::FromString(TmpString));
+    BubbleImage->SetOpacity(1);
+    BubbleText->SetText(FText::FromString(TmpString));
 
     World->GetTimerManager().SetTimer(FuzeTimerHandle, this, &UBubleTextWidgetClass::HideWidget, 5.0f);
 }

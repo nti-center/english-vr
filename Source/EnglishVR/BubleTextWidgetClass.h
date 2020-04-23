@@ -18,16 +18,19 @@ public:
     virtual void NativeConstruct() override;
 
     UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+    class UCanvasPanel* BubbleCanvas = nullptr;
+
+    UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
     class UScaleBox* ImageScaleBox = nullptr;
 
     UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
     class UScaleBox* TextScaleBox = nullptr;
 
     UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-    class UTextBlock* BubleText = nullptr;
+    class UTextBlock* BubbleText = nullptr;
 
     UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-    class UImage* BubleImage = nullptr;
+    class UImage* BubbleImage = nullptr;
 
     UPROPERTY()
     UWorld* World;
