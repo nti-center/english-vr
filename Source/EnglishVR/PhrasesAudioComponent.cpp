@@ -148,29 +148,22 @@ void UPhrasesAudioComponent::PlaySoundWithCrossfade(TArray<FString> InputArray, 
 }
 
 void UPhrasesAudioComponent::SetCrossfadeParametr() {
-    if (IsPlaying()) {
-        if (TimerCount >= SummaryDuration) {
-            TimerCount = 0;
-            SummaryDuration = 0;
-
-            GetWorld()->GetTimerManager().ClearTimer(FuzeTimerHandle);
-            Stop();
-        }
-        else {
-            TimerCount += 0.1;
-
-            if (TimerCount >= CurrentDuration - 0.2f && StepCount < PlayersArray.Num()-1) {
-                PlayersArray[StepCount]->bLooping = false;
+    if (TimerCount < SummaryDuration - 0.2f) {
+        TimerCount += 0.1;
+        if (TimerCount >= CurrentDuration - 0.2f) {
+            PlayersArray[StepCount]->bLooping = false;
+            if (StepCount < PlayersArray.Num() - 1) {
                 StepCount++;
                 CurrentDuration = CurrentDuration + SoundDuration[StepCount];
             }
-
-            if(TimerCount >= CurrentDuration - 0.2f && StepCount == PlayersArray.Num() - 1)
-                PlayersArray[StepCount]->bLooping = false;
-
-            UE_LOG(LogTemp, Warning, TEXT("Timer count %f"), TimerCount);
-            SetFloatParameter("CrossfadeParam", TimerCount);
         }
+        SetFloatParameter("CrossfadeParam", TimerCount);
+    }
+    else {
+        Stop();
+        TimerCount = 0;
+        SummaryDuration = 0;
+        GetWorld()->GetTimerManager().ClearTimer(FuzeTimerHandle);           
     }
 }
 
