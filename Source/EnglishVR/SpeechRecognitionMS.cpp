@@ -5,8 +5,9 @@ using namespace Microsoft::CognitiveServices::Speech;
 USpeechRecognitionMS::USpeechRecognitionMS() {
     PrimaryComponentTick.bCanEverTick = true;
 
-    auto config = SpeechConfig::FromSubscription("700eeb8760144050a16bb579f6c7b545", "westus");
-    Recognizer = SpeechRecognizer::FromConfig(config);
+    auto Config = SpeechConfig::FromSubscription("700eeb8760144050a16bb579f6c7b545", "westus");
+    Config->SetProperty(PropertyId::SpeechServiceConnection_EndSilenceTimeoutMs, "2000");
+    Recognizer = SpeechRecognizer::FromConfig(Config);
 }
 
 void USpeechRecognitionMS::BeginPlay() {
@@ -16,7 +17,7 @@ void USpeechRecognitionMS::BeginPlay() {
 
     std::function<void(const SpeechRecognitionEventArgs& E)> RecognizedFunction = std::bind(&USpeechRecognitionMS::Recognized, this, std::placeholders::_1);
     Recognizer->Recognized.Connect(RecognizedFunction);
-
+    //Recognizer->
     Recognizer->StartContinuousRecognitionAsync().get();
 }
 
