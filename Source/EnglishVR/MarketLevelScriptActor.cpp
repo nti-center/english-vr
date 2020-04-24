@@ -6,7 +6,7 @@
 AMarketLevelScriptActor::AMarketLevelScriptActor() {
     PrimaryActorTick.bCanEverTick = true;
 
-    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTable(TEXT("DataTable'/Game/CSV/FruitsAndPath.FruitsAndPath'"));
+    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTable(TEXT("DataTable'/Game/CSV/Fruits.Fruits'"));
     if (_DataTable.Succeeded()) {
         DataTable = _DataTable.Object;
     }
