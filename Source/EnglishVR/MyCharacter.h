@@ -44,7 +44,7 @@ public:
     // Sets default values for this character's properties
     AMyCharacter();
 
-    UPROPERTY(BlueprintReadWrite)
+    UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
     UBoxComponent* Box;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Audio Conmponent", meta = (AllowPrivateAccess = "true"))
