@@ -4,7 +4,7 @@
 AFruitBoxController::AFruitBoxController() {
 	PrimaryActorTick.bCanEverTick = true;
 
-    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTable(TEXT("DataTable'/Game/CSV/FruitsAndPath.FruitsAndPath'"));
+    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTable(TEXT("DataTable'/Game/CSV/Fruits.Fruits'"));
     if (_DataTable.Succeeded()) {
         DataTable = _DataTable.Object;
     }
@@ -51,6 +51,11 @@ TArray<FString> AFruitBoxController::RandomFruitGeneration() {
 // Called when the game starts or when spawned
 void AFruitBoxController::BeginPlay() {
 	Super::BeginPlay();
+
+    UWorld* World = GetWorld();
+    if (World) {
+        World->GetTimerManager().SetTimer(FuzeTimerHandle, this, &AFruitBoxController::DestroyFruits, 5.0f, false);
+    }
 }
 
 // Called every frame
@@ -58,3 +63,18 @@ void AFruitBoxController::Tick(float DeltaTime)  {
 	Super::Tick(DeltaTime);
 }
 
+void AFruitBoxController::DestroyFruits() {
+    TArray<AActor*> FruitArray;
+
+    TSubclassOf<AFruit> ClassToFind;
+    ClassToFind = AFruit::StaticClass();
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ClassToFind, FruitArray);
+
+    for (auto& fruit : FruitArray) {
+       FVector location = fruit->GetActorLocation();
+       if (location.Z < 170) {
+           fruit->Destroy();
+       }
+    }
+
+}

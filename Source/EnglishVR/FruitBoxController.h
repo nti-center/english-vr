@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine.h"
 #include "GameFramework/Actor.h"
+#include "Fruit.h"
 #include "Engine/DataTable.h"
 #include "AudioDataTableStruct.h"
 #include "FruitBoxController.generated.h"
@@ -19,6 +20,9 @@ class ENGLISHVR_API AFruitBoxController : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AFruitBoxController();
+
+    UPROPERTY(BlueprintReadWrite)
+    FTimerHandle FuzeTimerHandle;
 
     UPROPERTY(EditDefaultsOnly)
     UDataTable* DataTable;
@@ -38,6 +42,8 @@ public:
     UFUNCTION(BlueprintCallable)
     TArray<FString> RandomFruitGeneration();
 
+    UFUNCTION(BlueprintCallable)
+    void DestroyFruits();
 
 
 
