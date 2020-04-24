@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "Math/Color.h"
 #include "Engine.h"
+#include "Misc/FileHelper.h"
+#include "Misc/Paths.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "BubleTextWidgetClass.generated.h"
 
@@ -46,5 +48,8 @@ public:
 
     UFUNCTION(BlueprintCallable)
     FRotator MyLookRotation(FVector LookingActor, FVector TargetPosition, FVector WorldUp);
+
+    UFUNCTION(BlueprintCallable)
+    void SaveErrorToFile(FString word);
 
 };

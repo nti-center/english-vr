@@ -27,7 +27,7 @@ void UBubleTextWidgetClass::HideWidget() {
 void UBubleTextWidgetClass::SeeBotAnswer(TArray<FString> InputArray, int32 ErrorIndex) {
     FString TmpString;
     int32 Counter = 0;
-
+    
    // if (InputArray.Num() > 2) {
    //     BubbleCanvas->SetRenderScale(FVector2D(2180.0f, 2560.0f));
    //     ImageScaleBox->SetRenderScale(FVector2D(2180.0f, 2560.0f));
@@ -45,9 +45,12 @@ void UBubleTextWidgetClass::SeeBotAnswer(TArray<FString> InputArray, int32 Error
         }
         else {
             TmpString += name.ToUpper() + " ";
+            SaveErrorToFile(name);           
         }
+
         if((Counter+1) == InputArray.Num() && InputArray.Num() > 2)
             TmpString += "?";
+
         Counter++;
     }
 
@@ -61,6 +64,27 @@ FRotator UBubleTextWidgetClass::MyLookRotation(FVector LookingActor, FVector Tar
     FVector Forward = TargetPosition - LookingActor;
     FRotator Rot = UKismetMathLibrary::MakeRotFromXZ(Forward, WorldUp);
     return Rot;
+}
+
+void UBubleTextWidgetClass::SaveErrorToFile(FString word) {
+    FString FilePath = FPaths::ConvertRelativePathToFull(FPaths::ProjectSavedDir()) + TEXT("/ErrorSounds.txt");
+    TArray<FString> TextArray;
+    bool Check = false;
+    FFileHelper::LoadFileToStringArray(TextArray, *FilePath);
+    if (TextArray.Num() > 0) {
+        for (auto& elem : TextArray) {
+            if (elem == word) {
+                Check = true;
+            }
+        }
+    }
+    if (Check == false) {
+        FString FileContent = word + '\n';
+        FFileHelper::SaveStringToFile(FileContent, *FilePath, FFileHelper::EEncodingOptions::AutoDetect, &IFileManager::Get(), EFileWrite::FILEWRITE_Append);
+    }
+    else {
+        UE_LOG(LogTemp, Warning, TEXT("Already in array"));
+    }
 }
 
 
