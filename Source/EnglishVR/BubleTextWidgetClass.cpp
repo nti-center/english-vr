@@ -57,7 +57,7 @@ void UBubleTextWidgetClass::SeeBotAnswer(TArray<FString> InputArray, int32 Error
     BubbleImage->SetOpacity(1);
     BubbleText->SetText(FText::FromString(TmpString));
 
-    World->GetTimerManager().SetTimer(FuzeTimerHandle, this, &UBubleTextWidgetClass::HideWidget, 5.0f);
+    World->GetTimerManager().SetTimer(FuzeTimerHandle, this, &UBubleTextWidgetClass::HideWidget, 2.5f);
 }
 
 FRotator UBubleTextWidgetClass::MyLookRotation(FVector LookingActor, FVector TargetPosition, FVector WorldUp){
