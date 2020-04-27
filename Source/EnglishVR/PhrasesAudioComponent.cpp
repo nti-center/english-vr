@@ -50,12 +50,12 @@ int UPhrasesAudioComponent::CreateCue(TArray<FString> InputArray) {
     Crossfade->GraphNode->NodePosX = -130;
     Crossfade->GraphNode->NodePosY = 50 * InputArray.Num() / 2;
 
-    SoundCue->FirstNode = Crossfade;
-    //SoundCue->FirstNode = Concatenator;
+    //SoundCue->FirstNode = Crossfade;
+    SoundCue->FirstNode = Concatenator;
     SoundCue->LinkGraphNodesFromSoundNodes();
 
     for (FString name : InputArray) {
-        FString path = "SoundWave'/Game/Sounds/All_phrases/" + name + "." + name + "'";
+        FString path = "SoundWave'/Game/Sounds/GirlSounds/" + name + "." + name + "'";
         USoundWave* SoundWave = LoadObjFromPath<USoundWave>(FName(*path));
 
         if (!SoundWave) {
@@ -107,15 +107,15 @@ int UPhrasesAudioComponent::CreateCue(TArray<FString> InputArray) {
             WavePlayer->GraphNode->NodePosX = -650;
             WavePlayer->GraphNode->NodePosY = -100 * NodeIndex;
 
-            WavePlayer->bLooping = true;
+            //WavePlayer->bLooping = true;
 
             SummaryDuration += SoundWave->GetDuration();
 
-            //Concatenator->CreateStartingConnectors();
-            //Concatenator->ChildNodes[NodeIndex] = WavePlayer;
+            Concatenator->CreateStartingConnectors();
+            Concatenator->ChildNodes[NodeIndex] = WavePlayer;
 
-            Crossfade->CreateStartingConnectors();
-            Crossfade->ChildNodes[NodeIndex] = WavePlayer;
+            //Crossfade->CreateStartingConnectors();
+            //Crossfade->ChildNodes[NodeIndex] = WavePlayer;
 
             SoundCue->LinkGraphNodesFromSoundNodes();
 
@@ -124,7 +124,7 @@ int UPhrasesAudioComponent::CreateCue(TArray<FString> InputArray) {
             NodeIndex++;
         }
     }
-    Crossfade->CrossFadeInput = Datum;
+    //Crossfade->CrossFadeInput = Datum;
     return ErrorIndex;
 }
 
@@ -140,7 +140,7 @@ void UPhrasesAudioComponent::PlaySoundWithCrossfade(TArray<FString> InputArray, 
 
    UWorld* World = GetWorld();
    if (World) {
-       World->GetTimerManager().SetTimer(FuzeTimerHandle, this, &UPhrasesAudioComponent::SetCrossfadeParametr, 0.1f, true);
+       //World->GetTimerManager().SetTimer(FuzeTimerHandle, this, &UPhrasesAudioComponent::SetCrossfadeParametr, 0.01f, true);
    }
 
    Widget->SeeBotAnswer(InputArray, Error);
@@ -148,8 +148,9 @@ void UPhrasesAudioComponent::PlaySoundWithCrossfade(TArray<FString> InputArray, 
 }
 
 void UPhrasesAudioComponent::SetCrossfadeParametr() {
-    if (TimerCount < SummaryDuration - 0.2f) {
-        TimerCount += 0.1;
+    if (TimerCount < SummaryDuration) {
+        TimerCount += 0.01;
+
         if (TimerCount >= CurrentDuration - 0.2f) {
             PlayersArray[StepCount]->bLooping = false;
             if (StepCount < PlayersArray.Num() - 1) {
