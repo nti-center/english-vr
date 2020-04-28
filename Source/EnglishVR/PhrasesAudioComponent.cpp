@@ -50,8 +50,8 @@ int UPhrasesAudioComponent::CreateCue(TArray<FString> InputArray) {
     Crossfade->GraphNode->NodePosX = -130;
     Crossfade->GraphNode->NodePosY = 50 * InputArray.Num() / 2;
 
-    //SoundCue->FirstNode = Crossfade;
-    SoundCue->FirstNode = Concatenator;
+    SoundCue->FirstNode = Crossfade;
+    //SoundCue->FirstNode = Concatenator;
     SoundCue->LinkGraphNodesFromSoundNodes();
 
     for (FString name : InputArray) {
@@ -87,8 +87,8 @@ int UPhrasesAudioComponent::CreateCue(TArray<FString> InputArray) {
                     TempDatum.FadeInDistanceStart = 0;
                     TempDatum.FadeInDistanceEnd = 0;
 
-                    TempDatum.FadeOutDistanceStart = SoundWave->GetDuration() - 0.1f;
-                    TempDatum.FadeOutDistanceEnd = SoundWave->GetDuration();
+                    TempDatum.FadeOutDistanceStart = SoundWave->GetDuration() - 0.15f;
+                    TempDatum.FadeOutDistanceEnd = SoundWave->GetDuration() - 0.05;
                 }
                 else {
                     TempDatum.FadeInDistanceStart = Datum[NodeIndex - 1].FadeOutDistanceStart;
@@ -107,15 +107,15 @@ int UPhrasesAudioComponent::CreateCue(TArray<FString> InputArray) {
             WavePlayer->GraphNode->NodePosX = -650;
             WavePlayer->GraphNode->NodePosY = -100 * NodeIndex;
 
-            //WavePlayer->bLooping = true;
+            WavePlayer->bLooping = true;
 
             SummaryDuration += SoundWave->GetDuration();
 
-            Concatenator->CreateStartingConnectors();
-            Concatenator->ChildNodes[NodeIndex] = WavePlayer;
+            //Concatenator->CreateStartingConnectors();
+            //Concatenator->ChildNodes[NodeIndex] = WavePlayer;
 
-            //Crossfade->CreateStartingConnectors();
-            //Crossfade->ChildNodes[NodeIndex] = WavePlayer;
+            Crossfade->CreateStartingConnectors();
+            Crossfade->ChildNodes[NodeIndex] = WavePlayer;
 
             SoundCue->LinkGraphNodesFromSoundNodes();
 
@@ -124,11 +124,11 @@ int UPhrasesAudioComponent::CreateCue(TArray<FString> InputArray) {
             NodeIndex++;
         }
     }
-    //Crossfade->CrossFadeInput = Datum;
+    Crossfade->CrossFadeInput = Datum;
     return ErrorIndex;
 }
 
-void UPhrasesAudioComponent::PlaySoundWithCrossfade(TArray<FString> InputArray, UBubleTextWidgetClass* Widget) {
+void UPhrasesAudioComponent::PlaySoundWithCrossfade(TArray<FString> InputArray, UWidgetComponent* Widget) {
    if (InputArray.Num() <= 0)
        return;
 
@@ -140,10 +140,14 @@ void UPhrasesAudioComponent::PlaySoundWithCrossfade(TArray<FString> InputArray, 
 
    UWorld* World = GetWorld();
    if (World) {
-       //World->GetTimerManager().SetTimer(FuzeTimerHandle, this, &UPhrasesAudioComponent::SetCrossfadeParametr, 0.01f, true);
+       World->GetTimerManager().SetTimer(FuzeTimerHandle, this, &UPhrasesAudioComponent::SetCrossfadeParametr, 0.01f, true);
    }
 
-   Widget->SeeBotAnswer(InputArray, Error);
+   WidgetBubble = Cast<UBubleTextWidgetClass>(Widget->GetUserWidgetObject());
+   FVector2D WidgetSize = WidgetBubble->SeeBotAnswer(InputArray, Error);
+   if(WidgetSize > Widget->GetDrawSize())
+       Widget->SetDrawSize(WidgetSize);
+
    Play();
 }
 

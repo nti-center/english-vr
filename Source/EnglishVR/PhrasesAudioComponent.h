@@ -9,6 +9,7 @@
 #include "Sound/SoundCue.h"
 #include "EdGraph/EdGraph.h"
 #include "Engine/DataTable.h"
+#include "Components/WidgetComponent.h"
 #include "CrossfadeDataTableStruct.h"
 #include "Sound/SoundNodeWavePlayer.h"
 #include "Sound/SoundNodeParamCrossFade.h"
@@ -32,6 +33,9 @@ public:
 
     UPROPERTY(BlueprintReadWrite)
     FTimerHandle FuzeTimerHandle;
+
+    UPROPERTY(BlueprintReadWrite)
+    UBubleTextWidgetClass* WidgetBubble;
 
     UPROPERTY(EditDefaultsOnly)
     UDataTable* CrossfadeParametrsDataTable;
@@ -61,7 +65,7 @@ public:
     int CreateCue(TArray<FString>InputArray);
 
     UFUNCTION(BlueprintCallable)
-    void PlaySoundWithCrossfade(TArray<FString> InputArray, UBubleTextWidgetClass* Widget);
+    void PlaySoundWithCrossfade(TArray<FString> InputArray, UWidgetComponent* Widget);
 
     UFUNCTION(BlueprintCallable)
     void SetCrossfadeParametr();
