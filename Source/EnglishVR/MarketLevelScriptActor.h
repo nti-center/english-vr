@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Engine/LevelScriptActor.h"
 #include "Kismet/GameplayStatics.h"
-#include "BubleTextWidgetClass.h"
 #include "MyCharacter.h"
 #include "Basket.h"
 #include "Fruit.h"
@@ -72,7 +71,7 @@ public:
     TSubclassOf<class AFruit> FruitClass;
 
     UPROPERTY(EditAnywhere)
-    UBubleTextWidgetClass* WidgetText;
+    UWidgetComponent* Widget;
 
     UFUNCTION(BlueprintCallable)
     void SpawnCharacter();
@@ -117,7 +116,7 @@ public:
 
 private:
     void PlayAction(EAction Action, TArray<FString> ParamArray);
-    void PlayAudio(TArray<FString> PhraseArray, UBubleTextWidgetClass* Widget);
+    void PlayAudio(TArray<FString> PhraseArray, UWidgetComponent* TextWidget);
 
 protected:
     virtual void BeginPlay() override;
