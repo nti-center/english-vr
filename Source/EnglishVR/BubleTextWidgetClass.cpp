@@ -6,6 +6,7 @@
 #include "Components/CanvasPanel.h"
 #include "Components/ScaleBox.h"
 #include "Components/Image.h"
+#include "Components/CanvasPanelSlot.h"
 
 void UBubleTextWidgetClass::NativeConstruct() {
     Super::NativeConstruct();
@@ -22,16 +23,32 @@ void UBubleTextWidgetClass::HideWidget() {
     if (BubbleImage) {
         BubbleImage->SetOpacity(0);
     }
+
 }
 
-void UBubleTextWidgetClass::SeeBotAnswer(TArray<FString> InputArray, int32 ErrorIndex) {
+FVector2D UBubleTextWidgetClass::SetWidgetSize(FVector2D IncreaseImageSize, FVector2D IncreaseTextSize){
+    FVector2D ImageSize = FVector2D(0.0f,0.0f);
+    FVector2D TextSize = FVector2D(0.0f, 0.0f);
+
+    UCanvasPanelSlot* ImageSlot = Cast<UCanvasPanelSlot>(BubbleImage->Slot);
+    UCanvasPanelSlot* TextSlot = Cast<UCanvasPanelSlot>(BubbleText->Slot);
+
+    if (!(ImageSlot && TextSlot))
+        return FVector2D(0.0f, 0.0f);
+
+    ImageSize = ImageSlot->GetSize();
+    TextSize = TextSlot->GetSize();
+
+    ImageSlot->SetSize(ImageSize + IncreaseImageSize);
+    TextSlot->SetSize(TextSize + IncreaseTextSize);
+
+    return FVector2D(ImageSize + IncreaseImageSize);
+}
+
+FVector2D UBubleTextWidgetClass::SeeBotAnswer(TArray<FString> InputArray, int32 ErrorIndex) {
     FString TmpString;
     int32 Counter = 0;
-    
-   // if (InputArray.Num() > 2) {
-   //     BubbleCanvas->SetRenderScale(FVector2D(2180.0f, 2560.0f));
-   //     ImageScaleBox->SetRenderScale(FVector2D(2180.0f, 2560.0f));
-   // }
+    FVector2D SetSize = FVector2D(0.0f, 0.0f);
 
     for (auto& name : InputArray) { 
         if (!((ErrorIndex > 0) && ((Counter+1) == ErrorIndex))) {
@@ -54,10 +71,17 @@ void UBubleTextWidgetClass::SeeBotAnswer(TArray<FString> InputArray, int32 Error
         Counter++;
     }
 
+    TArray<FString> CharacterArray = UKismetStringLibrary::GetCharacterArrayFromString(TmpString);
+    //UE_LOG(LogTemp, Warning, TEXT("Num is: %d"), CharacterArray.Num());
+    if (CharacterArray.Num() >= 60)
+        SetSize = SetWidgetSize(FVector2D(640, 456), FVector2D(380, 240));
+
     BubbleImage->SetOpacity(1);
     BubbleText->SetText(FText::FromString(TmpString));
 
     World->GetTimerManager().SetTimer(FuzeTimerHandle, this, &UBubleTextWidgetClass::HideWidget, 2.5f);
+
+    return SetSize;
 }
 
 FRotator UBubleTextWidgetClass::MyLookRotation(FVector LookingActor, FVector TargetPosition, FVector WorldUp){

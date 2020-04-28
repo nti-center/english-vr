@@ -8,6 +8,7 @@
 #include "Engine.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
+#include "Kismet/KismetStringLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "BubleTextWidgetClass.generated.h"
 
@@ -21,12 +22,6 @@ public:
 
     UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
     class UCanvasPanel* BubbleCanvas = nullptr;
-
-    UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-    class UScaleBox* ImageScaleBox = nullptr;
-
-    UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-    class UScaleBox* TextScaleBox = nullptr;
 
     UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
     class UTextBlock* BubbleText = nullptr;
@@ -44,7 +39,10 @@ public:
     void HideWidget();
 
     UFUNCTION(BlueprintCallable)
-    void SeeBotAnswer(TArray<FString> InputArray, int32 ErrorIndex);
+    FVector2D SetWidgetSize(FVector2D IncreaseImageSize, FVector2D IncreaseTextSize);
+
+    UFUNCTION(BlueprintCallable)
+    FVector2D SeeBotAnswer(TArray<FString> InputArray, int32 ErrorIndex);
 
     UFUNCTION(BlueprintCallable)
     FRotator MyLookRotation(FVector LookingActor, FVector TargetPosition, FVector WorldUp);
