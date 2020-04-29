@@ -3,9 +3,8 @@
 
 #include "BubleTextWidgetClass.h"
 #include "Components/TextBlock.h"
-#include "Components/CanvasPanel.h"
-#include "Components/ScaleBox.h"
 #include "Components/Image.h"
+#include "Components/SizeBox.h"
 #include "Components/CanvasPanelSlot.h"
 
 void UBubleTextWidgetClass::NativeConstruct() {
@@ -26,12 +25,12 @@ void UBubleTextWidgetClass::HideWidget() {
 
 }
 
-FVector2D UBubleTextWidgetClass::SetWidgetSize(FVector2D IncreaseImageSize, FVector2D IncreaseTextSize){
+FVector2D UBubleTextWidgetClass::SetWidgetSize(FVector2D IncreaseImageSize, FVector2D IncreaseTextSize) {
     FVector2D ImageSize = FVector2D(0.0f,0.0f);
     FVector2D TextSize = FVector2D(0.0f, 0.0f);
 
-    UCanvasPanelSlot* ImageSlot = Cast<UCanvasPanelSlot>(BubbleImage->Slot);
-    UCanvasPanelSlot* TextSlot = Cast<UCanvasPanelSlot>(BubbleText->Slot);
+    UCanvasPanelSlot* ImageSlot = Cast<UCanvasPanelSlot>(BubbleImageSizeBox->Slot);
+    UCanvasPanelSlot* TextSlot = Cast<UCanvasPanelSlot>(BubbleTextSizeBox->Slot);
 
     if (!(ImageSlot && TextSlot))
         return FVector2D(0.0f, 0.0f);
@@ -84,7 +83,7 @@ FVector2D UBubleTextWidgetClass::SeeBotAnswer(TArray<FString> InputArray, int32 
     return SetSize;
 }
 
-FRotator UBubleTextWidgetClass::MyLookRotation(FVector LookingActor, FVector TargetPosition, FVector WorldUp){
+FRotator UBubleTextWidgetClass::MyLookRotation(FVector LookingActor, FVector TargetPosition, FVector WorldUp) {
     FVector Forward = TargetPosition - LookingActor;
     FRotator Rot = UKismetMathLibrary::MakeRotFromXZ(Forward, WorldUp);
     return Rot;
