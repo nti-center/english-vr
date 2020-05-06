@@ -122,7 +122,7 @@ public:
     void OnCharacterAudioFinished();
 
     UFUNCTION()
-    void OnSpeechRecognized(FString Text, int Reason);
+    void OnSpeechRecognized(FString Text);
 
 private:
     void PlayAction(EAction Action, TArray<FString> ParamArray);

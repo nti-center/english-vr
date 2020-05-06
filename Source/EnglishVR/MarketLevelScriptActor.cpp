@@ -207,7 +207,7 @@ TArray<FString> AMarketLevelScriptActor::RandomFruitGeneration()
 
         tmp.Add(FruitPath[Rand]);
         tmp.Add(FruitType[Rand]);
-        UE_LOG(LogTemp, Warning, TEXT("Mesh ¹ %d is %s %s"), counter, *tmp[0], *tmp[1]);
+        UE_LOG(LogTemp, Warning, TEXT("Mesh ï¿½ %d is %s %s"), counter, *tmp[0], *tmp[1]);
         return tmp;
     }
 
@@ -224,10 +224,9 @@ TArray<FString> AMarketLevelScriptActor::RandomFruitGeneration()
     return tmp;
 }
 
-void AMarketLevelScriptActor::OnSpeechRecognized(FString Text, int Reason) {
-    if ((int)Microsoft::CognitiveServices::Speech::ResultReason::RecognizedSpeech == Reason) {
-        BotRequest->Request(ECommand::SpeechRecognized, TArray<FString>({Text.Replace(TEXT(" "), TEXT("+"))}));
-    }
+void AMarketLevelScriptActor::OnSpeechRecognized(FString Text) {
+    UE_LOG(LogTemp, Warning, TEXT("Recognized text: %s"), *Text);
+    //BotRequest->Request(ECommand::SpeechRecognized, TArray<FString>({Text.Replace(TEXT(" "), TEXT("+"))}));
 }
 
 void AMarketLevelScriptActor::OnCharacterCanTakeBasket() {

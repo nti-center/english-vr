@@ -33,10 +33,10 @@ void USpeechRecognitionMS::StartRecognition() {
 
 void USpeechRecognitionMS::Recognized(const SpeechRecognitionEventArgs& E) {
     auto Result = E.Result;
-    OnRecognized.Broadcast(FString(Result->Text.c_str()), (int)Result->Reason);
 
     if (Result->Reason == ResultReason::RecognizedSpeech) {
         FString RecognizedString(Result->Text.c_str());
+        OnRecognized.Broadcast(RecognizedString);
         UE_LOG(LogTemp, Warning, TEXT("We recognized: %s"), *RecognizedString);
     }
     else if (Result->Reason == ResultReason::NoMatch) {

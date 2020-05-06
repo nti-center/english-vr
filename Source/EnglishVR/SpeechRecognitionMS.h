@@ -10,7 +10,7 @@
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class ENGLISHVR_API USpeechRecognitionMS : public USceneComponent {
     GENERATED_BODY()
-    DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRecognizedDelegate, FString, Text, int, Reason);
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRecognizedDelegate, FString, Text);
 
 public:
     USpeechRecognitionMS();
