@@ -102,6 +102,33 @@
     </category>
     
     <category>
+        <pattern>cmdSpeechRecognized *</pattern>
+        <template>
+            {
+                "VoicePhrases": "Great"
+            }
+        </template>
+    </category>
+    
+    <category>
+        <pattern>cmdSpeechRecognized $Hello</pattern>
+        <template>
+            {
+                "VoicePhrases": "Good_morning"
+            }
+        </template>
+    </category>
+    
+    <category>
+        <pattern>cmdSpeechRecognized $12</pattern>
+        <template>
+            {
+                "VoicePhrases": "One Two"
+            }
+        </template>
+    </category>
+    
+    <category>
         <pattern>cmdBasketOverlapCharacterBegin</pattern>
         <template>
             <think><set name="topic">startChecking</set></think>
@@ -145,14 +172,6 @@
             <pattern>cmdCorrectFruitsCount</pattern>
             <template>
                 <random>
-                    <li>
-                        <think><srai>generateRandomRequest</srai></think>
-                        {
-                            "Actions": "AddRequest",
-                            "Params": ["<map name="string2int"><get name="fruitCount"></get></map>", "<get name="fruitType"></get>"],
-                            "VoicePhrases": "Actaully_please_add <get name="fruitCount"></get> <get name="phraseType"></get>"
-                        }
-                    </li>
                     <li>
                         <think><set name="topic">readyToTakeBasket</set></think>
                         {

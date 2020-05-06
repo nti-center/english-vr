@@ -20,6 +20,7 @@ enum class ECommand : uint8 {
     IncorrectFruitsCount        UMETA(DisplayName = "IncorrectFruitsCount"),
     NewCharacterSpawned         UMETA(DisplayName = "NewCharacterSpawned"),
     ReachedMarket               UMETA(DisplayName = "ReachedMarket"),
+    SpeechRecognized            UMETA(DisplayName = "SpeechRecognized"),
     Start                       UMETA(DisplayName = "Start"),
     Hit                         UMETA(DisplayName = "Hit"),
 };
@@ -56,6 +57,7 @@ const TMap<ECommand, FString> Commands = {
     { ECommand::IncorrectFruitsCount,        "cmdIncorrectFruitsCount" },
     { ECommand::NewCharacterSpawned,         "cmdNewCharacterSpawned" },
     { ECommand::ReachedMarket,               "cmdReachedMarket" },
+    { ECommand::SpeechRecognized,            "cmdSpeechRecognized" },
     { ECommand::Start,                       "cmdStart" },
     { ECommand::Hit,                         "cmdHit" },
 };
@@ -87,7 +89,9 @@ class ENGLISHVR_API UBotRequest : public USceneComponent {
 public:
     UBotRequest();
     void Request(ECommand Command);
+    void Request(ECommand Command, TArray<FString> Params);
     void ResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+
     UPROPERTY(BlueprintAssignable, BlueprintCallable)
     FResponseReceivedDelegate OnResponseReceived;
 
@@ -95,6 +99,7 @@ private:
     FHttpModule* Http;
 
     TArray<FString> ParsePhrasesString(const FString& PhrasesString);
+    void Request(FString RequestString);
 
 protected:
     virtual void BeginPlay() override;

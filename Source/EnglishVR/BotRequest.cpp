@@ -19,13 +19,23 @@ void UBotRequest::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 }
 
 void UBotRequest::Request(ECommand Command) {
+    Request(Commands[Command]);
+}
 
+void UBotRequest::Request(ECommand Command, TArray<FString> Params) {
+    FString RequestString = Commands[Command];
+    for (auto& Param: Params)
+        RequestString += "+" + Param;
+    Request(RequestString);
+}
+
+void UBotRequest::Request(FString RequestString) {
     TSharedRef<IHttpRequest> Request = Http->CreateRequest();
 
     FString UserID = "Player";
     Request->OnProcessRequestComplete().BindUObject(this, &UBotRequest::ResponseReceived);
 
-    Request->SetURL(TEXT("http://localhost:8989/api/rest/v2.0/ask?query=" + Commands[Command] + "&userId=" + UserID));
+    Request->SetURL(TEXT("http://localhost:8989/api/rest/v2.0/ask?query=" + RequestString + "&userId=" + UserID));
     Request->SetVerb("GET");
     Request->SetHeader(TEXT("User-Agent"), "X-UnrealEngine-Agent");
     Request->SetHeader("Content-Type", TEXT("application/json"));
