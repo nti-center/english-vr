@@ -17,8 +17,6 @@ void USpeechRecognitionMS::BeginPlay() {
 
     std::function<void(const SpeechRecognitionEventArgs& E)> RecognizedFunction = std::bind(&USpeechRecognitionMS::Recognized, this, std::placeholders::_1);
     Recognizer->Recognized.Connect(RecognizedFunction);
-    //Recognizer->
-    Recognizer->StartContinuousRecognitionAsync().get();
 }
 
 void USpeechRecognitionMS::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {
@@ -27,6 +25,10 @@ void USpeechRecognitionMS::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 void USpeechRecognitionMS::StopRecognition() {
     Recognizer->StopContinuousRecognitionAsync().get();
+}
+
+void USpeechRecognitionMS::StartRecognition() {
+    Recognizer->StartContinuousRecognitionAsync().get();
 }
 
 void USpeechRecognitionMS::Recognized(const SpeechRecognitionEventArgs& E) {

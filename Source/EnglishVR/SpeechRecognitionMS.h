@@ -18,6 +18,9 @@ public:
     UFUNCTION(BlueprintCallable)
     void StopRecognition();
 
+    UFUNCTION(BlueprintCallable)
+    void StartRecognition();
+
     UPROPERTY(BlueprintAssignable, BlueprintCallable)
     FRecognizedDelegate OnRecognized;
 
