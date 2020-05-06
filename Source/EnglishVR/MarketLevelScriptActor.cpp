@@ -31,6 +31,15 @@ static FORCEINLINE ObjClass* LoadObjFromPath(const FName& Path) {
 void AMarketLevelScriptActor::BeginPlay() {
     Super::BeginPlay();
 
+    if (SpeechRecognizerType) {
+        SpeechRecognizer = Cast<USpeechRecognizer>(SpeechRecognizerType->GetDefaultObject());
+        SpeechRecognizer->OnRecognized.AddDynamic(this, &AMarketLevelScriptActor::OnSpeechRecognized);
+        SpeechRecognizer->SetupAttachment(RootComponent);
+    }
+    else {
+        UE_LOG(LogTemp, Warning, TEXT("Speech recognizer type is not initilized"));
+    }
+
     //SpawnFruits();
     if (!VRPawn) {
         UE_LOG(LogTemp, Warning, TEXT("VR pawn is not initilized"));

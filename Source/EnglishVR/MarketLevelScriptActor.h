@@ -11,6 +11,8 @@
 #include "BotRequest.h"
 #include "FinalTargetPoint.h"
 #include "SpeechRecognitionMS.h"
+#include "SpeechRecognizer.h"
+#include "SpeechRecognizerDeepSpeech.h"
 #include "MarketLevelScriptActor.generated.h"
 
 UCLASS()
@@ -79,6 +81,12 @@ public:
 
     UPROPERTY(EditDefaultsOnly)
     USpeechRecognitionMS* SpeechRecognition;
+
+    UPROPERTY(EditDefaultsOnly)
+    USpeechRecognizer* SpeechRecognizer;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TSubclassOf<class USpeechRecognizer> SpeechRecognizerType;
 
     UFUNCTION(BlueprintCallable)
     void SpawnCharacter();
