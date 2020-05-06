@@ -41,7 +41,10 @@ void AMarketLevelScriptActor::BeginPlay() {
     }
 
     //SpawnFruits();
-    if (!VRPawn) {
+    if (VRPawn) {
+        VRPawn->OnAudioRecorded.AddDynamic(this, &AMarketLevelScriptActor::OnAudioRecorded);
+    }
+    else {
         UE_LOG(LogTemp, Warning, TEXT("VR pawn is not initilized"));
     }
 
@@ -98,6 +101,10 @@ void AMarketLevelScriptActor::OnCharacterHit(UPrimitiveComponent* HitComponent, 
 
     if (NormalImpulse.Size() > 50) 
         BotRequest->Request(ECommand::Hit);
+}
+
+void AMarketLevelScriptActor::OnAudioRecorded(FString File) {
+    SpeechRecognizer->Recognize(File);
 }
 
 void AMarketLevelScriptActor::OnCharacterAudioFinished() {
@@ -216,7 +223,7 @@ TArray<FString> AMarketLevelScriptActor::RandomFruitGeneration()
 
         tmp.Add(FruitPath[Rand]);
         tmp.Add(FruitType[Rand]);
-        UE_LOG(LogTemp, Warning, TEXT("Mesh ï¿½ %d is %s %s"), counter, *tmp[0], *tmp[1]);
+        UE_LOG(LogTemp, Warning, TEXT("Mesh ¹ %d is %s %s"), counter, *tmp[0], *tmp[1]);
         return tmp;
     }
 

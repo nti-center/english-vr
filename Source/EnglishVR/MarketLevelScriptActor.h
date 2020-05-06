@@ -132,6 +132,9 @@ public:
     UFUNCTION()
     void OnSpeechRecognized(FString Text);
 
+    UFUNCTION()
+    void OnAudioRecorded(FString File);
+
 private:
     void PlayAction(EAction Action, TArray<FString> ParamArray);
     void PlayAudio(TArray<FString> PhraseArray, UWidgetComponent* TextWidget);
