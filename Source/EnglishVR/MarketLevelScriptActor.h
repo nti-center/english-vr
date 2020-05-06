@@ -35,7 +35,7 @@ public:
     ATargetPoint* BasketSpawnPoint;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    ATargetPoint* CharacterSpawnPoint;
+    AActor* CharacterSpawnPoint;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     AFinalTargetPoint* MarketPoint;
@@ -72,6 +72,9 @@ public:
 
     UPROPERTY(EditAnywhere)
     UWidgetComponent* Widget;
+
+    UFUNCTION(BlueprintCallable)
+    void SelectSpawnAndDestroyPoint();
 
     UFUNCTION(BlueprintCallable)
     void SpawnCharacter();

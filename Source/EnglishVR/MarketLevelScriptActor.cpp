@@ -16,6 +16,8 @@ AMarketLevelScriptActor::AMarketLevelScriptActor() {
     BotRequest = CreateDefaultSubobject<UBotRequest>(TEXT("BotRequest"));
     BotRequest->OnResponseReceived.AddDynamic(this, &AMarketLevelScriptActor::OnBotResponseReceived);
     BotRequest->SetupAttachment(RootComponent);
+
+
 }
 
 template <typename ObjClass>
@@ -41,7 +43,27 @@ void AMarketLevelScriptActor::Tick(float DeltaTime) {
     Super::Tick(DeltaTime);
 }
 
+void AMarketLevelScriptActor::SelectSpawnAndDestroyPoint() {
+    TArray<AActor*> SpawnPointsArray;
+    TArray<AActor*> DestroyPointsArray;
+    int32 Rand = 0;
+
+    UGameplayStatics::GetAllActorsWithTag(GetWorld(), "SpawnPoint", SpawnPointsArray);
+    UGameplayStatics::GetAllActorsWithTag(GetWorld(), "EndPoint", DestroyPointsArray);
+
+    Rand = FMath::RandRange(0, SpawnPointsArray.Num() - 1);
+    CharacterSpawnPoint = SpawnPointsArray[Rand];
+
+    Rand = 0;
+    Rand = FMath::RandRange(0, DestroyPointsArray.Num() - 1);
+    OutPath.Add(DestroyPointsArray[Rand]);
+    //UE_LOG(LogTemp, Warning, TEXT("Length: %d Number: %d "), OutPath.Num(), Rand);
+}
+
 void AMarketLevelScriptActor::SpawnCharacter() {
+
+    SelectSpawnAndDestroyPoint();
+
     if (CharacterSpawnPoint == nullptr || ToCharacterSpawn == nullptr)
         return;
 
