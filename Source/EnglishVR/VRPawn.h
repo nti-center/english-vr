@@ -11,7 +11,8 @@
 
 UCLASS()
 class ENGLISHVR_API AVRPawn : public APawn {
- GENERATED_BODY()
+    GENERATED_BODY()
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAudioRecordedDelegate, FString, File);
 
 public:
     // Sets default values for this pawn's properties
@@ -19,6 +20,9 @@ public:
     
     UPROPERTY(BlueprintReadWrite,EditAnywhere)
     ATargetPoint* ResetPoint;
+
+    UPROPERTY(BlueprintAssignable, BlueprintCallable)
+    FAudioRecordedDelegate OnAudioRecorded;
     
     void ResetPositionAndRotation();
 
