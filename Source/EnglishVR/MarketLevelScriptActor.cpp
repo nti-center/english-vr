@@ -32,6 +32,9 @@ void AMarketLevelScriptActor::BeginPlay() {
     Super::BeginPlay();
 
     //SpawnFruits();
+    if (!VRPawn) {
+        UE_LOG(LogTemp, Warning, TEXT("VR pawn is not initilized"));
+    }
 
     if (MarketPoint) {
         MarketPoint->FillSphere->OnComponentBeginOverlap.AddDynamic(this, &AMarketLevelScriptActor::OnTargetPointOverlapBegin);

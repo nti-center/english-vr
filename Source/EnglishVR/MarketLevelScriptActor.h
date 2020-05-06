@@ -21,6 +21,9 @@ public:
     AMarketLevelScriptActor();
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    AVRPawn* VRPawn;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     AMyCharacter* Character;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
