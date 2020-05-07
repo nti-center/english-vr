@@ -29,7 +29,7 @@ static FORCEINLINE ObjClass* LoadObjFromPath(const FName& Path) {
 void AMarketLevelScriptActor::BeginPlay() {
     Super::BeginPlay();
 
-    //SpawnFruits();
+    SpawnFruits();
 
     if (MarketPoint) {
         MarketPoint->FillSphere->OnComponentBeginOverlap.AddDynamic(this, &AMarketLevelScriptActor::OnTargetPointOverlapBegin);
@@ -46,18 +46,34 @@ void AMarketLevelScriptActor::Tick(float DeltaTime) {
 void AMarketLevelScriptActor::SelectSpawnAndDestroyPoint() {
     TArray<AActor*> SpawnPointsArray;
     TArray<AActor*> DestroyPointsArray;
-    int32 Rand = 0;
+    TArray<AActor*> ChildActors;
 
     UGameplayStatics::GetAllActorsWithTag(GetWorld(), "SpawnPoint", SpawnPointsArray);
     UGameplayStatics::GetAllActorsWithTag(GetWorld(), "EndPoint", DestroyPointsArray);
 
-    Rand = FMath::RandRange(0, SpawnPointsArray.Num() - 1);
+    int32 Rand = FMath::RandRange(0, SpawnPointsArray.Num() - 1);
     CharacterSpawnPoint = SpawnPointsArray[Rand];
+    CharacterSpawnPoint->GetAllChildActors(ChildActors);
 
-    Rand = 0;
+    if (ChildActors.Num() > 0) {
+        ToPath.Append(ChildActors);
+        ChildActors.Empty();
+    }
+
+    MarketPoint->GetAllChildActors(ChildActors);
+    if (ChildActors.Num() > 0) {
+        ToPath.Append(ChildActors);
+        ChildActors.Empty();
+    }
+    ToPath.Add(MarketPoint);
+
     Rand = FMath::RandRange(0, DestroyPointsArray.Num() - 1);
+    DestroyPointsArray[Rand]->GetAllChildActors(ChildActors);
+    if (ChildActors.Num() > 0) {
+        OutPath.Append(ChildActors);
+        ChildActors.Empty();
+    }   
     OutPath.Add(DestroyPointsArray[Rand]);
-    //UE_LOG(LogTemp, Warning, TEXT("Length: %d Number: %d "), OutPath.Num(), Rand);
 }
 
 void AMarketLevelScriptActor::SpawnCharacter() {
@@ -142,13 +158,15 @@ void AMarketLevelScriptActor::SpawnFruits() {
 
     MarketActor[0]->GetComponents<UStaticMeshComponent>(children);
 
+    for (int i = 0; i < children.Num(); i++) {
+        //UE_LOG(LogTemp, Error, TEXT("Children: %s"), *children[i]->GetRelativeLocation().ToString());
+    }
+
     if (children.Num() < 0)
         return;
 
-    children.RemoveAt(0, 18, true);
-       
-    for (auto& it : children) {
-
+    //for (auto& it : children) {
+    for(int l = 0; l < 2; l++) {
         TArray<FString> tmp = RandomFruitGeneration();
         UStaticMesh* CurrentFruitMesh = LoadObjFromPath<UStaticMesh>(FName(*tmp[0]));
         FString CurrentFruitType = tmp[1];
@@ -166,8 +184,10 @@ void AMarketLevelScriptActor::SpawnFruits() {
         FActorSpawnParameters SpawnParams;
         SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-        FVector FruitBoxBE = it->GetStaticMesh()->GetBounds().BoxExtent;
-        FVector FruitBoxOrigin = it->GetComponentLocation() - FruitBoxBE;
+        FVector FruitBoxBE = children[l]->GetStaticMesh()->GetBounds().BoxExtent;
+        FVector FruitBoxOrigin = children[l]->GetComponentLocation() - FruitBoxBE;
+
+        UE_LOG(LogTemp, Error, TEXT("Location is: %s"), *children[l]->GetComponentLocation().ToString());
 
         FVector FruitBE = CurrentFruitMesh->GetBounds().BoxExtent;
         FVector FruitOffset = FruitBE / 3.0f;
@@ -196,7 +216,7 @@ void AMarketLevelScriptActor::SpawnFruits() {
 
                     FRotator RRotator(FMath::RandRange(-40, 40), FMath::RandRange(-40, 40), FMath::RandRange(-40, 40));
                     FVector FruitLocation = FVector(CurrX + ROffsetX, CurrY + ROffsetY, CurrZ + ROffsetZ);
-                    FVector Location = it->GetComponentLocation() + OriginOffset + it->GetComponentRotation().RotateVector(FruitLocation - FruitBoxBE);
+                    FVector Location = children[l]->GetComponentLocation() + OriginOffset + children[l]->GetComponentRotation().RotateVector(FruitLocation - FruitBoxBE);
 
                     AFruit* Fruit = World->SpawnActor<AFruit>(FruitClass, Location, RRotator, SpawnParams);
 
