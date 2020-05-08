@@ -20,6 +20,14 @@ public class EnglishVR : ModuleRules {
 
         bEnableExceptions = true;
 
+        RuntimeDependencies.Add("$(BinaryOutputDir)/pocketsphinx.dll", "$(ProjectDir)/SpeechRecognition/Sphinx/pocketsphinx/lib/pocketsphinx.dll");
+        RuntimeDependencies.Add("$(BinaryOutputDir)/sphinxbase.dll", "$(ProjectDir)/SpeechRecognition/Sphinx/sphinxbase/lib/sphinxbase.dll");
+        PublicAdditionalLibraries.Add("$(ProjectDir)/SpeechRecognition/Sphinx/pocketsphinx/lib/pocketsphinx.lib");
+        PublicAdditionalLibraries.Add("$(ProjectDir)/SpeechRecognition/Sphinx/sphinxbase/lib/sphinxbase.lib");
+        PublicIncludePaths.Add("../SpeechRecognition/Sphinx/pocketsphinx/include");
+        PublicIncludePaths.Add("../SpeechRecognition/Sphinx/sphinxbase/include");
+        PublicIncludePaths.Add("../SpeechRecognition/Sphinx/sphinxbase/include/win32");
+
         RuntimeDependencies.Add("$(BinaryOutputDir)/Microsoft.CognitiveServices.Speech.core.dll", "$(ProjectDir)/packages/Microsoft.CognitiveServices.Speech.1.11.0/runtimes/win-x64/native/Microsoft.CognitiveServices.Speech.core.dll");
         RuntimeDependencies.Add("$(BinaryOutputDir)/Microsoft.CognitiveServices.Speech.extension.codec.dll", "$(ProjectDir)/packages/Microsoft.CognitiveServices.Speech.1.11.0/runtimes/win-x64/native/Microsoft.CognitiveServices.Speech.extension.codec.dll");
         RuntimeDependencies.Add("$(BinaryOutputDir)/Microsoft.CognitiveServices.Speech.extension.kws.dll", "$(ProjectDir)/packages/Microsoft.CognitiveServices.Speech.1.11.0/runtimes/win-x64/native/Microsoft.CognitiveServices.Speech.extension.kws.dll");

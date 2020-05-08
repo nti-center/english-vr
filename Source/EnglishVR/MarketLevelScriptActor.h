@@ -13,6 +13,7 @@
 #include "SpeechRecognitionMS.h"
 #include "SpeechRecognizer.h"
 #include "SpeechRecognizerDeepSpeech.h"
+#include "SpeechRecognizerSphinx.h"
 #include "MarketLevelScriptActor.generated.h"
 
 UCLASS()
