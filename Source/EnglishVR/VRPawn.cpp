@@ -10,6 +10,10 @@ AVRPawn::AVRPawn() {
     
     AutoPossessPlayer = EAutoReceiveInput::Player0;
 
+    AudioCapture = CreateDefaultSubobject<UAudioCaptureComponent>(TEXT("AudioCapture"));
+    AudioCapture->SetupAttachment(RootComponent);
+
+    SoundSubmix = CreateDefaultSubobject<USoundSubmix>(TEXT("SoundSubmix"));
 }
 
 void AVRPawn::ResetPositionAndRotation() {

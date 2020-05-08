@@ -6,6 +6,8 @@
 #include "Components/InputComponent.h"
 #include "Engine/TargetPoint.h"
 #include "EngineUtils.h"
+#include "AudioCaptureComponent.h"
+#include "Sound/SoundSubmix.h"
 #include "GameFramework/Pawn.h"
 #include "VRPawn.generated.h"
 
@@ -20,6 +22,12 @@ public:
     
     UPROPERTY(BlueprintReadWrite,EditAnywhere)
     ATargetPoint* ResetPoint;
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    UAudioCaptureComponent* AudioCapture;
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    USoundSubmix* SoundSubmix;
 
     UPROPERTY(BlueprintAssignable, BlueprintCallable)
     FAudioRecordedDelegate OnAudioRecorded;
