@@ -23,6 +23,9 @@ public:
     AMyCharacter* Character;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    AActor* MarketActor;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TSubclassOf<class AMyCharacter> ToCharacterSpawn;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)

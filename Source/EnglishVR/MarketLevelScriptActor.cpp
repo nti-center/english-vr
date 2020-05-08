@@ -16,8 +16,6 @@ AMarketLevelScriptActor::AMarketLevelScriptActor() {
     BotRequest = CreateDefaultSubobject<UBotRequest>(TEXT("BotRequest"));
     BotRequest->OnResponseReceived.AddDynamic(this, &AMarketLevelScriptActor::OnBotResponseReceived);
     BotRequest->SetupAttachment(RootComponent);
-
-
 }
 
 template <typename ObjClass>
@@ -29,7 +27,7 @@ static FORCEINLINE ObjClass* LoadObjFromPath(const FName& Path) {
 void AMarketLevelScriptActor::BeginPlay() {
     Super::BeginPlay();
 
-    SpawnFruits();
+    //SpawnFruits();
 
     if (MarketPoint) {
         MarketPoint->FillSphere->OnComponentBeginOverlap.AddDynamic(this, &AMarketLevelScriptActor::OnTargetPointOverlapBegin);
@@ -78,7 +76,7 @@ void AMarketLevelScriptActor::SelectSpawnAndDestroyPoint() {
 
 void AMarketLevelScriptActor::SpawnCharacter() {
 
-    SelectSpawnAndDestroyPoint();
+    //SelectSpawnAndDestroyPoint();
 
     if (CharacterSpawnPoint == nullptr || ToCharacterSpawn == nullptr)
         return;
@@ -134,9 +132,9 @@ void AMarketLevelScriptActor::OnBasketFruitCountChanged() {
 }
 
 void AMarketLevelScriptActor::SpawnFruits() {
-    TArray<AActor*> MarketActor;
     TArray<UStaticMeshComponent*> children;
     FString ContextString;
+    UWorld* World = GetWorld();
 
     for (auto it : DataTable->GetRowMap()) {
         FAudioDataTableStruct* Row = DataTable->FindRow<FAudioDataTableStruct>(it.Key, ContextString, true);
@@ -146,21 +144,11 @@ void AMarketLevelScriptActor::SpawnFruits() {
         }
     }
 
-    UWorld* World = GetWorld();
-    if (World) {
-        UGameplayStatics::GetAllActorsWithTag(World, "Market", MarketActor);
-    }
+    MarketActor->GetComponents<UStaticMeshComponent>(children);
 
-    if (MarketActor.Num() <= 0) { 
-        UE_LOG(LogTemp, Warning, TEXT("NotFindMarket"));
-        return;
-    }
-
-    MarketActor[0]->GetComponents<UStaticMeshComponent>(children);
-
-    for (int i = 0; i < children.Num(); i++) {
-        //UE_LOG(LogTemp, Error, TEXT("Children: %s"), *children[i]->GetRelativeLocation().ToString());
-    }
+   // for (int i = 0; i < children.Num(); i++) {
+   //     //UE_LOG(LogTemp, Error, TEXT("Children: %s"), *children[i]->GetRelativeLocation().ToString());
+   // }
 
     if (children.Num() < 0)
         return;
