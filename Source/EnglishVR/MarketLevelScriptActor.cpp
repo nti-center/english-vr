@@ -42,6 +42,8 @@ void AMarketLevelScriptActor::Tick(float DeltaTime) {
 }
 
 void AMarketLevelScriptActor::SelectSpawnAndDestroyPoint() {
+    ToPath.Empty();
+    OutPath.Empty();
     TArray<AActor*> SpawnPointsArray;
     TArray<AActor*> DestroyPointsArray;
     TArray<AActor*> ChildActors;
@@ -50,6 +52,9 @@ void AMarketLevelScriptActor::SelectSpawnAndDestroyPoint() {
     UGameplayStatics::GetAllActorsWithTag(GetWorld(), "EndPoint", DestroyPointsArray);
 
     int32 Rand = FMath::RandRange(0, SpawnPointsArray.Num() - 1);
+
+    UE_LOG(LogTemp, Warning, TEXT("Num: %d Rand: %d"), SpawnPointsArray.Num(), Rand);
+
     CharacterSpawnPoint = SpawnPointsArray[Rand];
     CharacterSpawnPoint->GetAllChildActors(ChildActors);
 
@@ -76,7 +81,7 @@ void AMarketLevelScriptActor::SelectSpawnAndDestroyPoint() {
 
 void AMarketLevelScriptActor::SpawnCharacter() {
 
-    //SelectSpawnAndDestroyPoint();
+    SelectSpawnAndDestroyPoint();
 
     if (CharacterSpawnPoint == nullptr || ToCharacterSpawn == nullptr)
         return;
