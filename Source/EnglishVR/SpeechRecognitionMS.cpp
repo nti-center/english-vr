@@ -1,6 +1,7 @@
 #include "SpeechRecognitionMS.h"
 
 using namespace Microsoft::CognitiveServices::Speech;
+using namespace Microsoft::CognitiveServices::Speech::Audio;
 
 USpeechRecognitionMS::USpeechRecognitionMS() {
     PrimaryComponentTick.bCanEverTick = true;
@@ -31,9 +32,22 @@ void USpeechRecognitionMS::StartRecognition() {
     Recognizer->StartContinuousRecognitionAsync().get();
 }
 
-void USpeechRecognitionMS::Recognized(const SpeechRecognitionEventArgs& E) {
-    auto Result = E.Result;
+void USpeechRecognitionMS::Recognize(const FString& File) {
+    auto Config = SpeechConfig::FromSubscription("700eeb8760144050a16bb579f6c7b545", "westus");
+    Config->SetProperty(PropertyId::SpeechServiceConnection_EndSilenceTimeoutMs, "2000");
+    auto AudioInput = AudioConfig::FromWavFileInput(TCHAR_TO_UTF8(*(File + ".wav")));
+    auto SR = SpeechRecognizer::FromConfig(Config, AudioInput);
+    
+    auto Result = SR->RecognizeOnceAsync().get();
 
+    ParseResult(Result);
+}
+
+void USpeechRecognitionMS::Recognized(const SpeechRecognitionEventArgs& E) {
+    ParseResult(E.Result);
+}
+
+void USpeechRecognitionMS::ParseResult(std::shared_ptr<Microsoft::CognitiveServices::Speech::SpeechRecognitionResult> Result) {
     if (Result->Reason == ResultReason::RecognizedSpeech) {
         FString RecognizedString(Result->Text.c_str());
         OnRecognized.Broadcast(RecognizedString);

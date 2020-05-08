@@ -5,12 +5,12 @@
 #include "CoreMinimal.h"
 #include "Components/SceneComponent.h"
 #include "speechapi_cxx.h"
+#include "SpeechRecognizer.h"
 #include "SpeechRecognitionMS.generated.h"
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class ENGLISHVR_API USpeechRecognitionMS : public USceneComponent {
+class ENGLISHVR_API USpeechRecognitionMS : public USpeechRecognizer {
     GENERATED_BODY()
-    DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRecognizedDelegate, FString, Text);
 
 public:
     USpeechRecognitionMS();
@@ -21,12 +21,12 @@ public:
     UFUNCTION(BlueprintCallable)
     void StartRecognition();
 
-    UPROPERTY(BlueprintAssignable, BlueprintCallable)
-    FRecognizedDelegate OnRecognized;
+    virtual void Recognize(const FString& File) override;
 
 protected:
     virtual void BeginPlay() override;
     void Recognized(const Microsoft::CognitiveServices::Speech::SpeechRecognitionEventArgs& E);
+    void ParseResult(std::shared_ptr<Microsoft::CognitiveServices::Speech::SpeechRecognitionResult> Result);
 
     std::shared_ptr<Microsoft::CognitiveServices::Speech::SpeechRecognizer> Recognizer;    
 
