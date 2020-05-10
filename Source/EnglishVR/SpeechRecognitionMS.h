@@ -21,6 +21,9 @@ public:
     UFUNCTION(BlueprintCallable)
     void StartRecognition();
 
+    UFUNCTION(BlueprintCallable)
+    void CreateReognizer(const FString& Subscription, const FString& Region);
+
     virtual void Recognize(const FString& File) override;
 
 protected:

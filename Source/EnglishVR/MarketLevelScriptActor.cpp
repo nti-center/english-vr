@@ -12,14 +12,12 @@ AMarketLevelScriptActor::AMarketLevelScriptActor() {
     }
 
     FruitClass = AFruit::StaticClass();
+    MSRegion = "westus";
 
     BotRequest = CreateDefaultSubobject<UBotRequest>(TEXT("BotRequest"));
     BotRequest->OnResponseReceived.AddDynamic(this, &AMarketLevelScriptActor::OnBotResponseReceived);
     BotRequest->SetupAttachment(RootComponent);
-
-    SpeechRecognition = CreateDefaultSubobject<USpeechRecognitionMS>(TEXT("SpeechRecognition"));
-    SpeechRecognition->OnRecognized.AddDynamic(this, &AMarketLevelScriptActor::OnSpeechRecognized);
-    SpeechRecognition->SetupAttachment(RootComponent);
+    
 }
 
 template <typename ObjClass>
@@ -35,6 +33,15 @@ void AMarketLevelScriptActor::BeginPlay() {
         SpeechRecognizer = Cast<USpeechRecognizer>(SpeechRecognizerType->GetDefaultObject());
         SpeechRecognizer->OnRecognized.AddDynamic(this, &AMarketLevelScriptActor::OnSpeechRecognized);
         SpeechRecognizer->SetupAttachment(RootComponent);
+
+        if (Cast<USpeechRecognitionMS>(SpeechRecognizer)) {
+            if (!MSSubscription.IsEmpty() && !MSRegion.IsEmpty()) {
+                Cast<USpeechRecognitionMS>(SpeechRecognizer)->CreateReognizer(MSSubscription, MSRegion);
+            }
+            else {
+                UE_LOG(LogTemp, Warning, TEXT("MSSubscription or MSRegion is not initilized"));
+            }
+        }
     }
     else {
         UE_LOG(LogTemp, Warning, TEXT("Speech recognizer type is not initilized"));
@@ -54,6 +61,14 @@ void AMarketLevelScriptActor::BeginPlay() {
     else {
         UE_LOG(LogTemp, Warning, TEXT("Market point is not initilized"));
     }
+}
+
+void AMarketLevelScriptActor::EndPlay(const EEndPlayReason::Type EndPlayReason) {
+    if (SpeechRecognizerType && Cast<USpeechRecognitionMS>(SpeechRecognizer) && !MSSubscription.IsEmpty() && !MSRegion.IsEmpty()) {
+        Cast<USpeechRecognitionMS>(SpeechRecognizer)->StopRecognition();
+    }
+
+    Super::EndPlay(EndPlayReason);
 }
 
 void AMarketLevelScriptActor::Tick(float DeltaTime) {
@@ -242,7 +257,7 @@ TArray<FString> AMarketLevelScriptActor::RandomFruitGeneration()
 
 void AMarketLevelScriptActor::OnSpeechRecognized(FString Text) {
     UE_LOG(LogTemp, Warning, TEXT("Recognized text: %s"), *Text);
-    //BotRequest->Request(ECommand::SpeechRecognized, TArray<FString>({Text.Replace(TEXT(" "), TEXT("+"))}));
+    BotRequest->Request(ECommand::SpeechRecognized, TArray<FString>({Text.Replace(TEXT(" "), TEXT("+"))}));
 }
 
 void AMarketLevelScriptActor::OnCharacterCanTakeBasket() {

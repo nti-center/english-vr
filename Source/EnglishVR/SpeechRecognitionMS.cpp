@@ -5,24 +5,28 @@ using namespace Microsoft::CognitiveServices::Speech::Audio;
 
 USpeechRecognitionMS::USpeechRecognitionMS() {
     PrimaryComponentTick.bCanEverTick = true;
-
-    auto Config = SpeechConfig::FromSubscription("700eeb8760144050a16bb579f6c7b545", "westus");
-    Config->SetProperty(PropertyId::SpeechServiceConnection_EndSilenceTimeoutMs, "2000");
-    Recognizer = SpeechRecognizer::FromConfig(Config);
+    //700eeb8760144050a16bb579f6c7b545
 }
 
 void USpeechRecognitionMS::BeginPlay() {
     Super::BeginPlay();
-    
-    UE_LOG(LogTemp, Warning, TEXT("Start recognition"));
-
-    std::function<void(const SpeechRecognitionEventArgs& E)> RecognizedFunction = std::bind(&USpeechRecognitionMS::Recognized, this, std::placeholders::_1);
-    Recognizer->Recognized.Connect(RecognizedFunction);
 }
 
 void USpeechRecognitionMS::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
+
+void USpeechRecognitionMS::CreateReognizer(const FString& Subscription, const FString& Region) {
+    auto Config = SpeechConfig::FromSubscription(TCHAR_TO_UTF8(*Subscription), TCHAR_TO_UTF8(*Region));
+    //Config->SetProperty(PropertyId::SpeechServiceConnection_EndSilenceTimeoutMs, "2000");
+    Recognizer = SpeechRecognizer::FromConfig(Config);
+
+    std::function<void(const SpeechRecognitionEventArgs & E)> RecognizedFunction = std::bind(&USpeechRecognitionMS::Recognized, this, std::placeholders::_1);
+    Recognizer->Recognized.Connect(RecognizedFunction);
+
+    StartRecognition();
+}
+
 
 void USpeechRecognitionMS::StopRecognition() {
     Recognizer->StopContinuousRecognitionAsync().get();
