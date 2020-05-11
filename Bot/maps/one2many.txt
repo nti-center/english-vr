@@ -1,0 +1,13 @@
+Apple:Apples
+Potato:Potatoes
+Banana:Bananas
+Lemon:Lemons
+Melon:Melons
+Pear:Pears
+Peach:Peaches
+Watermelon:Watermelons
+Carrot:Carrots
+Tomato:Tomatoes
+Plum:Plums
+Bell_pepper:Bell_peppers
+Chili_pepper:Chili_peppers
