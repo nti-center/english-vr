@@ -79,7 +79,7 @@ public:
     UPROPERTY(EditAnywhere)
     UWidgetComponent* Widget;
 
-    UPROPERTY(EditDefaultsOnly)
+    UPROPERTY(BlueprintReadOnly)
     ASpeechRecognizer* SpeechRecognizer;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
