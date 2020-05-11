@@ -3,21 +3,21 @@
 
 #include "SpeechRecognizerDeepSpeech.h"
 
-USpeechRecognizerDeepSpeech::USpeechRecognizerDeepSpeech() {
-    PrimaryComponentTick.bCanEverTick = true;
+ASpeechRecognizerDeepSpeech::ASpeechRecognizerDeepSpeech() {
+    PrimaryActorTick.bCanEverTick = true;
 
     Http = &FHttpModule::Get();
 }
 
-void USpeechRecognizerDeepSpeech::BeginPlay() {
+void ASpeechRecognizerDeepSpeech::BeginPlay() {
     Super::BeginPlay();
 }
 
-void USpeechRecognizerDeepSpeech::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {
-    Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+void ASpeechRecognizerDeepSpeech::Tick(float DeltaTime) {
+    Super::Tick(DeltaTime);
 }
 
-void USpeechRecognizerDeepSpeech::Recognize(const FString& File) {
+void ASpeechRecognizerDeepSpeech::Recognize(const FString& File) {
     TArray<uint8> Data;
     bool IsLoad = FFileHelper::LoadFileToArray(Data, *(File + ".wav"));
 
@@ -27,7 +27,7 @@ void USpeechRecognizerDeepSpeech::Recognize(const FString& File) {
     }
 
     TSharedRef<IHttpRequest> Request = Http->CreateRequest();
-    Request->OnProcessRequestComplete().BindUObject(this, &USpeechRecognizerDeepSpeech::ResponseReceived);
+    Request->OnProcessRequestComplete().BindUObject(this, &ASpeechRecognizerDeepSpeech::ResponseReceived);
 
     Request->SetURL(TEXT("http://127.0.0.1:5000/recognize"));
     Request->SetVerb("POST");
@@ -38,7 +38,7 @@ void USpeechRecognizerDeepSpeech::Recognize(const FString& File) {
     UE_LOG(LogTemp, Warning, TEXT("Send request"));
 }
 
-void USpeechRecognizerDeepSpeech::ResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful) {
+void ASpeechRecognizerDeepSpeech::ResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful) {
     TSharedPtr<FJsonObject> JsonObject;
     TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(Response->GetContentAsString());
 

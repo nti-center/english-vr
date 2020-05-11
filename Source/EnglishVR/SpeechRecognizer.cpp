@@ -3,21 +3,20 @@
 
 #include "SpeechRecognizer.h"
 
-USpeechRecognizer::USpeechRecognizer() {
-    PrimaryComponentTick.bCanEverTick = true;
+ASpeechRecognizer::ASpeechRecognizer() {
+    PrimaryActorTick.bCanEverTick = true;
 
 }
 
 
 // Called when the game starts
-void USpeechRecognizer::BeginPlay() {
+void ASpeechRecognizer::BeginPlay() {
     Super::BeginPlay();
 }
 
 
 // Called every frame
-void USpeechRecognizer::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {
-    Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+void ASpeechRecognizer::Tick(float DeltaTime) {
+    Super::Tick(DeltaTime);
 }
 

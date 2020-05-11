@@ -3,17 +3,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/SceneComponent.h"
 #include "speechapi_cxx.h"
 #include "SpeechRecognizer.h"
 #include "SpeechRecognitionMS.generated.h"
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class ENGLISHVR_API USpeechRecognitionMS : public USpeechRecognizer {
+class ENGLISHVR_API ASpeechRecognitionMS : public ASpeechRecognizer {
     GENERATED_BODY()
 
 public:
-    USpeechRecognitionMS();
+    ASpeechRecognitionMS();
 
     UFUNCTION(BlueprintCallable)
     void StopRecognition();
@@ -34,5 +33,5 @@ protected:
     std::shared_ptr<Microsoft::CognitiveServices::Speech::SpeechRecognizer> Recognizer;    
 
 public:
-    virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+    virtual void Tick(float DeltaTime) override;
 };

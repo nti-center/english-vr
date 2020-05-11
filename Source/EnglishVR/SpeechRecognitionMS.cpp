@@ -28,11 +28,11 @@ void USpeechRecognitionMS::CreateReognizer(const FString& Subscription, const FS
 }
 
 
-void USpeechRecognitionMS::StopRecognition() {
+void ASpeechRecognitionMS::StopRecognition() {
     Recognizer->StopContinuousRecognitionAsync().get();
 }
 
-void USpeechRecognitionMS::StartRecognition() {
+void ASpeechRecognitionMS::StartRecognition() {
     Recognizer->StartContinuousRecognitionAsync().get();
 }
 
@@ -47,11 +47,11 @@ void USpeechRecognitionMS::Recognize(const FString& File) {
     ParseResult(Result);
 }
 
-void USpeechRecognitionMS::Recognized(const SpeechRecognitionEventArgs& E) {
+void ASpeechRecognitionMS::Recognized(const SpeechRecognitionEventArgs& E) {
     ParseResult(E.Result);
 }
 
-void USpeechRecognitionMS::ParseResult(std::shared_ptr<Microsoft::CognitiveServices::Speech::SpeechRecognitionResult> Result) {
+void ASpeechRecognitionMS::ParseResult(std::shared_ptr<Microsoft::CognitiveServices::Speech::SpeechRecognitionResult> Result) {
     if (Result->Reason == ResultReason::RecognizedSpeech) {
         FString RecognizedString(Result->Text.c_str());
         OnRecognized.Broadcast(RecognizedString);

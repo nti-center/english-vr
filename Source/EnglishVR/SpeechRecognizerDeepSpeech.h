@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/SceneComponent.h"
 #include "SpeechRecognizer.h"
 #include "Runtime/Online/HTTP/Public/Http.h"
 #include "Json.h"
@@ -11,11 +10,11 @@
 
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class ENGLISHVR_API USpeechRecognizerDeepSpeech : public USpeechRecognizer {
+class ENGLISHVR_API ASpeechRecognizerDeepSpeech : public ASpeechRecognizer {
     GENERATED_BODY()
 
 public:
-    USpeechRecognizerDeepSpeech();
+    ASpeechRecognizerDeepSpeech();
     virtual void Recognize(const FString& File) override;
     void ResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
@@ -26,5 +25,5 @@ protected:
     virtual void BeginPlay() override;
 
 public:
-    virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+    virtual void Tick(float DeltaTime) override;
 };

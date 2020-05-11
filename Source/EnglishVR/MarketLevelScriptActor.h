@@ -80,7 +80,7 @@ public:
     UWidgetComponent* Widget;
 
     UPROPERTY(EditDefaultsOnly)
-    USpeechRecognizer* SpeechRecognizer;
+    ASpeechRecognizer* SpeechRecognizer;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FString MSSubscription;
