@@ -12,12 +12,10 @@ AMarketLevelScriptActor::AMarketLevelScriptActor() {
     }
 
     FruitClass = AFruit::StaticClass();
-    MSRegion = "westus";
 
     BotRequest = CreateDefaultSubobject<UBotRequest>(TEXT("BotRequest"));
     BotRequest->OnResponseReceived.AddDynamic(this, &AMarketLevelScriptActor::OnBotResponseReceived);
     BotRequest->SetupAttachment(RootComponent);
-    
 }
 
 template <typename ObjClass>
@@ -61,14 +59,6 @@ void AMarketLevelScriptActor::BeginPlay() {
     else {
         UE_LOG(LogTemp, Warning, TEXT("Market point is not initilized"));
     }
-}
-
-void AMarketLevelScriptActor::EndPlay(const EEndPlayReason::Type EndPlayReason) {
-    if (SpeechRecognizerType && Cast<USpeechRecognitionMS>(SpeechRecognizer) && !MSSubscription.IsEmpty() && !MSRegion.IsEmpty()) {
-        Cast<USpeechRecognitionMS>(SpeechRecognizer)->StopRecognition();
-    }
-
-    Super::EndPlay(EndPlayReason);
 }
 
 void AMarketLevelScriptActor::Tick(float DeltaTime) {
@@ -238,7 +228,7 @@ TArray<FString> AMarketLevelScriptActor::RandomFruitGeneration()
 
         tmp.Add(FruitPath[Rand]);
         tmp.Add(FruitType[Rand]);
-        UE_LOG(LogTemp, Warning, TEXT("Mesh ¹ %d is %s %s"), counter, *tmp[0], *tmp[1]);
+        UE_LOG(LogTemp, Warning, TEXT("Mesh ï¿½ %d is %s %s"), counter, *tmp[0], *tmp[1]);
         return tmp;
     }
 

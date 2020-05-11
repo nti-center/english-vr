@@ -83,13 +83,7 @@ public:
     ASpeechRecognizer* SpeechRecognizer;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FString MSSubscription;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FString MSRegion;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TSubclassOf<class USpeechRecognizer> SpeechRecognizerType;
+    TSubclassOf<class ASpeechRecognizer> SpeechRecognizerType;
 
     UFUNCTION(BlueprintCallable)
     void SpawnCharacter();
@@ -144,7 +138,6 @@ private:
 
 protected:
     virtual void BeginPlay() override;
-    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:
     virtual void Tick(float DeltaTime) override;

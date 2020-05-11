@@ -3,30 +3,51 @@
 using namespace Microsoft::CognitiveServices::Speech;
 using namespace Microsoft::CognitiveServices::Speech::Audio;
 
-USpeechRecognitionMS::USpeechRecognitionMS() {
-    PrimaryComponentTick.bCanEverTick = true;
-    //700eeb8760144050a16bb579f6c7b545
-}
+ASpeechRecognitionMS::ASpeechRecognitionMS() {
+    PrimaryActorTick.bCanEverTick = true;
 
-void USpeechRecognitionMS::BeginPlay() {
-    Super::BeginPlay();
-}
+    FString ConfigString;
+    bool IsLoad = FFileHelper::LoadFileToString(ConfigString, *(FPaths::ProjectDir() + "/SpeechRecognition/MicrosoftCognitiveServicesSpeech/config.txt"));
 
-void USpeechRecognitionMS::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {
-    Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-}
+    if (!IsLoad) {
+        UE_LOG(LogTemp, Warning, TEXT("Cant find MicrosoftCognitiveServicesSpeech/config.txt"));
+        return;
+    }
 
-void USpeechRecognitionMS::CreateReognizer(const FString& Subscription, const FString& Region) {
+    TSharedPtr<FJsonObject> JsonObject;
+    TSharedRef<TJsonReader<TCHAR>> Reader = TJsonReaderFactory<TCHAR>::Create(ConfigString);
+
+    if (FJsonSerializer::Deserialize(Reader, JsonObject)) {
+        Subscription = JsonObject->GetStringField("Subscription");
+        Region = JsonObject->GetStringField("Region");
+    }
+    else {
+        UE_LOG(LogTemp, Warning, TEXT("Cant deserialize config"));
+    }
+
     auto Config = SpeechConfig::FromSubscription(TCHAR_TO_UTF8(*Subscription), TCHAR_TO_UTF8(*Region));
     //Config->SetProperty(PropertyId::SpeechServiceConnection_EndSilenceTimeoutMs, "2000");
     Recognizer = SpeechRecognizer::FromConfig(Config);
 
-    std::function<void(const SpeechRecognitionEventArgs & E)> RecognizedFunction = std::bind(&USpeechRecognitionMS::Recognized, this, std::placeholders::_1);
+    std::function<void(const SpeechRecognitionEventArgs & E)> RecognizedFunction = std::bind(&ASpeechRecognitionMS::Recognized, this, std::placeholders::_1);
     Recognizer->Recognized.Connect(RecognizedFunction);
+}
+
+void ASpeechRecognitionMS::BeginPlay() {
+    Super::BeginPlay();
 
     StartRecognition();
 }
 
+void ASpeechRecognitionMS::Tick(float DeltaTime) {
+    Super::Tick(DeltaTime);
+}
+
+void ASpeechRecognitionMS::EndPlay(const EEndPlayReason::Type EndPlayReason) {
+    StopRecognition();
+
+    Super::EndPlay(EndPlayReason);
+}
 
 void ASpeechRecognitionMS::StopRecognition() {
     Recognizer->StopContinuousRecognitionAsync().get();
@@ -36,8 +57,8 @@ void ASpeechRecognitionMS::StartRecognition() {
     Recognizer->StartContinuousRecognitionAsync().get();
 }
 
-void USpeechRecognitionMS::Recognize(const FString& File) {
-    auto Config = SpeechConfig::FromSubscription("700eeb8760144050a16bb579f6c7b545", "westus");
+void ASpeechRecognitionMS::Recognize(const FString& File) {
+    auto Config = SpeechConfig::FromSubscription(TCHAR_TO_UTF8(*Subscription), TCHAR_TO_UTF8(*Region));
     Config->SetProperty(PropertyId::SpeechServiceConnection_EndSilenceTimeoutMs, "2000");
     auto AudioInput = AudioConfig::FromWavFileInput(TCHAR_TO_UTF8(*(File + ".wav")));
     auto SR = SpeechRecognizer::FromConfig(Config, AudioInput);
