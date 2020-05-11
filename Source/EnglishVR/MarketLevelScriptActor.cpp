@@ -27,18 +27,18 @@ static FORCEINLINE ObjClass* LoadObjFromPath(const FName& Path) {
 void AMarketLevelScriptActor::BeginPlay() {
     Super::BeginPlay();
 
-    if (SpeechRecognizerType) {
-        SpeechRecognizer = Cast<USpeechRecognizer>(SpeechRecognizerType->GetDefaultObject());
-        SpeechRecognizer->OnRecognized.AddDynamic(this, &AMarketLevelScriptActor::OnSpeechRecognized);
-        SpeechRecognizer->SetupAttachment(RootComponent);
-
-        if (Cast<USpeechRecognitionMS>(SpeechRecognizer)) {
-            if (!MSSubscription.IsEmpty() && !MSRegion.IsEmpty()) {
-                Cast<USpeechRecognitionMS>(SpeechRecognizer)->CreateReognizer(MSSubscription, MSRegion);
-            }
-            else {
-                UE_LOG(LogTemp, Warning, TEXT("MSSubscription or MSRegion is not initilized"));
-            }
+    if (SpeechRecognizerType != nullptr) {
+        FActorSpawnParameters SpawnInfo;
+        SpawnInfo.Instigator = GetInstigator();
+        SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+        SpawnInfo.OverrideLevel = GetLevel();
+        SpawnInfo.ObjectFlags |= RF_Transient;
+        SpeechRecognizer = GetWorld()->SpawnActor<ASpeechRecognizer>(SpeechRecognizerType, GetActorLocation(), GetActorRotation(), SpawnInfo);
+        if (SpeechRecognizer != nullptr) {
+            SpeechRecognizer->OnRecognized.AddDynamic(this, &AMarketLevelScriptActor::OnSpeechRecognized);
+        }
+        else {
+            UE_LOG(LogTemp, Warning, TEXT("Cant spawn speech recognizer"));
         }
     }
     else {
@@ -228,7 +228,7 @@ TArray<FString> AMarketLevelScriptActor::RandomFruitGeneration()
 
         tmp.Add(FruitPath[Rand]);
         tmp.Add(FruitType[Rand]);
-        UE_LOG(LogTemp, Warning, TEXT("Mesh ï¿½ %d is %s %s"), counter, *tmp[0], *tmp[1]);
+        UE_LOG(LogTemp, Warning, TEXT("Mesh ¹ %d is %s %s"), counter, *tmp[0], *tmp[1]);
         return tmp;
     }
 
