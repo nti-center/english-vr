@@ -32,6 +32,7 @@ static FORCEINLINE ObjClass* LoadObjFromPath(const FName& Path) {
 
 int UPhrasesAudioComponent::CreateCue(TArray<FString> InputArray) {
     TArray<struct FDistanceDatum> Datum;
+    FDistanceDatum TempDatum;
 
     FString SoundCueName = "CueWithCrossfade";
     FString ContextString;
@@ -63,8 +64,6 @@ int UPhrasesAudioComponent::CreateCue(TArray<FString> InputArray) {
             UE_LOG(LogTemp, Warning, TEXT("Can not find audio file!"));
         }
         else {
-            FDistanceDatum TempDatum;
-
             FCrossfadeDataTableStruct* Row = CrossfadeParametrsDataTable->FindRow<FCrossfadeDataTableStruct>(FName(*name), ContextString, true);
             if (Row) {
                 if (NodeIndex == 0) {
@@ -136,17 +135,18 @@ void UPhrasesAudioComponent::PlaySoundWithCrossfade(TArray<FString> InputArray, 
    SetSound(SoundCue);
 
    StepCount = 0;
-   CurrentDuration = SoundDuration[StepCount];
+   if(SoundDuration.Num() > 0)
+    CurrentDuration = SoundDuration[StepCount];
 
    UWorld* World = GetWorld();
    if (World) {
        World->GetTimerManager().SetTimer(FuzeTimerHandle, this, &UPhrasesAudioComponent::SetCrossfadeParametr, 0.01f, true);
    }
 
-   WidgetBubble = Cast<UBubleTextWidgetClass>(Widget->GetUserWidgetObject());
-   FVector2D WidgetSize = WidgetBubble->SeeBotAnswer(InputArray, Error);
-   if(WidgetSize > Widget->GetDrawSize())
-       Widget->SetDrawSize(WidgetSize);
+  // WidgetBubble = Cast<UBubleTextWidgetClass>(Widget->GetUserWidgetObject());
+  // FVector2D WidgetSize = WidgetBubble->SeeBotAnswer(InputArray, Error);
+  // if(WidgetSize > Widget->GetDrawSize())
+  //     Widget->SetDrawSize(WidgetSize);
 
    Play();
 }

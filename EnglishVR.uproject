@@ -62,14 +62,6 @@
 			"MarketplaceURL": "http://www.ue4code.com"
 		},
 		{
-			"Name": "OpenXR",
-			"Enabled": true,
-			"SupportedTargetPlatforms": [
-				"Win32",
-				"Win64"
-			]
-		},
-		{
 			"Name": "OpenVRExpansionPlugin",
 			"Enabled": true
 		},

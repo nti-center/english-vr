@@ -9,6 +9,9 @@ AFruitBoxController::AFruitBoxController() {
         DataTable = _DataTable.Object;
     }
 
+}
+
+TArray<FString> AFruitBoxController::RandomFruitGeneration() {
     FString ContextString;
 
     for (auto it : DataTable->GetRowMap()) {
@@ -18,9 +21,7 @@ AFruitBoxController::AFruitBoxController() {
             FruitPath.Add(Row->Path);
         }
     }
-}
 
-TArray<FString> AFruitBoxController::RandomFruitGeneration() {
     TArray<FString> tmp;
     int32 Rand = FMath::RandRange(0, FruitType.Num() - 1);
 

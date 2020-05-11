@@ -24,6 +24,9 @@ public:
     AMyCharacter* Character;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    AActor* MarketActor;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TSubclassOf<class AMyCharacter> ToCharacterSpawn;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -36,7 +39,7 @@ public:
     ATargetPoint* BasketSpawnPoint;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    ATargetPoint* CharacterSpawnPoint;
+    AActor* CharacterSpawnPoint;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     AFinalTargetPoint* MarketPoint;
@@ -76,6 +79,9 @@ public:
 
     UPROPERTY(EditDefaultsOnly)
     USpeechRecognitionMS* SpeechRecognition;
+
+    UFUNCTION(BlueprintCallable)
+    void SelectSpawnAndDestroyPoint();
 
     UFUNCTION(BlueprintCallable)
     void SpawnCharacter();
