@@ -16,6 +16,8 @@ AMarketLevelScriptActor::AMarketLevelScriptActor() {
     BotRequest = CreateDefaultSubobject<UBotRequest>(TEXT("BotRequest"));
     BotRequest->OnResponseReceived.AddDynamic(this, &AMarketLevelScriptActor::OnBotResponseReceived);
     BotRequest->SetupAttachment(RootComponent);
+
+    SpeechRecognizerType = ASpeechRecognizerMCSS::StaticClass();
 }
 
 template <typename ObjClass>
