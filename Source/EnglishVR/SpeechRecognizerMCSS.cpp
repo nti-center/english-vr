@@ -1,9 +1,9 @@
-#include "SpeechRecognitionMS.h"
+#include "SpeechRecognizerMCSS.h"
 
 using namespace Microsoft::CognitiveServices::Speech;
 using namespace Microsoft::CognitiveServices::Speech::Audio;
 
-ASpeechRecognitionMS::ASpeechRecognitionMS() {
+ASpeechRecognizerMCSS::ASpeechRecognizerMCSS() {
     PrimaryActorTick.bCanEverTick = true;
 
     FString ConfigString;
@@ -30,35 +30,35 @@ ASpeechRecognitionMS::ASpeechRecognitionMS() {
     Config->SetProperty(PropertyId::SpeechServiceConnection_EndSilenceTimeoutMs, TCHAR_TO_UTF8(*EndSilenceTimeoutMs));
     Recognizer = SpeechRecognizer::FromConfig(Config);
 
-    std::function<void(const SpeechRecognitionEventArgs & E)> RecognizedFunction = std::bind(&ASpeechRecognitionMS::Recognized, this, std::placeholders::_1);
+    std::function<void(const SpeechRecognitionEventArgs & E)> RecognizedFunction = std::bind(&ASpeechRecognizerMCSS::Recognized, this, std::placeholders::_1);
     Recognizer->Recognized.Connect(RecognizedFunction);
 }
 
-void ASpeechRecognitionMS::BeginPlay() {
+void ASpeechRecognizerMCSS::BeginPlay() {
     Super::BeginPlay();
 
     StartRecognition();
 }
 
-void ASpeechRecognitionMS::Tick(float DeltaTime) {
+void ASpeechRecognizerMCSS::Tick(float DeltaTime) {
     Super::Tick(DeltaTime);
 }
 
-void ASpeechRecognitionMS::EndPlay(const EEndPlayReason::Type EndPlayReason) {
+void ASpeechRecognizerMCSS::EndPlay(const EEndPlayReason::Type EndPlayReason) {
     StopRecognition();
 
     Super::EndPlay(EndPlayReason);
 }
 
-void ASpeechRecognitionMS::StopRecognition() {
+void ASpeechRecognizerMCSS::StopRecognition() {
     Recognizer->StopContinuousRecognitionAsync().get();
 }
 
-void ASpeechRecognitionMS::StartRecognition() {
+void ASpeechRecognizerMCSS::StartRecognition() {
     Recognizer->StartContinuousRecognitionAsync().get();
 }
 
-void ASpeechRecognitionMS::Recognize(const FString& File) {
+void ASpeechRecognizerMCSS::Recognize(const FString& File) {
     auto Config = SpeechConfig::FromSubscription(TCHAR_TO_UTF8(*Subscription), TCHAR_TO_UTF8(*Region));
     auto AudioInput = AudioConfig::FromWavFileInput(TCHAR_TO_UTF8(*(File + ".wav")));
     auto SR = SpeechRecognizer::FromConfig(Config, AudioInput);
@@ -68,11 +68,11 @@ void ASpeechRecognitionMS::Recognize(const FString& File) {
     ParseResult(Result);
 }
 
-void ASpeechRecognitionMS::Recognized(const SpeechRecognitionEventArgs& E) {
+void ASpeechRecognizerMCSS::Recognized(const SpeechRecognitionEventArgs& E) {
     ParseResult(E.Result);
 }
 
-void ASpeechRecognitionMS::ParseResult(std::shared_ptr<Microsoft::CognitiveServices::Speech::SpeechRecognitionResult> Result) {
+void ASpeechRecognizerMCSS::ParseResult(std::shared_ptr<Microsoft::CognitiveServices::Speech::SpeechRecognitionResult> Result) {
     if (Result->Reason == ResultReason::RecognizedSpeech) {
         FString RecognizedString(Result->Text.c_str());
         OnRecognized.Broadcast(RecognizedString);

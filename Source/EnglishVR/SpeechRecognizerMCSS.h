@@ -7,14 +7,14 @@
 #include "SpeechRecognizer.h"
 #include "Json.h"
 #include "Misc/Paths.h"
-#include "SpeechRecognitionMS.generated.h"
+#include "SpeechRecognizerMCSS.generated.h"
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class ENGLISHVR_API ASpeechRecognitionMS : public ASpeechRecognizer {
+class ENGLISHVR_API ASpeechRecognizerMCSS : public ASpeechRecognizer {
     GENERATED_BODY()
 
 public:
-    ASpeechRecognitionMS();
+    ASpeechRecognizerMCSS();
 
     UFUNCTION(BlueprintCallable)
     void StopRecognition();
