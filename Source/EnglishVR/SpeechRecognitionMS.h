@@ -33,6 +33,7 @@ protected:
     std::shared_ptr<Microsoft::CognitiveServices::Speech::SpeechRecognizer> Recognizer;    
     FString Subscription;
     FString Region;
+    FString EndSilenceTimeoutMs;
 
 public:
     virtual void Tick(float DeltaTime) override;

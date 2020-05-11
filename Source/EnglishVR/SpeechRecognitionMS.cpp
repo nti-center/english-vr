@@ -20,13 +20,14 @@ ASpeechRecognitionMS::ASpeechRecognitionMS() {
     if (FJsonSerializer::Deserialize(Reader, JsonObject)) {
         Subscription = JsonObject->GetStringField("Subscription");
         Region = JsonObject->GetStringField("Region");
+        EndSilenceTimeoutMs = JsonObject->GetStringField("EndSilenceTimeoutMs");
     }
     else {
         UE_LOG(LogTemp, Warning, TEXT("Cant deserialize config"));
     }
 
     auto Config = SpeechConfig::FromSubscription(TCHAR_TO_UTF8(*Subscription), TCHAR_TO_UTF8(*Region));
-    //Config->SetProperty(PropertyId::SpeechServiceConnection_EndSilenceTimeoutMs, "2000");
+    Config->SetProperty(PropertyId::SpeechServiceConnection_EndSilenceTimeoutMs, TCHAR_TO_UTF8(*EndSilenceTimeoutMs));
     Recognizer = SpeechRecognizer::FromConfig(Config);
 
     std::function<void(const SpeechRecognitionEventArgs & E)> RecognizedFunction = std::bind(&ASpeechRecognitionMS::Recognized, this, std::placeholders::_1);
@@ -59,7 +60,6 @@ void ASpeechRecognitionMS::StartRecognition() {
 
 void ASpeechRecognitionMS::Recognize(const FString& File) {
     auto Config = SpeechConfig::FromSubscription(TCHAR_TO_UTF8(*Subscription), TCHAR_TO_UTF8(*Region));
-    Config->SetProperty(PropertyId::SpeechServiceConnection_EndSilenceTimeoutMs, "2000");
     auto AudioInput = AudioConfig::FromWavFileInput(TCHAR_TO_UTF8(*(File + ".wav")));
     auto SR = SpeechRecognizer::FromConfig(Config, AudioInput);
     

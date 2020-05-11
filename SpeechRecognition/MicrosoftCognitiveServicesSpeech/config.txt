@@ -1,4 +1,5 @@
 {
     "Subscription": "700eeb8760144050a16bb579f6c7b545",
-    "Region": "westus"
+    "Region": "westus",
+    "EndSilenceTimeoutMs": 2000
 }
