@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aiml version="2.1">
+    
+    <category>
+        <pattern>cmdNewCharacterSpawned</pattern>
+        <template>
+            <think><set name="state">none</set></think>
+            <think><set name="topic">none</set></think>
+            {
+                "Actions": "GoToMarket"
+            }
+        </template>
+    </category>
+
+    <category>
+        <pattern>cmdReachedMarket</pattern>
+        <template>
+            <think><srai>generateRandomRequest</srai></think>
+            <think><srai>generateRandomGreeting</srai></think>
+            {
+                "Actions": "SetRequest",
+                "Params": ["<map name="string2int"><get name="fruitCount"></get></map>", "<get name="fruitType"></get>"],
+                "VoicePhrases": "<get name="phraseGreeting"></get> <get name="phraseStarter"></get> <get name="fruitCount"></get> <get name="phraseType"></get>" 
+            }
+        </template>
+    </category>
+    
+     <category>
+        <pattern>generateRandomStarter</pattern>
+        <template>
+            <set name="phraseStarter">
+                <random>
+                    <li>Can_I_have</li>
+                    <li>I_would_like</li>
+                    <li>I'd_like</li>
+                </random>
+            </set>
+        </template>
+    </category>
+
+    <category>
+        <pattern>generateRandomGreeting</pattern>
+        <template>
+            <set name="phraseGreeting">
+                <random>
+                    <li>Hello</li>
+                    <li>Hi</li>
+                    <li>Good_morning</li>
+                </random>
+            </set>
+        </template>
+    </category>
+            
+    <category>
+        <pattern>generateRandomRequest</pattern>
+        <template>
+            <srai>generateRandomStarter</srai>
+            <srai>generateRandomFruitType</srai>
+            <srai>generateRandomFruitCount</srai>
+            <srai>generatePhraseType</srai>
+        </template>
+    </category>
+    
+    <category>
+        <pattern>generateRandomFruitType</pattern>
+        <template>
+            <set name="fruitType">
+                <random>
+                    <li>Apple</li>
+                    <li>Potato</li>
+                    <li>Banana</li>
+                    <li>Lemon</li>
+                    <li>Melon</li>
+                    <li>Pear</li>
+                    <li>Peach</li>
+                    <li>Watermelon</li>
+                    <li>Carrot</li>
+                    <li>Tomato</li>
+                    <li>Plum</li>
+                    <li>Bell_pepper</li>
+                    <li>Chili_pepper</li>
+                </random>
+            </set>
+        </template>
+    </category>
+    
+    <category>
+        <pattern>generateRandomFruitCount</pattern>
+        <template>
+            <set name="fruitCount">
+                <random>
+                    <li>One</li>
+                    <li>Two</li>
+                    <li>Three</li>
+                    <li>Four</li>
+                    <li>Five</li>
+                    <li>Six</li>
+                    <li>Seven</li>
+                    <li>Eight</li>
+                    <li>Nine</li>
+                    <li>Ten</li>
+                    <li>Eleven</li>
+                    <li>a_dozen</li>
+                    <li>a_Couple_of</li>
+                </random>
+            </set>
+        </template>
+    </category>
+    
+    <!---category>
+        <pattern>cmdSpeechRecognized *</pattern>
+        <template>
+            {
+                "VoicePhrases": "One"
+            }
+        </template>
+    </category-->
+
+    <category>
+        <pattern>cmdSpeechRecognized $How can I help you</pattern>
+        <template>
+            {
+                "VoicePhrases": "<get name="phraseStarter"></get> some <get name="phraseType"></get>"
+            }
+        </template>
+    </category>
+    
+    <category>
+        <pattern>cmdSpeechRecognized $How many * would you like</pattern>
+        <template>
+            {
+                "VoicePhrases": "<get name="phraseStarter"></get> <get name="fruitCount"></get> <star index = "1"/>"
+            }
+        </template>
+    </category>
+
+    <category>
+        <pattern>generatePhraseType</pattern>
+        <template>
+            <condition name="fruitCount">
+                <li value="One">
+                    <set name="phraseType">
+                        <get name="fruitType"></get> 
+                    </set>
+                </li>
+                <li>
+                    <set name="phraseType">
+                        <map name="one2many"><get name="fruitType"></get></map>
+                    </set>
+                </li>
+            </condition>
+        </template>
+    </category>
+    
+    <category>
+        <pattern>cmdHit</pattern>
+        <template>
+            {
+                "Actions": "Hide"
+            }
+        </template>
+    </category>
+    
+    <category>
+        <pattern>cmdBasketOverlapCharacterBegin</pattern>
+        <template>
+            <think><set name="topic">startChecking</set></think>
+            {
+                "Actions": "CheckFruitsCount"
+            }
+        </template>
+    </category>
+
+    <topic name="startChecking">
+        <category>
+            <pattern>cmdBasketOverlapCharacterEnd</pattern>
+            <template>
+                <think><set name="topic">stopChecking</set></think>
+            </template>
+        </category>
+
+        <category>
+            <pattern>cmdCorrectFruitsCount</pattern>
+            <template>
+                <think><set name="topic">startTryTaking</set></think>
+                {
+                    "Actions": "TryToTakeBasket"
+                }
+            </template>
+        </category>
+
+        <category>
+            <pattern>cmdIncorrectFruitsCount</pattern>
+            <template>
+                <think><set name="topic">startDisappointing</set></think>
+                {
+                    "Actions": "StartDisappointing"
+                }
+            </template>
+        </category>
+    </topic>
+
+    <topic name="none">
+        <category>
+            <pattern>cmdCorrectFruitsCount</pattern>
+            <template>
+                <random>
+                    <li>
+                        <think><srai>generateRandomRequest</srai></think>
+                        {
+                            "Actions": "AddRequest",
+                            "Params": ["<map name="string2int"><get name="fruitCount"></get></map>", "<get name="fruitType"></get>"],
+                            "VoicePhrases": "Actually_please_add <get name="fruitCount"></get> <get name="phraseType"></get>"
+                        }
+                    </li>
+                    <li>
+                        <think>
+                        	<set name="topic">readyToTakeBasket</set>
+							<set name="Agreement">
+				                <random>
+				                    <li>Great</li>
+				                    <li>Wonderful</li>
+				                    <li>Cool</li>
+				                    <li>That's_just_what_I_want</li>
+				                </random>
+				            </set>
+                    	</think>
+                        {
+                            "VoicePhrases": "<get name="Agreement"></get>"
+                        }
+                    </li>
+                </random>
+            </template>
+        </category>
+    </topic>
+    
+    <topic name="startTryTaking">
+        <category>
+            <pattern>cmdBasketOverlapCharacterEnd</pattern>
+            <template>
+                {
+                    "Actions": "StopTryingToTakeBasket"
+                }
+            </template>
+        </category>
+    </topic>
+    
+    <category>
+        <pattern>cmdCanTakeBasket</pattern>
+        <template>
+            {
+                "Actions": "TakeBasket"
+            }
+        </template>
+    </category>
+    
+    <category>
+        <pattern>cmdBasketTaken</pattern>
+        <template>
+            <think><set name="state">startSayingGoodbye</set></think>
+            <think><set name="phraseFarewell">
+                <random>
+                    <li>Have_a_great_day</li>
+                    <li>Goodbye</li>
+                    <li>Bye_bye</li>
+                </random>
+            </set></think>
+            {
+                "VoicePhrases": "<get name="phraseFarewell"></get>"
+            }
+        </template>
+    </category>
+    
+    <category>
+        <pattern>cmdAudioFinished</pattern>
+        <template>
+            <condition name="state" value="startSayingGoodbye">
+                <think><set name="state">none</set></think>
+                {
+                    "Actions": "GoToHome"
+                }
+            </condition>
+        </template>
+    </category>
+
+</aiml>
