@@ -19,6 +19,12 @@ AMyCharacter::AMyCharacter() {
     AnimationState = EAnimationState::None;
 }
 
+template <typename ObjClass>
+static FORCEINLINE ObjClass* LoadObjFromPath(const FName& Path) {
+    if (Path == NAME_None) return NULL;
+    return Cast<ObjClass>(StaticLoadObject(ObjClass::StaticClass(), NULL, *Path.ToString()));
+}
+
 void AMyCharacter::SetPath(TArray<AActor*> Path) {
     CurrentPath = Path;
 }
@@ -45,8 +51,45 @@ bool AMyCharacter::TakeBasket(ABasket* NewBasket) {
     return true;
 }
 
+void AMyCharacter::LoadRandomTexture(FString TextureName, FName ParametrName, int32 Rand, UMaterialInstanceDynamic* DynamicMaterial) {
+    TextureName.Append(FString::FromInt(Rand));
+    FString path = "Texture2D'/Game/Models/Girl_New/Textures/" + TextureName + "." + TextureName + "'";
+    UTexture* RandomTexture = LoadObjFromPath<UTexture>(FName(*path));
+    DynamicMaterial->SetTextureParameterValue(ParametrName, RandomTexture);
+}
+
+void AMyCharacter::SetRandomOutfit() {
+    USkeletalMeshComponent* CharacterMesh;
+    UMaterialInterface* Material;
+    UMaterialInstanceDynamic* DynamicMaterial;
+
+    CharacterMesh = GetMesh();
+    if (!CharacterMesh) {
+        UE_LOG(LogTemp, Warning, TEXT("Not found character mesh"));
+        return;
+    }
+    //Material = CharacterMesh->GetMaterial(0);
+    Material = LoadObjFromPath<UMaterialInterface>("Material'/Game/Models/Girl_New/Girl_New_material.Girl_New_material'");
+    if (!Material) {
+        UE_LOG(LogTemp, Warning, TEXT("Can not take material"));
+        return;
+    }
+       
+    DynamicMaterial = UKismetMaterialLibrary::CreateDynamicMaterialInstance(CharacterMesh, Material);
+    CharacterMesh->SetMaterial(0,DynamicMaterial);
+
+    int32 Rand = FMath::RandRange(1,1);
+
+    LoadRandomTexture("BaseColor", "BaseColor", Rand, DynamicMaterial);
+    LoadRandomTexture("ORM", "ORM", Rand, DynamicMaterial);
+    LoadRandomTexture("Normal", "Normal", Rand, DynamicMaterial);
+}
+
+
 void AMyCharacter::BeginPlay() {
     Super::BeginPlay();
+
+    SetRandomOutfit();
 
     BubbleText = Cast<UBubleTextWidgetClass>(WidgetComponent->GetUserWidgetObject());
 
