@@ -17,9 +17,7 @@ AMarketLevelScriptActor::AMarketLevelScriptActor() {
     BotRequest->OnResponseReceived.AddDynamic(this, &AMarketLevelScriptActor::OnBotResponseReceived);
     BotRequest->SetupAttachment(RootComponent);
 
-    SpeechRecognition = CreateDefaultSubobject<USpeechRecognitionMS>(TEXT("SpeechRecognition"));
-    SpeechRecognition->OnRecognized.AddDynamic(this, &AMarketLevelScriptActor::OnSpeechRecognized);
-    SpeechRecognition->SetupAttachment(RootComponent);
+    SpeechRecognizerType = ASpeechRecognizerMCSS::StaticClass();
 }
 
 template <typename ObjClass>
@@ -31,7 +29,31 @@ static FORCEINLINE ObjClass* LoadObjFromPath(const FName& Path) {
 void AMarketLevelScriptActor::BeginPlay() {
     Super::BeginPlay();
 
+    if (SpeechRecognizerType != nullptr) {
+        FActorSpawnParameters SpawnInfo;
+        SpawnInfo.Instigator = GetInstigator();
+        SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+        SpawnInfo.OverrideLevel = GetLevel();
+        SpawnInfo.ObjectFlags |= RF_Transient;
+        SpeechRecognizer = GetWorld()->SpawnActor<ASpeechRecognizer>(SpeechRecognizerType, GetActorLocation(), GetActorRotation(), SpawnInfo);
+        if (SpeechRecognizer != nullptr) {
+            SpeechRecognizer->OnRecognized.AddDynamic(this, &AMarketLevelScriptActor::OnSpeechRecognized);
+        }
+        else {
+            UE_LOG(LogTemp, Warning, TEXT("Cant spawn speech recognizer"));
+        }
+    }
+    else {
+        UE_LOG(LogTemp, Warning, TEXT("Speech recognizer type is not initilized"));
+    }
+
     //SpawnFruits();
+    if (VRPawn) {
+        VRPawn->OnAudioRecorded.AddDynamic(this, &AMarketLevelScriptActor::OnAudioRecorded);
+    }
+    else {
+        UE_LOG(LogTemp, Warning, TEXT("VR pawn is not initilized"));
+    }
 
     if (MarketPoint) {
         MarketPoint->FillSphere->OnComponentBeginOverlap.AddDynamic(this, &AMarketLevelScriptActor::OnTargetPointOverlapBegin);
@@ -127,6 +149,10 @@ void AMarketLevelScriptActor::OnCharacterHit(UPrimitiveComponent* HitComponent, 
 
     if (NormalImpulse.Size() > 50) 
         BotRequest->Request(ECommand::Hit);
+}
+
+void AMarketLevelScriptActor::OnAudioRecorded(FString File) {
+    SpeechRecognizer->Recognize(File);
 }
 
 void AMarketLevelScriptActor::OnCharacterAudioFinished() {
@@ -256,10 +282,9 @@ TArray<FString> AMarketLevelScriptActor::RandomFruitGeneration()
     return tmp;
 }
 
-void AMarketLevelScriptActor::OnSpeechRecognized(FString Text, int Reason) {
-    if ((int)Microsoft::CognitiveServices::Speech::ResultReason::RecognizedSpeech == Reason) {
-        BotRequest->Request(ECommand::SpeechRecognized, TArray<FString>({Text.Replace(TEXT(" "), TEXT("+"))}));
-    }
+void AMarketLevelScriptActor::OnSpeechRecognized(FString Text) {
+    UE_LOG(LogTemp, Warning, TEXT("Recognized text: %s"), *Text);
+    BotRequest->Request(ECommand::SpeechRecognized, TArray<FString>({Text.Replace(TEXT(" "), TEXT("+"))}));
 }
 
 void AMarketLevelScriptActor::OnCharacterCanTakeBasket() {

@@ -6,7 +6,7 @@ public class EnglishVR : ModuleRules {
     public EnglishVR(ReadOnlyTargetRules Target) : base(Target) {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
         
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "AIModule", "Http", "Json", "JsonUtilities" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "AIModule", "Http", "Json", "JsonUtilities", "AudioCapture", "AudioMixer" });
     
         PrivateDependencyModuleNames.AddRange(new string[] {  });
 
@@ -20,12 +20,12 @@ public class EnglishVR : ModuleRules {
 
         bEnableExceptions = true;
 
-        RuntimeDependencies.Add("$(BinaryOutputDir)/Microsoft.CognitiveServices.Speech.core.dll", "$(ProjectDir)/packages/Microsoft.CognitiveServices.Speech.1.11.0/runtimes/win-x64/native/Microsoft.CognitiveServices.Speech.core.dll");
-        RuntimeDependencies.Add("$(BinaryOutputDir)/Microsoft.CognitiveServices.Speech.extension.codec.dll", "$(ProjectDir)/packages/Microsoft.CognitiveServices.Speech.1.11.0/runtimes/win-x64/native/Microsoft.CognitiveServices.Speech.extension.codec.dll");
-        RuntimeDependencies.Add("$(BinaryOutputDir)/Microsoft.CognitiveServices.Speech.extension.kws.dll", "$(ProjectDir)/packages/Microsoft.CognitiveServices.Speech.1.11.0/runtimes/win-x64/native/Microsoft.CognitiveServices.Speech.extension.kws.dll");
-        RuntimeDependencies.Add("$(BinaryOutputDir)/Microsoft.CognitiveServices.Speech.extension.silk_codec.dll", "$(ProjectDir)/packages/Microsoft.CognitiveServices.Speech.1.11.0/runtimes/win-x64/native/Microsoft.CognitiveServices.Speech.extension.silk_codec.dll");
-        PublicAdditionalLibraries.Add("$(ProjectDir)/packages/Microsoft.CognitiveServices.Speech.1.11.0/build/native/x64/Release/Microsoft.CognitiveServices.Speech.core.lib");
-        PublicIncludePaths.Add("../packages/Microsoft.CognitiveServices.Speech.1.11.0/build/native/include/cxx_api");
-        PublicIncludePaths.Add("../packages/Microsoft.CognitiveServices.Speech.1.11.0/build/native/include/c_api");
+        RuntimeDependencies.Add("$(BinaryOutputDir)/Microsoft.CognitiveServices.Speech.core.dll", "$(ProjectDir)/SpeechRecognition/MicrosoftCognitiveServicesSpeech/lib/Microsoft.CognitiveServices.Speech.core.dll");
+        RuntimeDependencies.Add("$(BinaryOutputDir)/Microsoft.CognitiveServices.Speech.extension.codec.dll", "$(ProjectDir)/SpeechRecognition/MicrosoftCognitiveServicesSpeech/lib/Microsoft.CognitiveServices.Speech.extension.codec.dll");
+        RuntimeDependencies.Add("$(BinaryOutputDir)/Microsoft.CognitiveServices.Speech.extension.kws.dll", "$(ProjectDir)/SpeechRecognition/MicrosoftCognitiveServicesSpeech/lib/Microsoft.CognitiveServices.Speech.extension.kws.dll");
+        RuntimeDependencies.Add("$(BinaryOutputDir)/Microsoft.CognitiveServices.Speech.extension.silk_codec.dll", "$(ProjectDir)/SpeechRecognition/MicrosoftCognitiveServicesSpeech/lib/Microsoft.CognitiveServices.Speech.extension.silk_codec.dll");
+        PublicAdditionalLibraries.Add("$(ProjectDir)/SpeechRecognition/MicrosoftCognitiveServicesSpeech/lib/Microsoft.CognitiveServices.Speech.core.lib");
+        PublicIncludePaths.Add("../SpeechRecognition/MicrosoftCognitiveServicesSpeech/include/cxx_api");
+        PublicIncludePaths.Add("../SpeechRecognition/MicrosoftCognitiveServicesSpeech/include/c_api");
     }
 }

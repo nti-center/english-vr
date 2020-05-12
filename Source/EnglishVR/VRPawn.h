@@ -6,12 +6,15 @@
 #include "Components/InputComponent.h"
 #include "Engine/TargetPoint.h"
 #include "EngineUtils.h"
+#include "AudioCaptureComponent.h"
+#include "Sound/SoundSubmix.h"
 #include "GameFramework/Pawn.h"
 #include "VRPawn.generated.h"
 
 UCLASS()
 class ENGLISHVR_API AVRPawn : public APawn {
- GENERATED_BODY()
+    GENERATED_BODY()
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAudioRecordedDelegate, FString, File);
 
 public:
     // Sets default values for this pawn's properties
@@ -19,6 +22,15 @@ public:
     
     UPROPERTY(BlueprintReadWrite,EditAnywhere)
     ATargetPoint* ResetPoint;
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    UAudioCaptureComponent* AudioCapture;
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    USoundSubmix* SoundSubmix;
+
+    UPROPERTY(BlueprintAssignable, BlueprintCallable)
+    FAudioRecordedDelegate OnAudioRecorded;
     
     void ResetPositionAndRotation();
 

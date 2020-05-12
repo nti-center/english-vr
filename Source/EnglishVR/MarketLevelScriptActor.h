@@ -10,7 +10,9 @@
 #include "Fruit.h"
 #include "BotRequest.h"
 #include "FinalTargetPoint.h"
-#include "SpeechRecognitionMS.h"
+#include "SpeechRecognizerMCSS.h"
+#include "SpeechRecognizer.h"
+#include "SpeechRecognizerDeepSpeech.h"
 #include "MarketLevelScriptActor.generated.h"
 
 UCLASS()
@@ -19,6 +21,9 @@ class ENGLISHVR_API AMarketLevelScriptActor : public ALevelScriptActor {
 
 public:
     AMarketLevelScriptActor();
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    AVRPawn* VRPawn;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     AMyCharacter* Character;
@@ -77,8 +82,11 @@ public:
     UPROPERTY(EditAnywhere)
     UWidgetComponent* Widget;
 
-    UPROPERTY(EditDefaultsOnly)
-    USpeechRecognitionMS* SpeechRecognition;
+    UPROPERTY(BlueprintReadOnly)
+    ASpeechRecognizer* SpeechRecognizer;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TSubclassOf<class ASpeechRecognizer> SpeechRecognizerType;
 
     UFUNCTION(BlueprintCallable)
     void SelectSpawnAndDestroyPoint();
@@ -125,7 +133,10 @@ public:
     void OnCharacterAudioFinished();
 
     UFUNCTION()
-    void OnSpeechRecognized(FString Text, int Reason);
+    void OnSpeechRecognized(FString Text);
+
+    UFUNCTION()
+    void OnAudioRecorded(FString File);
 
 private:
     void PlayAction(EAction Action, TArray<FString> ParamArray);
