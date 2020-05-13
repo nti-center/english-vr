@@ -4,8 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Engine.h"
+#include "FruitCostWidget.h"
 #include "GameFramework/Actor.h"
+#include "Engine/DataTable.h"
 #include "Collectable.h"
+#include "Market.h"
 #include "MControllerClass.h"
 #include "PickableActor.h"
 #include "Basket.generated.h"
@@ -54,6 +57,21 @@ public:
 
     UPROPERTY(BlueprintAssignable, BlueprintCallable)
     FFruitRemovedDelegate OnFruitRemoved;
+
+    UPROPERTY(EditDefaultsOnly)
+    UDataTable* DataTable;
+
+    UPROPERTY(EditDefaultsOnly)
+    FString ContextString;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 TotalCost;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UFruitCostWidget* CostWidget;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    AMarket* Market;
 
 protected:
     virtual void BeginPlay() override;
