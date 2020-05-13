@@ -4,8 +4,7 @@
 #include "Market.h"
 
 // Sets default values
-AMarket::AMarket()
-{
+AMarket::AMarket() {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -19,19 +18,17 @@ void AMarket::BeginPlay(){
     TArray <USceneComponent*> ChildrenComponents;
     this->GetComponents<USceneComponent>(ChildrenComponents);
     
-    if(ChildrenComponents.Num() > 0){
+    if(ChildrenComponents.Num() > 0) {
         for (int i = 0; i < ChildrenComponents.Num(); i++) {
             if (ChildrenComponents[i]->GetName() == "FruitCostWidget") {
-                WidgetComponent = Cast<UWidgetComponent>(ChildrenComponents[i]);
-                if(WidgetComponent)
-                    UE_LOG(LogTemp, Error, TEXT("Find"));
+                WidgetComponent = Cast<UWidgetComponent>(ChildrenComponents[i]); 
             }
         }
     }
 }
 
 // Called every frame
-void AMarket::Tick(float DeltaTime){
+void AMarket::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 
 }
