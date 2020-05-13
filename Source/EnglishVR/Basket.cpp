@@ -137,10 +137,7 @@ void ABasket::BeginPlay() {
         return;
     CostWidget = Cast<UFruitCostWidget>(Market->WidgetComponent->GetUserWidgetObject());
     if (!CostWidget)
-        return;
-    else {
-        UE_LOG(LogTemp, Error, TEXT("Find widget"));
-    }
+        return; 
 }
 
 // Called every frame
