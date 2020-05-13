@@ -30,11 +30,10 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fruit")
     TSubclassOf<class AFruit> FruitClass;
-
 protected:
     virtual void BeginPlay() override;
 
 public:
     virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
+    void GenerateFruits();
 };
