@@ -5,9 +5,9 @@
 #include "CoreMinimal.h"
 #include "Engine/LevelScriptActor.h"
 #include "Kismet/GameplayStatics.h"
+#include "FruitController.h"
 #include "MyCharacter.h"
 #include "Basket.h"
-#include "Fruit.h"
 #include "BotRequest.h"
 #include "FinalTargetPoint.h"
 #include "SpeechRecognizerMCSS.h"
@@ -30,6 +30,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     AActor* MarketActor;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    AFruitController* FruitController;
 
     UPROPERTY(BlueprintReadWrite)
     FTimerHandle FuzeTimerHandle;
@@ -61,32 +64,6 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     UBotRequest* BotRequest;
 
-    UPROPERTY(EditDefaultsOnly)
-    UDataTable* DataTable;
-
-    UPROPERTY(EditDefaultsOnly)
-    UStaticMesh* FruitMesh;
-
-    UPROPERTY(EditDefaultsOnly)
-    TArray<FString> FruitType;
-
-    UPROPERTY(EditDefaultsOnly)
-    TArray <FString> FruitPath;
-
-    UPROPERTY(EditDefaultsOnly)
-    FString RandomFruitPath;
-
-    UPROPERTY(EditDefaultsOnly)
-    FString RandomFruitType;
-
-    UPROPERTY(EditDefaultsOnly)
-    int32 counter;
-
-    UPROPERTY(EditDefaultsOnly)
-    TMap<FString, int32> AllFruits;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fruit")
-    TSubclassOf<class AFruit> FruitClass;
 
     UPROPERTY(EditAnywhere)
     UWidgetComponent* Widget;
@@ -105,15 +82,6 @@ public:
 
     UFUNCTION(BlueprintCallable)
     void SpawnBasket();
-
-    UFUNCTION(BlueprintCallable)
-    void SpawnFruits();
-
-    UFUNCTION(BlueprintCallable)
-    void RandomFruitGeneration();
-
-    UFUNCTION(BlueprintCallable)
-    void DestroyFruits();
 
     UFUNCTION()
     bool IsCorrectFruitsCount();
