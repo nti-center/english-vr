@@ -62,10 +62,10 @@ public:
     void StartPlayingQueue();
 
     UFUNCTION(BlueprintCallable)
-    int CreateCue(TArray<FString>InputArray);
+    int CreateCue(TArray<FString>InputArray, FString Name);
 
     UFUNCTION(BlueprintCallable)
-    void PlaySoundWithCrossfade(TArray<FString> InputArray, UWidgetComponent* Widget);
+    void PlaySoundWithCrossfade(TArray<FString> InputArray, UWidgetComponent* Widget, FString CharacterName);
 
     UFUNCTION(BlueprintCallable)
     void SetCrossfadeParametr();
