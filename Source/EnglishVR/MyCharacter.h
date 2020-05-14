@@ -86,7 +86,7 @@ public:
     FCanTakeBasketDelegate OnCanTakeBasket;
 
     UFUNCTION(BlueprintCallable)
-    void LoadRandomTexture(FString TextureName, FName ParametrName, int32 Rand, UMaterialInstanceDynamic* DynamicMaterial);
+    void LoadRandomTexture(FString TextureName, FName ParametrName, FString path, int32 Rand, UMaterialInstanceDynamic* DynamicMaterial);
 
     UFUNCTION(BlueprintCallable)
     void SetRandomOutfit();

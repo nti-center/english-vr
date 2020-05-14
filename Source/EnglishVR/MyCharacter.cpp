@@ -51,9 +51,9 @@ bool AMyCharacter::TakeBasket(ABasket* NewBasket) {
     return true;
 }
 
-void AMyCharacter::LoadRandomTexture(FString TextureName, FName ParametrName, int32 Rand, UMaterialInstanceDynamic* DynamicMaterial) {
+void AMyCharacter::LoadRandomTexture(FString TextureName, FName ParametrName, FString path, int32 Rand, UMaterialInstanceDynamic* DynamicMaterial) {
     TextureName.Append(FString::FromInt(Rand));
-    FString path = "Texture2D'/Game/Models/Girl_New/Textures/" + TextureName + "." + TextureName + "'";
+    path = path + TextureName + "." + TextureName + "'";
     UTexture* RandomTexture = LoadObjFromPath<UTexture>(FName(*path));
     DynamicMaterial->SetTextureParameterValue(ParametrName, RandomTexture);
 }
@@ -68,8 +68,20 @@ void AMyCharacter::SetRandomOutfit() {
         UE_LOG(LogTemp, Warning, TEXT("Not found character mesh"));
         return;
     }
-    //Material = CharacterMesh->GetMaterial(0);
-    Material = LoadObjFromPath<UMaterialInterface>("Material'/Game/Models/Girl_New/Girl_New_material.Girl_New_material'");
+
+    FString Path = "";
+    FString MaterialName = "";
+
+    if (this->GetName() == "Girl1") {
+        Path = "Material'/Game/Models/Girl_New/";
+        MaterialName = "Girl_New_material.Girl_New_material'";
+    }
+    else if (this->GetName() == "Boy1") {
+        return;
+    }
+
+    Material = LoadObjFromPath<UMaterialInterface>(FName(*(Path.Append(MaterialName))));
+
     if (!Material) {
         UE_LOG(LogTemp, Warning, TEXT("Can not take material"));
         return;
@@ -80,9 +92,9 @@ void AMyCharacter::SetRandomOutfit() {
 
     int32 Rand = FMath::RandRange(1,1);
 
-    LoadRandomTexture("BaseColor", "BaseColor", Rand, DynamicMaterial);
-    LoadRandomTexture("ORM", "ORM", Rand, DynamicMaterial);
-    LoadRandomTexture("Normal", "Normal", Rand, DynamicMaterial);
+    LoadRandomTexture("BaseColor", "BaseColor",Path, Rand, DynamicMaterial);
+    LoadRandomTexture("ORM", "ORM", Path, Rand,  DynamicMaterial);
+    LoadRandomTexture("Normal", "Normal", Path, Rand, DynamicMaterial);
 }
 
 
