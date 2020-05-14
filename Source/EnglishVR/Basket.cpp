@@ -1,13 +1,11 @@
 
 #include "Basket.h"
+#include "AudioDataTableStruct.h"
 
 // Sets default values
 ABasket::ABasket() {
     // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
-    
-    //Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-    //Root->SetupAttachment(RootComponent);
     
     Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
     Mesh->SetupAttachment(RootComponent);
@@ -20,7 +18,6 @@ ABasket::ABasket() {
     Mesh->SetStaticMesh(ModelPath.Object);
     Mesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
     Mesh->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f));
-    //Mesh->bEditableWhenInherited = true;
     
     FillSphere = CreateDefaultSubobject<USphereComponent>(TEXT("FillSphere"));
     FillSphere->SetGenerateOverlapEvents(true);
@@ -33,10 +30,11 @@ ABasket::ABasket() {
     OutlineSphere->OnComponentBeginOverlap.AddDynamic(this, &ABasket::OnOutlineOverlapBegin);
     OutlineSphere->OnComponentEndOverlap.AddDynamic(this, &ABasket::OnOutlineOverlapEnd);
     OutlineSphere->SetupAttachment(Mesh);
-    //FillSphere->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-    //FillSphere->bEditableWhenInherited = true;
-    //FillSphere->SetSphereRadius(12.0f);
-    //FillSphere->SetRelativeLocation(FVector(0.0f, 0.0f, 11.0f));
+
+    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTable(TEXT("DataTable'/Game/CSV/Fruits.Fruits'"));
+    if (_DataTable.Succeeded()) {
+        DataTable = _DataTable.Object;
+    }
 }
 
 void ABasket::AttachOverlappingActors() {
@@ -56,7 +54,6 @@ void ABasket::AttachOverlappingActors() {
 }
 
 void ABasket::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
-    //UE_LOG(LogTemp, Warning, TEXT("2 wrong"));
     if (OtherActor == nullptr || OtherActor == this || OtherComp == nullptr)
         return;
     
@@ -66,19 +63,15 @@ void ABasket::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
     
     FString Type = ICollectable::Execute_GetType(OtherActor);
     
-    //Actor->SetRootComponent(Component);
-    //Actor->AddInstanceComponent(Component);
-    
     if (!FruitCounts.Contains(Type))
         FruitCounts.Add(Type, 0); 
     ++FruitCounts[Type];
-    
-    if(!AllFruitCounts.Contains(Type))
-        AllFruitCounts.Add(Type, 0);
 
-    ++AllFruitCounts[Type];
-    //UE_LOG(LogTemp, Warning, TEXT("2 wrong"));
-    //OtherActor->Destroy();    
+    FAudioDataTableStruct* Row = DataTable->FindRow<FAudioDataTableStruct>(FName(*Type), ContextString, true);
+    if (Row) {
+        TotalCost += Row->Cost;
+    }
+    CostWidget->SetText(FString::FromInt(TotalCost));
 
     OnFruitAdded.Broadcast();
 }
@@ -102,22 +95,18 @@ void ABasket::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherAct
     if (!OtherActor->GetClass()->ImplementsInterface(UCollectable::StaticClass()))
         return;
     
-    //OtherActor->AttachToComponent(FillSphere, FAttachmentTransformRules::KeepWorldTransform);
-    
     FString Type = ICollectable::Execute_GetType(OtherActor);
+    if (FruitCounts.Contains(Type)) {
+        --FruitCounts[Type];
 
-    //if (FruitCounts.Num() != 0) {
-        if (FruitCounts.Contains(Type))
-            --FruitCounts[Type];
-        if (FruitCounts.Contains(Type) && (FruitCounts[Type] == 0)) {
-            FruitCounts.Remove(Type);
+        FAudioDataTableStruct* Row = DataTable->FindRow<FAudioDataTableStruct>(FName(*Type), ContextString, true);
+        if (Row) {
+            TotalCost -= Row->Cost;
         }
-   // }
-
-    if (AllFruitCounts.Contains(Type))
-        --AllFruitCounts[Type];
-    if ((AllFruitCounts.Contains(Type)) && (AllFruitCounts[Type] == 0 )) {
-        AllFruitCounts.Remove(Type);
+        CostWidget->SetText(FString::FromInt(TotalCost));
+    }
+    if (FruitCounts.Contains(Type) && (FruitCounts[Type] == 0)) {
+            FruitCounts.Remove(Type);
     }
 
     OnFruitRemoved.Broadcast();
@@ -140,6 +129,15 @@ void ABasket::BeginPlay() {
     
     Mesh->SetSimulatePhysics(true);
     Mesh->SetMassOverrideInKg("", 3, true);
+
+    for (TActorIterator<AMarket> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
+        Market = Cast<AMarket>(*ActorItr);
+    }
+    if (!Market)
+        return;
+    CostWidget = Cast<UFruitCostWidget>(Market->WidgetComponent->GetUserWidgetObject());
+    if (!CostWidget)
+        return; 
 }
 
 // Called every frame

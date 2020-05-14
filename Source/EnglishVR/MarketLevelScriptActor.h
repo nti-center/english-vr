@@ -31,6 +31,9 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     AActor* MarketActor;
 
+    UPROPERTY(BlueprintReadWrite)
+    FTimerHandle FuzeTimerHandle;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TSubclassOf<class AMyCharacter> ToCharacterSpawn;
 
@@ -71,6 +74,12 @@ public:
     TArray <FString> FruitPath;
 
     UPROPERTY(EditDefaultsOnly)
+    FString RandomFruitPath;
+
+    UPROPERTY(EditDefaultsOnly)
+    FString RandomFruitType;
+
+    UPROPERTY(EditDefaultsOnly)
     int32 counter;
 
     UPROPERTY(EditDefaultsOnly)
@@ -101,7 +110,10 @@ public:
     void SpawnFruits();
 
     UFUNCTION(BlueprintCallable)
-    TArray<FString> RandomFruitGeneration();
+    void RandomFruitGeneration();
+
+    UFUNCTION(BlueprintCallable)
+    void DestroyFruits();
 
     UFUNCTION()
     bool IsCorrectFruitsCount();

@@ -13,7 +13,8 @@ struct FAudioDataTableStruct : public FTableRowBase {
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FString Path;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 Cost;
     
-
-
 };

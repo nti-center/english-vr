@@ -47,12 +47,18 @@ void AMarketLevelScriptActor::BeginPlay() {
         UE_LOG(LogTemp, Warning, TEXT("Speech recognizer type is not initilized"));
     }
 
-    //SpawnFruits();
+    SpawnFruits();
+    
     if (VRPawn) {
         VRPawn->OnAudioRecorded.AddDynamic(this, &AMarketLevelScriptActor::OnAudioRecorded);
     }
     else {
         UE_LOG(LogTemp, Warning, TEXT("VR pawn is not initilized"));
+    }
+
+    UWorld* World = GetWorld();
+    if (World) {
+        World->GetTimerManager().SetTimer(FuzeTimerHandle, this, &AMarketLevelScriptActor::DestroyFruits, 5.0f, false);
     }
 
     if (MarketPoint) {
@@ -79,7 +85,7 @@ void AMarketLevelScriptActor::SelectSpawnAndDestroyPoint() {
 
     int32 Rand = FMath::RandRange(0, SpawnPointsArray.Num() - 1);
 
-    UE_LOG(LogTemp, Warning, TEXT("Num: %d Rand: %d"), SpawnPointsArray.Num(), Rand);
+    //UE_LOG(LogTemp, Warning, TEXT("Num: %d Rand: %d"), SpawnPointsArray.Num(), Rand);
 
     CharacterSpawnPoint = SpawnPointsArray[Rand];
     CharacterSpawnPoint->GetAllChildActors(ChildActors);
@@ -179,20 +185,18 @@ void AMarketLevelScriptActor::SpawnFruits() {
         }
     }
 
-    MarketActor->GetComponents<UStaticMeshComponent>(children);
+    if (!MarketActor)
+        return;
 
-   // for (int i = 0; i < children.Num(); i++) {
-   //     //UE_LOG(LogTemp, Error, TEXT("Children: %s"), *children[i]->GetRelativeLocation().ToString());
-   // }
+    MarketActor->GetComponents<UStaticMeshComponent>(children);
 
     if (children.Num() < 0)
         return;
 
-    //for (auto& it : children) {
-    for(int l = 0; l < 2; l++) {
-        TArray<FString> tmp = RandomFruitGeneration();
-        UStaticMesh* CurrentFruitMesh = LoadObjFromPath<UStaticMesh>(FName(*tmp[0]));
-        FString CurrentFruitType = tmp[1];
+    for(int l = 0; l < children.Num()-1; l++) {
+        RandomFruitGeneration();
+        UStaticMesh* CurrentFruitMesh = LoadObjFromPath<UStaticMesh>(FName(*RandomFruitPath));
+        FString CurrentFruitType = RandomFruitType;
 
         if (!CurrentFruitMesh) {
             UE_LOG(LogTemp, Warning, TEXT("Cant find Mesh"));
@@ -208,9 +212,9 @@ void AMarketLevelScriptActor::SpawnFruits() {
         SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
         FVector FruitBoxBE = children[l]->GetStaticMesh()->GetBounds().BoxExtent;
-        FVector FruitBoxOrigin = children[l]->GetComponentLocation() - FruitBoxBE;
-
-        UE_LOG(LogTemp, Error, TEXT("Location is: %s"), *children[l]->GetComponentLocation().ToString());
+        if(CurrentFruitType == "Melon" || CurrentFruitType == "Watermelon")
+            FruitBoxBE += FVector(0, 10, 0);
+        FVector FruitBoxOrigin = children[l]->Bounds.Origin - FruitBoxBE;
 
         FVector FruitBE = CurrentFruitMesh->GetBounds().BoxExtent;
         FVector FruitOffset = FruitBE / 3.0f;
@@ -237,10 +241,12 @@ void AMarketLevelScriptActor::SpawnFruits() {
                     if (CurrZ + FruitBE.Z + ROffsetZ > MaxSize.Z)
                         break;
 
-                    FRotator RRotator(FMath::RandRange(-40, 40), FMath::RandRange(-40, 40), FMath::RandRange(-40, 40));
-                    FVector FruitLocation = FVector(CurrX + ROffsetX, CurrY + ROffsetY, CurrZ + ROffsetZ);
-                    FVector Location = children[l]->GetComponentLocation() + OriginOffset + children[l]->GetComponentRotation().RotateVector(FruitLocation - FruitBoxBE);
-
+                    FRotator RRotator(0, 0, 0);
+                    if (CurrentFruitType == "Carrot" || CurrentFruitType == "Cucumber") {
+                        RRotator = FRotator(70, 0, 0);
+                    }
+                    FVector FruitLocation = FVector(CurrX + ROffsetX, CurrY + ROffsetY + 5, CurrZ + ROffsetZ);
+                    FVector Location = children[l]->Bounds.Origin + OriginOffset + children[l]->GetComponentRotation().RotateVector(FruitLocation - FruitBoxBE);
                     AFruit* Fruit = World->SpawnActor<AFruit>(FruitClass, Location, RRotator, SpawnParams);
 
                     if (Fruit) {
@@ -253,38 +259,49 @@ void AMarketLevelScriptActor::SpawnFruits() {
     }
 }
 
-TArray<FString> AMarketLevelScriptActor::RandomFruitGeneration()
-{
-    TArray<FString> tmp;
+void AMarketLevelScriptActor::RandomFruitGeneration() {
+    RandomFruitPath = "";
+    RandomFruitType = "";
     int32 Rand = FMath::RandRange(0, FruitType.Num() - 1);
-
-    counter++;
 
     if (!AllFruits.Contains(FruitPath[Rand])) {
         AllFruits.Add(FruitPath[Rand], 1);
 
-        tmp.Add(FruitPath[Rand]);
-        tmp.Add(FruitType[Rand]);
-        UE_LOG(LogTemp, Warning, TEXT("Mesh ¹ %d is %s %s"), counter, *tmp[0], *tmp[1]);
-        return tmp;
+        RandomFruitPath = FruitPath[Rand];
+        RandomFruitType = FruitType[Rand];
+        return;
     }
 
     int32 count = AllFruits.FindRef(FruitPath[Rand]);
     if (count >= 2)
-        return tmp = RandomFruitGeneration();
+        return RandomFruitGeneration();
 
     AllFruits.Add(FruitPath[Rand], 2);
 
-    tmp.Add(FruitPath[Rand]);
-    tmp.Add(FruitType[Rand]);
-    UE_LOG(LogTemp, Warning, TEXT("Mesh%d is %s %s"), counter, *tmp[0], *tmp[1]);
+    RandomFruitPath = FruitPath[Rand];
+    RandomFruitType = FruitType[Rand];
 
-    return tmp;
+    return;
 }
 
 void AMarketLevelScriptActor::OnSpeechRecognized(FString Text) {
     UE_LOG(LogTemp, Warning, TEXT("Recognized text: %s"), *Text);
     BotRequest->Request(ECommand::SpeechRecognized, TArray<FString>({Text.Replace(TEXT(" "), TEXT("+"))}));
+}
+
+void AMarketLevelScriptActor::DestroyFruits() {
+    TArray<AActor*> FruitArray;
+
+    TSubclassOf<AFruit> ClassToFind;
+    ClassToFind = AFruit::StaticClass();
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ClassToFind, FruitArray);
+
+    for (auto& fruit : FruitArray) {
+        FVector location = fruit->GetActorLocation();
+        if (location.Z < 170) {
+            fruit->Destroy();
+        }
+    }
 }
 
 void AMarketLevelScriptActor::OnCharacterCanTakeBasket() {
@@ -365,10 +382,6 @@ bool AMarketLevelScriptActor::IsCorrectFruitsCount() {
 }
 
 void AMarketLevelScriptActor::PlayAudio(TArray<FString> PhraseArray, UWidgetComponent* TextWidget) {
-    //for (auto& Phrase : PhraseArray) {
-    //    Character->PhrasesAudio->SoundQueue.Enqueue(Phrase); 
-    //}
-    //Character->PhrasesAudio->StartPlayingQueue();
     Character->PhrasesAudio->PlaySoundWithCrossfade(PhraseArray,TextWidget);
 }
 

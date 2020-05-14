@@ -8,8 +8,10 @@
 #include "AIController.h"
 #include "Basket.h"
 #include "VRPawn.h"
+#include "Components/MeshComponent.h"
 #include "Sound/SoundCue.h"
 #include "BubleTextWidgetClass.h"
+#include "Kismet/KismetMaterialLibrary.h"
 #include "Components/WidgetComponent.h"
 #include "PhrasesAudioComponent.h"
 #include "UObject/UObjectGlobals.h"
@@ -82,6 +84,12 @@ public:
 
     UPROPERTY(BlueprintAssignable, BlueprintCallable)
     FCanTakeBasketDelegate OnCanTakeBasket;
+
+    UFUNCTION(BlueprintCallable)
+    void LoadRandomTexture(FString TextureName, FName ParametrName, int32 Rand, UMaterialInstanceDynamic* DynamicMaterial);
+
+    UFUNCTION(BlueprintCallable)
+    void SetRandomOutfit();
 
     UFUNCTION(BlueprintCallable)
     void SetPath(TArray<AActor*> Path);
