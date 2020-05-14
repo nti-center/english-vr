@@ -6,20 +6,18 @@
 #include "Engine.h"
 #include "GameFramework/Actor.h"
 #include "Fruit.h"
-#include "Engine/DataTable.h"
-#include "AudioDataTableStruct.h"
-#include "FruitBoxController.generated.h"
-
-
+#include "FruitController.generated.h"
 
 UCLASS()
-class ENGLISHVR_API AFruitBoxController : public AActor
-{
+class ENGLISHVR_API AFruitController : public AActor {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AFruitBoxController();
+	AFruitController();
+
+    UPROPERTY(EditDefaultsOnly)
+    TArray<FString> RequestedFruits;
 
     UPROPERTY(BlueprintReadWrite)
     FTimerHandle FuzeTimerHandle;
@@ -28,23 +26,37 @@ public:
     UDataTable* DataTable;
 
     UPROPERTY(EditDefaultsOnly)
-    TArray <FString> FruitType;
+    UStaticMesh* FruitMesh;
 
     UPROPERTY(EditDefaultsOnly)
-    int32 counter;
-
-    UPROPERTY(EditDefaultsOnly)
-    TMap<FString, int32> AllFruits;
+    TArray<FString> FruitType;
 
     UPROPERTY(EditDefaultsOnly)
     TArray <FString> FruitPath;
 
-    UFUNCTION(BlueprintCallable)
-    TArray<FString> RandomFruitGeneration();
+    UPROPERTY(EditDefaultsOnly)
+    FString RandomFruitPath;
+
+    UPROPERTY(EditDefaultsOnly)
+    FString RandomFruitType;
+
+    UPROPERTY(EditDefaultsOnly)
+    TMap<FString, int32> AllFruits;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fruit")
+    TSubclassOf<class AFruit> FruitClass;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    AActor* MarketActor;
 
     UFUNCTION(BlueprintCallable)
-    void DestroyFruits();
+    void SpawnFruits();
 
+    UFUNCTION(BlueprintCallable)
+    void RandomFruitGeneration();
+
+    UFUNCTION(BlueprintCallable)
+    void DestroyFallenFruits();
 
 
 protected:
