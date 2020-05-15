@@ -10,6 +10,7 @@
 #include "EdGraph/EdGraph.h"
 #include "Engine/DataTable.h"
 #include "Components/WidgetComponent.h"
+#include "CharacterDataTableStruct.h"
 #include "CrossfadeDataTableStruct.h"
 #include "Sound/SoundNodeWavePlayer.h"
 #include "Sound/SoundNodeParamCrossFade.h"
@@ -39,6 +40,9 @@ public:
 
     UPROPERTY(EditDefaultsOnly)
     UDataTable* CrossfadeParametrsDataTable;
+
+    UPROPERTY(EditDefaultsOnly)
+    UDataTable* CharacterParametrsTable;
 
     UPROPERTY(BlueprintReadWrite)
     float TimerCount = 0;

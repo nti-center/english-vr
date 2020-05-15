@@ -4,9 +4,9 @@
 UPhrasesAudioComponent::UPhrasesAudioComponent() {
     PrimaryComponentTick.bCanEverTick = true;
 
-    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTable(TEXT("DataTable'/Game/CSV/CrossfadeParametrs.CrossfadeParametrs'"));
-    if (_DataTable.Succeeded()) {
-        CrossfadeParametrsDataTable = _DataTable.Object;
+    static ConstructorHelpers::FObjectFinder<UDataTable> _CharacterDataTable(TEXT("DataTable'/Game/CSV/CharacterparametrsTable.CharacterparametrsTable'"));
+    if (_CharacterDataTable.Succeeded()) {
+        CharacterParametrsTable = _CharacterDataTable.Object;
     }
 
     //OnAudioFinished.AddDynamic(this, &UPhrasesAudioComponent::PlayNextSound);
@@ -56,13 +56,20 @@ int UPhrasesAudioComponent::CreateCue(TArray<FString> InputArray, FString Name) 
     SoundCue->LinkGraphNodesFromSoundNodes();
 
     for (FString name : InputArray) {
-        FString path = "";
-        if (Name == "Girl1")
-            path = "SoundWave'/Game/Sounds/GirlSounds/" + name + "." + name + "'";
-        else if (Name == "Boy1")
-            path = "SoundWave'/Game/Sounds/MaleSounds/" + name + "." + name + "'";
+        FString PathToCrossfade = "";
+        FString PathToSound = "";
 
-        USoundWave* SoundWave = LoadObjFromPath<USoundWave>(FName(*path));
+        FCharacterDataTableStruct* TableRow = CharacterParametrsTable->FindRow<FCharacterDataTableStruct>(FName(*Name), ContextString, true);
+        if (TableRow) {
+            PathToCrossfade = *TableRow->PathToCrossfadeTable;
+            PathToSound = *TableRow->PathToSound;
+        }
+        const TCHAR *Path = *PathToCrossfade;
+
+        CrossfadeParametrsDataTable = Cast<UDataTable>(StaticLoadObject(UDataTable::StaticClass(), NULL, Path));
+
+        PathToSound = PathToSound + name + "." + name + "'";
+        USoundWave* SoundWave = LoadObjFromPath<USoundWave>(FName(*PathToSound));
 
         if (!SoundWave) {
             ErrorIndex = NodeIndex + 1;
