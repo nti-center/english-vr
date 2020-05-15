@@ -53,6 +53,9 @@ public:
     void SpawnFruits();
 
     UFUNCTION(BlueprintCallable)
+    void CreateFruit(UStaticMeshComponent* Box);
+
+    UFUNCTION(BlueprintCallable)
     void RandomFruitGeneration();
 
     UFUNCTION(BlueprintCallable)

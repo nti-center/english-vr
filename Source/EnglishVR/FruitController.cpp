@@ -47,73 +47,82 @@ void AFruitController::SpawnFruits() {
     if (children.Num() < 0)
         return;
 
-    for (int l = 0; l < children.Num()-1; l++) {
-        RandomFruitGeneration();
-        UStaticMesh* CurrentFruitMesh = LoadObjFromPath<UStaticMesh>(FName(*RandomFruitPath));
-        FString CurrentFruitType = RandomFruitType;
-
-        if (!CurrentFruitMesh) {
-            UE_LOG(LogTemp, Warning, TEXT("Cant find Mesh"));
-            return;
+    if (RequestedFruits.Num() == 0) {
+        for (int l = 0; l < children.Num() - 1; l++) {
+            RandomFruitGeneration();
+            CreateFruit(children[l]);
         }
+    }
+    else {
+    }
 
-        if (!FruitClass) {
-            UE_LOG(LogTemp, Warning, TEXT("Cant find fruit class"));
-            return;
-        }
+    if (World) {
+        World->GetTimerManager().SetTimer(FuzeTimerHandle, this, &AFruitController::DestroyFallenFruits, 5.0f, false);
+    }   
+}
 
-        FActorSpawnParameters SpawnParams;
-        SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+void AFruitController::CreateFruit(UStaticMeshComponent* Box) {
+    UStaticMesh* CurrentFruitMesh = LoadObjFromPath<UStaticMesh>(FName(*RandomFruitPath));
+    FString CurrentFruitType = RandomFruitType;
 
-        FVector FruitBoxBE = children[l]->GetStaticMesh()->GetBounds().BoxExtent;
-        if (CurrentFruitType == "Melon" || CurrentFruitType == "Watermelon")
-            FruitBoxBE += FVector(0, 10, 0);
-        FVector FruitBoxOrigin = children[l]->Bounds.Origin - FruitBoxBE;
+    if (!CurrentFruitMesh) {
+        UE_LOG(LogTemp, Warning, TEXT("Cant find Mesh"));
+        return;
+    }
 
-        FVector FruitBE = CurrentFruitMesh->GetBounds().BoxExtent;
-        FVector FruitOffset = FruitBE / 3.0f;
+    if (!FruitClass) {
+        UE_LOG(LogTemp, Warning, TEXT("Cant find fruit class"));
+        return;
+    }
 
-        FVector MaxSize = FruitBoxBE * 2;
-        FIntVector Count(MaxSize / (FruitBE * 2));
-        FVector OriginOffset = FruitBoxBE - FVector(Count) * FruitBE;
+    FActorSpawnParameters SpawnParams;
+    SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-        for (int i = 0;; i++) {
-            float ROffsetX = FMath::RandRange(-FruitOffset.X, FruitOffset.X);
-            float CurrX = FruitBE.X + FruitBE.X * 2 * i;
-            if (CurrX + FruitBE.X + ROffsetX > MaxSize.X)
+    FVector FruitBoxBE = Box->GetStaticMesh()->GetBounds().BoxExtent;
+    if (CurrentFruitType == "Melon" || CurrentFruitType == "Watermelon")
+        FruitBoxBE += FVector(0, 10, 0);
+    FVector FruitBoxOrigin = Box->Bounds.Origin - FruitBoxBE;
+
+    FVector FruitBE = CurrentFruitMesh->GetBounds().BoxExtent;
+    FVector FruitOffset = FruitBE / 3.0f;
+
+    FVector MaxSize = FruitBoxBE * 2;
+    FIntVector Count(MaxSize / (FruitBE * 2));
+    FVector OriginOffset = FruitBoxBE - FVector(Count) * FruitBE;
+
+    for (int i = 0;; i++) {
+        float ROffsetX = FMath::RandRange(-FruitOffset.X, FruitOffset.X);
+        float CurrX = FruitBE.X + FruitBE.X * 2 * i;
+        if (CurrX + FruitBE.X + ROffsetX > MaxSize.X)
+            break;
+
+        for (int j = 0;; j++) {
+            float ROffsetY = FMath::RandRange(-FruitOffset.Y, FruitOffset.Y);
+            float CurrY = FruitBE.Y + FruitBE.Y * 2 * j;
+            if (CurrY + FruitBE.Y + ROffsetY > MaxSize.Y)
                 break;
 
-            for (int j = 0;; j++) {
-                float ROffsetY = FMath::RandRange(-FruitOffset.Y, FruitOffset.Y);
-                float CurrY = FruitBE.Y + FruitBE.Y * 2 * j;
-                if (CurrY + FruitBE.Y + ROffsetY > MaxSize.Y)
+            for (int k = 0;; k++) {
+                float ROffsetZ = FMath::RandRange(-FruitOffset.Z, FruitOffset.Z);
+                float CurrZ = FruitBE.Z + FruitBE.Z * 2 * k;
+                if (CurrZ + FruitBE.Z + ROffsetZ > MaxSize.Z)
                     break;
 
-                for (int k = 0;; k++) {
-                    float ROffsetZ = FMath::RandRange(-FruitOffset.Z, FruitOffset.Z);
-                    float CurrZ = FruitBE.Z + FruitBE.Z * 2 * k;
-                    if (CurrZ + FruitBE.Z + ROffsetZ > MaxSize.Z)
-                        break;
+                FRotator RRotator(0, 0, 0);
+                if (CurrentFruitType == "Carrot" || CurrentFruitType == "Cucumber") {
+                    RRotator = FRotator(70, 0, 0);
+                }
+                FVector FruitLocation = FVector(CurrX + ROffsetX, CurrY + ROffsetY, CurrZ + ROffsetZ);
+                FVector Location = Box->Bounds.Origin + OriginOffset + Box->GetComponentRotation().RotateVector(FruitLocation - FruitBoxBE);
+                AFruit* Fruit = GetWorld()->SpawnActor<AFruit>(FruitClass, Location, RRotator, SpawnParams);
 
-                    FRotator RRotator(0, 0, 0);
-                    if (CurrentFruitType == "Carrot" || CurrentFruitType == "Cucumber") {
-                        RRotator = FRotator(70, 0, 0);
-                    }
-                    FVector FruitLocation = FVector(CurrX + ROffsetX, CurrY + ROffsetY, CurrZ + ROffsetZ);
-                    FVector Location = children[l]->Bounds.Origin + OriginOffset + children[l]->GetComponentRotation().RotateVector(FruitLocation - FruitBoxBE);
-                    AFruit* Fruit = World->SpawnActor<AFruit>(FruitClass, Location, RRotator, SpawnParams);
-
-                    if (Fruit) {
-                        Fruit->Mesh->SetStaticMesh(CurrentFruitMesh);
-                        Fruit->Type = CurrentFruitType;
-                    }
+                if (Fruit) {
+                    Fruit->Mesh->SetStaticMesh(CurrentFruitMesh);
+                    Fruit->Type = CurrentFruitType;
                 }
             }
         }
     }
-     if (World) {
-         World->GetTimerManager().SetTimer(FuzeTimerHandle, this, &AFruitController::DestroyFallenFruits, 5.0f, false);
-     }
 }
 
 void AFruitController::RandomFruitGeneration() {
