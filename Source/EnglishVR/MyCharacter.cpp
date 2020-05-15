@@ -16,6 +16,11 @@ AMyCharacter::AMyCharacter() {
     WidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("WidgetComponent"));
     WidgetComponent->SetupAttachment(RootComponent);
 
+    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTable(TEXT("DataTable'/Game/CSV/CharacterparametrsTable.CharacterparametrsTable'"));
+    if (_DataTable.Succeeded()) {
+        CharacterParametrsTable = _DataTable.Object;
+    }
+
     AnimationState = EAnimationState::None;
 }
 
@@ -59,6 +64,7 @@ void AMyCharacter::LoadRandomTexture(FString TextureName, FName ParametrName, FS
 }
 
 void AMyCharacter::SetRandomOutfit() {
+    FString ContextString;
     USkeletalMeshComponent* CharacterMesh;
     UMaterialInterface* Material;
     UMaterialInstanceDynamic* DynamicMaterial;
@@ -69,18 +75,18 @@ void AMyCharacter::SetRandomOutfit() {
         return;
     }
 
-    FString Path = "";
-    FString MaterialName = "";
+    FString MaterialPath = "";
+    FString TexturePath = "";
 
-    if (this->GetName() == "Girl1") {
-        Path = "Material'/Game/Models/Girl_New/";
-        MaterialName = "Girl_New_material.Girl_New_material'";
+    FCharacterDataTableStruct* Row = CharacterParametrsTable->FindRow<FCharacterDataTableStruct>(FName(*this->GetName()), ContextString, true);
+    if (Row) {
+        MaterialPath = *Row->PathToMaterial;
+        TexturePath = *Row->PathToTexture;
     }
-    else if (this->GetName() == "Boy1") {
+    if (MaterialPath == "")
         return;
-    }
 
-    Material = LoadObjFromPath<UMaterialInterface>(FName(*(Path.Append(MaterialName))));
+    Material = LoadObjFromPath<UMaterialInterface>(FName(*MaterialPath));
 
     if (!Material) {
         UE_LOG(LogTemp, Warning, TEXT("Can not take material"));
@@ -92,9 +98,9 @@ void AMyCharacter::SetRandomOutfit() {
 
     int32 Rand = FMath::RandRange(1,1);
 
-    LoadRandomTexture("BaseColor", "BaseColor",Path, Rand, DynamicMaterial);
-    LoadRandomTexture("ORM", "ORM", Path, Rand,  DynamicMaterial);
-    LoadRandomTexture("Normal", "Normal", Path, Rand, DynamicMaterial);
+    LoadRandomTexture("BaseColor", "BaseColor", TexturePath, Rand, DynamicMaterial);
+    LoadRandomTexture("ORM", "ORM", TexturePath, Rand,  DynamicMaterial);
+    LoadRandomTexture("Normal", "Normal", TexturePath, Rand, DynamicMaterial);
 }
 
 

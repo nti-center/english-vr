@@ -8,6 +8,7 @@
 #include "AIController.h"
 #include "Basket.h"
 #include "VRPawn.h"
+#include "CharacterDataTableStruct.h"
 #include "Components/MeshComponent.h"
 #include "Sound/SoundCue.h"
 #include "BubleTextWidgetClass.h"
@@ -54,6 +55,9 @@ public:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     UPhrasesAudioComponent* PhrasesAudio;
+
+    UPROPERTY(EditDefaultsOnly)
+    UDataTable* CharacterParametrsTable;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     UWidgetComponent* WidgetComponent;
