@@ -1,17 +1,27 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
-
 #include "CoreMinimal.h"
+#include "Engine/DataTable.h"
 #include "UObject/NoExportTypes.h"
 #include "CharacterDataTableStruct.generated.h"
 
-/**
- * 
- */
-UCLASS()
-class ENGLISHVR_API UCharacterDataTableStruct : public UObject
-{
+USTRUCT(BlueprintType)
+struct FCharacterDataTableStruct : public FTableRowBase {
 	GENERATED_BODY()
+
+public:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FString PathToBP;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FString PathToMaterial;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FString PathToTexture;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FString PathToCrossfadeTable;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FString PathToSound;
 	
 };
