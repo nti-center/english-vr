@@ -10,6 +10,11 @@ AMarketLevelScriptActor::AMarketLevelScriptActor() {
     BotRequest->OnResponseReceived.AddDynamic(this, &AMarketLevelScriptActor::OnBotResponseReceived);
     BotRequest->SetupAttachment(RootComponent);
 
+    static ConstructorHelpers::FObjectFinder<UDataTable> _DataTable(TEXT("DataTable'/Game/CSV/CharacterparametrsTable.CharacterparametrsTable'"));
+    if (_DataTable.Succeeded()) {
+        CharacterParametrsTable = _DataTable.Object;
+    }
+
     SpeechRecognizerType = ASpeechRecognizerMCSS::StaticClass();
 }
 
@@ -100,18 +105,19 @@ void AMarketLevelScriptActor::SelectSpawnAndDestroyPoint() {
 }
 
 void AMarketLevelScriptActor::SpawnCharacter() {
+    TArray <FName>  OutRowNames;
+    FActorSpawnParameters SpawnParametrs;
+    FString StringPath = "";
+    FString ContextString;
+
     SelectSpawnAndDestroyPoint();
 
-    FActorSpawnParameters SpawnParametrs;
-    int32 Rand = FMath::RandRange(1, 1);
-    FString StringPath = "";
-    if (Rand == 1) {
-        StringPath = "Blueprint'/Game/Blueprints/CharacterBP.CharacterBP_C'";
-        SpawnParametrs.Name = "Girl1";
-    }
-    else {
-        StringPath = "Blueprint'/Game/Blueprints/MaleBP.MaleBP_C'";
-        SpawnParametrs.Name = "Boy1";
+    UDataTableFunctionLibrary::GetDataTableRowNames(CharacterParametrsTable,OutRowNames);
+    int32 Rand = FMath::RandRange(1, 1/*OutRowNames.Num()*/);
+    FCharacterDataTableStruct* Row = CharacterParametrsTable->FindRow<FCharacterDataTableStruct>(OutRowNames[Rand-1], ContextString, true);
+    if (Row) {
+        StringPath = *Row->PathToBP; 
+        SpawnParametrs.Name = OutRowNames[Rand - 1];
     }
 
     const TCHAR *Path = *StringPath;

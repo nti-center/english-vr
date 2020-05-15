@@ -4,8 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Engine/LevelScriptActor.h"
+#include "Kismet/DataTableFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "FruitController.h"
+#include "CharacterDataTableStruct.h"
 #include "MyCharacter.h"
 #include "Basket.h"
 #include "BotRequest.h"
@@ -27,6 +29,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     AMyCharacter* Character;
+
+    UPROPERTY(EditDefaultsOnly)
+    UDataTable* CharacterParametrsTable;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     AActor* MarketActor;
