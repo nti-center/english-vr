@@ -71,7 +71,9 @@ void ABasket::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
     if (Row) {
         TotalCost += Row->Cost;
     }
-    CostWidget->SetText(FString::FromInt(TotalCost));
+    FString text = FString::FromInt(TotalCost);
+    text.Append("$");
+    CostWidget->SetText(text);
 
     OnFruitAdded.Broadcast();
 }
@@ -103,7 +105,9 @@ void ABasket::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherAct
         if (Row) {
             TotalCost -= Row->Cost;
         }
-        CostWidget->SetText(FString::FromInt(TotalCost));
+        FString text = FString::FromInt(TotalCost);
+        text.Append("$");
+        CostWidget->SetText(text);
     }
     if (FruitCounts.Contains(Type) && (FruitCounts[Type] == 0)) {
             FruitCounts.Remove(Type);
