@@ -30,7 +30,7 @@ static FORCEINLINE ObjClass* LoadObjFromPath(const FName& Path) {
     return Cast<ObjClass>(StaticLoadObject(ObjClass::StaticClass(), NULL, *Path.ToString()));
 }
 
-int UPhrasesAudioComponent::CreateCue(TArray<FString> InputArray) {
+int UPhrasesAudioComponent::CreateCue(TArray<FString> InputArray, FString Name) {
     TArray<struct FDistanceDatum> Datum;
     FDistanceDatum TempDatum;
 
@@ -56,7 +56,12 @@ int UPhrasesAudioComponent::CreateCue(TArray<FString> InputArray) {
     SoundCue->LinkGraphNodesFromSoundNodes();
 
     for (FString name : InputArray) {
-        FString path = "SoundWave'/Game/Sounds/GirlSounds/" + name + "." + name + "'";
+        FString path = "";
+        if (Name == "Girl1")
+            path = "SoundWave'/Game/Sounds/GirlSounds/" + name + "." + name + "'";
+        else if (Name == "Boy1")
+            path = "SoundWave'/Game/Sounds/MaleSounds/" + name + "." + name + "'";
+
         USoundWave* SoundWave = LoadObjFromPath<USoundWave>(FName(*path));
 
         if (!SoundWave) {
@@ -127,11 +132,11 @@ int UPhrasesAudioComponent::CreateCue(TArray<FString> InputArray) {
     return ErrorIndex;
 }
 
-void UPhrasesAudioComponent::PlaySoundWithCrossfade(TArray<FString> InputArray, UWidgetComponent* Widget) {
+void UPhrasesAudioComponent::PlaySoundWithCrossfade(TArray<FString> InputArray, UWidgetComponent* Widget, FString CharacterName) {
    if (InputArray.Num() <= 0)
        return;
 
-   int32 Error = CreateCue(InputArray);
+   int32 Error = CreateCue(InputArray, CharacterName);
    SetSound(SoundCue);
 
    StepCount = 0;
