@@ -16,9 +16,6 @@ public:
 	// Sets default values for this actor's properties
 	AFruitController();
 
-    UPROPERTY(EditDefaultsOnly)
-    TArray<FString> RequestedFruits;
-
     UPROPERTY(BlueprintReadWrite)
     FTimerHandle FuzeTimerHandle;
 
@@ -35,10 +32,25 @@ public:
     TArray <FString> FruitPath;
 
     UPROPERTY(EditDefaultsOnly)
+    TMap <FString, FString> TypeAndPath;
+
+    UPROPERTY(EditDefaultsOnly)
+    TMap <FString, FString> TypeAndClass;
+
+    UPROPERTY(EditDefaultsOnly)
     FString RandomFruitPath;
 
     UPROPERTY(EditDefaultsOnly)
     FString RandomFruitType;
+
+    UPROPERTY(EditDefaultsOnly)
+    FString CurrentClass;
+
+    UPROPERTY(EditDefaultsOnly)
+    FString PreviousClass;
+
+    UPROPERTY(EditDefaultsOnly)
+    int32 Counter;
 
     UPROPERTY(EditDefaultsOnly)
     TMap<FString, int32> AllFruits;
@@ -50,13 +62,13 @@ public:
     AActor* MarketActor;
 
     UFUNCTION(BlueprintCallable)
-    void SpawnFruits();
+    void SpawnFruits(TArray<FString> RequestedFruits);
 
     UFUNCTION(BlueprintCallable)
-    void CreateFruit(UStaticMeshComponent* Box);
+    void CreateFruit(UStaticMeshComponent* Box, FString Path, FString Type);
 
     UFUNCTION(BlueprintCallable)
-    void RandomFruitGeneration();
+    void RandomFruitGeneration(int32 Num);
 
     UFUNCTION(BlueprintCallable)
     void DestroyFallenFruits();

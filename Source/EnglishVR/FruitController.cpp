@@ -12,7 +12,6 @@ AFruitController::AFruitController() {
     }
 
     FruitClass = AFruit::StaticClass();
-
 }
 
 template <typename ObjClass>
@@ -23,10 +22,11 @@ static FORCEINLINE ObjClass* LoadObjFromPath(const FName& Path) {
 
 
 void AFruitController::BeginPlay() {
-	Super::BeginPlay();
+    Super::BeginPlay();
+    Counter = 0;
 }
 
-void AFruitController::SpawnFruits() {
+void AFruitController::SpawnFruits(TArray<FString> RequestedFruits) {
     TArray<UStaticMeshComponent*> children;
     FString ContextString;
     UWorld* World = GetWorld();
@@ -36,6 +36,9 @@ void AFruitController::SpawnFruits() {
         if (Row) {
             FruitType.Add(Row->FruitType);
             FruitPath.Add(Row->Path);
+
+            TypeAndPath.Add(Row->FruitType, Row->Path);
+            TypeAndClass.Add(Row->FruitType, Row->VegetablesOrFruits);
         }
     }
 
@@ -49,11 +52,25 @@ void AFruitController::SpawnFruits() {
 
     if (RequestedFruits.Num() == 0) {
         for (int l = 0; l < children.Num() - 1; l++) {
-            RandomFruitGeneration();
-            CreateFruit(children[l]);
+            UE_LOG(LogTemp, Error, TEXT("Box = %s"),*children[l]->GetName());
+            RandomFruitGeneration(children.Num());
+            CreateFruit(children[l], RandomFruitPath, RandomFruitType);
         }
     }
     else {
+        for (int i = 0; i < RequestedFruits.Num(); i++) {
+            for (int j = 0; j < children.Num(); j++) {
+                FString Box = "Box";
+                if (children[j]->GetName() == Box.Append(FString::FromInt(i + 1))) {
+                    CreateFruit(children[j], TypeAndPath.FindRef(RequestedFruits[i]), RequestedFruits[i]);
+                    children.RemoveAt(j, 1);
+                }
+            }
+        }
+        for (int l = 0; l < children.Num() - 1; l++) {
+            RandomFruitGeneration(children.Num());
+            CreateFruit(children[l], RandomFruitPath, RandomFruitType);
+        }
     }
 
     if (World) {
@@ -61,9 +78,9 @@ void AFruitController::SpawnFruits() {
     }   
 }
 
-void AFruitController::CreateFruit(UStaticMeshComponent* Box) {
-    UStaticMesh* CurrentFruitMesh = LoadObjFromPath<UStaticMesh>(FName(*RandomFruitPath));
-    FString CurrentFruitType = RandomFruitType;
+void AFruitController::CreateFruit(UStaticMeshComponent* Box, FString Path, FString Type) {
+    UStaticMesh* CurrentFruitMesh = LoadObjFromPath<UStaticMesh>(FName(*Path));
+    FString CurrentFruitType = Type;
 
     if (!CurrentFruitMesh) {
         UE_LOG(LogTemp, Warning, TEXT("Cant find Mesh"));
@@ -125,27 +142,57 @@ void AFruitController::CreateFruit(UStaticMeshComponent* Box) {
     }
 }
 
-void AFruitController::RandomFruitGeneration() {
+void AFruitController::RandomFruitGeneration(int32 Num) {
     RandomFruitPath = "";
     RandomFruitType = "";
+
     int32 Rand = FMath::RandRange(0, FruitType.Num() - 1);
+    CurrentClass = TypeAndClass.FindRef(FruitType[Rand]);
+
+    if (Counter == 0) {
+        PreviousClass = CurrentClass;
+    }
+
+    if ((PreviousClass != CurrentClass) && (Counter < Num/2)) {
+        return RandomFruitGeneration(Num);
+    }
+    else if (Counter == Num/2) {
+        if (PreviousClass == "Fruit")
+            PreviousClass = "Vegetable";
+        else {
+            PreviousClass = "Fruit";
+        }
+    }
 
     if (!AllFruits.Contains(FruitPath[Rand])) {
         AllFruits.Add(FruitPath[Rand], 1);
 
         RandomFruitPath = FruitPath[Rand];
         RandomFruitType = FruitType[Rand];
+
+        UE_LOG(LogTemp, Error, TEXT("Fruit %s"),*RandomFruitType);
+        PreviousClass = CurrentClass;
+        Counter++;
+
         return;
     }
 
     int32 count = AllFruits.FindRef(FruitPath[Rand]);
-    if (count >= 2)
-        return RandomFruitGeneration();
+    if (count >= 2) {
+        FruitPath.RemoveAt(Rand, 1);
+        FruitType.RemoveAt(Rand, 1);
+        return RandomFruitGeneration(Num);
+    }
 
     AllFruits.Add(FruitPath[Rand], 2);
 
     RandomFruitPath = FruitPath[Rand];
     RandomFruitType = FruitType[Rand];
+
+    UE_LOG(LogTemp, Error, TEXT("Fruit %s"), *RandomFruitType);
+
+    PreviousClass = CurrentClass;
+    Counter++;
 
     return;
 }
@@ -167,6 +214,5 @@ void AFruitController::DestroyFallenFruits() {
 
 void AFruitController::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
-
 }
 
