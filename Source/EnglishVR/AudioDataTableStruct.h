@@ -12,6 +12,9 @@ struct FAudioDataTableStruct : public FTableRowBase {
     FString FruitType;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FString VegetablesOrFruits;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FString Path;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
