@@ -39,6 +39,9 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     AFruitController* FruitController;
 
+    UPROPERTY(EditDefaultsOnly)
+    TArray<FString> RequestedFruits;
+
     UPROPERTY(BlueprintReadWrite)
     FTimerHandle FuzeTimerHandle;
 
