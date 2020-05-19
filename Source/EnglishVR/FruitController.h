@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine.h"
+#include "Kismet/KismetStringLibrary.h"
 #include "GameFramework/Actor.h"
 #include "Fruit.h"
 #include "FruitController.generated.h"

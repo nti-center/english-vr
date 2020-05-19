@@ -50,9 +50,37 @@ void AFruitController::SpawnFruits(TArray<FString> RequestedFruits) {
     if (children.Num() < 0)
         return;
 
+    for (int i = 0; i < children.Num(); i++) { 
+        if (children[i]->GetName() == "StaticMesh")
+            children.RemoveAt(i, 1);
+    }
+
+    for (int i = 0; i < children.Num() - 1; i++) {
+        for (int j = 0; j < children.Num() - i - 1; j++) {
+            if (FCString::Atoi(*UKismetStringLibrary::GetSubstring(children[j]->GetName(), 3, children[j]->GetName().Len())) >
+                FCString::Atoi(*UKismetStringLibrary::GetSubstring(children[j + 1]->GetName(), 3, children[j + 1]->GetName().Len()))) {
+                UStaticMeshComponent* tmp = children[j];
+                children[j] = children[j + 1];
+                children[j + 1] = tmp;
+            }
+        }
+    }
+
+    TArray< UStaticMeshComponent*> ChildrenSort;
+    int32 length = children.Num() / 2;
+    for (int i = 0; i < length; i += 2) {
+        ChildrenSort.Add(children[i]);
+        ChildrenSort.Add(children[i + 1]);
+
+        children.RemoveAt(i, 2);
+    }
+    ChildrenSort.Append(children);
+    children.Empty();
+    children.Append(ChildrenSort);
+
+
     if (RequestedFruits.Num() == 0) {
-        for (int l = 0; l < children.Num() - 1; l++) {
-            UE_LOG(LogTemp, Error, TEXT("Box = %s"),*children[l]->GetName());
+        for (int l = 0; l < children.Num(); l++) {
             RandomFruitGeneration(children.Num());
             CreateFruit(children[l], RandomFruitPath, RandomFruitType);
         }
@@ -63,11 +91,15 @@ void AFruitController::SpawnFruits(TArray<FString> RequestedFruits) {
                 FString Box = "Box";
                 if (children[j]->GetName() == Box.Append(FString::FromInt(i + 1))) {
                     CreateFruit(children[j], TypeAndPath.FindRef(RequestedFruits[i]), RequestedFruits[i]);
-                    children.RemoveAt(j, 1);
+
+                    children.RemoveAt(j, 1); 
                 }
             }
+            int32 Index = 0;
+            FruitType.Find(RequestedFruits[i], Index);
+            AllFruits.Add(FruitPath[Index], 1);
         }
-        for (int l = 0; l < children.Num() - 1; l++) {
+        for (int l = 0; l < children.Num(); l++) {
             RandomFruitGeneration(children.Num());
             CreateFruit(children[l], RandomFruitPath, RandomFruitType);
         }
@@ -153,15 +185,16 @@ void AFruitController::RandomFruitGeneration(int32 Num) {
         PreviousClass = CurrentClass;
     }
 
-    if ((PreviousClass != CurrentClass) && (Counter < Num/2)) {
-        return RandomFruitGeneration(Num);
-    }
-    else if (Counter == Num/2) {
+    if (Counter == Num / 2) {
         if (PreviousClass == "Fruit")
             PreviousClass = "Vegetable";
         else {
             PreviousClass = "Fruit";
         }
+    }
+
+    if (PreviousClass != CurrentClass) {
+        return RandomFruitGeneration(Num);
     }
 
     if (!AllFruits.Contains(FruitPath[Rand])) {
@@ -170,10 +203,10 @@ void AFruitController::RandomFruitGeneration(int32 Num) {
         RandomFruitPath = FruitPath[Rand];
         RandomFruitType = FruitType[Rand];
 
-        UE_LOG(LogTemp, Error, TEXT("Fruit %s"),*RandomFruitType);
-        PreviousClass = CurrentClass;
-        Counter++;
-
+        if (Counter <= Num / 2) {
+            PreviousClass = CurrentClass;
+            Counter++;
+        }
         return;
     }
 
@@ -189,11 +222,10 @@ void AFruitController::RandomFruitGeneration(int32 Num) {
     RandomFruitPath = FruitPath[Rand];
     RandomFruitType = FruitType[Rand];
 
-    UE_LOG(LogTemp, Error, TEXT("Fruit %s"), *RandomFruitType);
-
-    PreviousClass = CurrentClass;
-    Counter++;
-
+    if (Counter <= Num / 2) {
+        PreviousClass = CurrentClass;
+        Counter++;
+    }
     return;
 }
 
