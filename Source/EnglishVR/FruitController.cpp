@@ -26,7 +26,7 @@ void AFruitController::BeginPlay() {
     Counter = 0;
 }
 
-void AFruitController::SpawnFruits(TArray<FString> RequestedFruits) {
+void AFruitController::SpawnFruits(TArray<FString> RequestedFruits, TArray<FString> Boxes, bool RandomSpawn) {
     TArray<UStaticMeshComponent*> children;
     FString ContextString;
     UWorld* World = GetWorld();
@@ -54,7 +54,6 @@ void AFruitController::SpawnFruits(TArray<FString> RequestedFruits) {
         if (children[i]->GetName() == "StaticMesh")
             children.RemoveAt(i, 1);
     }
-
     for (int i = 0; i < children.Num() - 1; i++) {
         for (int j = 0; j < children.Num() - i - 1; j++) {
             if (FCString::Atoi(*UKismetStringLibrary::GetSubstring(children[j]->GetName(), 3, children[j]->GetName().Len())) >
@@ -66,45 +65,76 @@ void AFruitController::SpawnFruits(TArray<FString> RequestedFruits) {
         }
     }
 
-    TArray< UStaticMeshComponent*> ChildrenSort;
-    int32 length = children.Num() / 2;
-    for (int i = 0; i < length; i += 2) {
-        ChildrenSort.Add(children[i]);
-        ChildrenSort.Add(children[i + 1]);
-
-        children.RemoveAt(i, 2);
+    TArray< UStaticMeshComponent*> Tmp;
+    if ((RequestedFruits.Num() != 0 && Boxes.Num() != 0 && RandomSpawn == false) || (RequestedFruits.Num()==0 && Boxes.Num() != 0 && RandomSpawn == true)) {
+        for (int i = 0; i < children.Num(); i++) {
+            for (int j = 0; j < Boxes.Num(); j++) {
+                if (children[i]->GetName() == Boxes[j]) {
+                    Tmp.Add(children[i]);
+                    break;
+                }
+            }
+        }
+        children.Empty();
+        children.Append(Tmp);
     }
-    ChildrenSort.Append(children);
-    children.Empty();
-    children.Append(ChildrenSort);
 
+    //Only for Makrete scene!------------------
+    if (RandomSpawn == true) {
+        Tmp.Empty();
+        int32 length = children.Num() / 2;
+        for (int i = 0; i < length; i += 2) {
+             Tmp.Add(children[i]);
+             Tmp.Add(children[i + 1]);
+    
+            children.RemoveAt(i, 2);
+        }
+        Tmp.Append(children);
+        children.Empty();
+        children.Append(Tmp);
+    }
+    //-----------------------------------------
 
-    if (RequestedFruits.Num() == 0) {
+    //If we have only random || we have boxes and random
+    if (RequestedFruits.Num() == 0 && RandomSpawn == true) {
         for (int l = 0; l < children.Num(); l++) {
             RandomFruitGeneration(children.Num());
             CreateFruit(children[l], RandomFruitPath, RandomFruitType);
         }
     }
-    else {
+    //If we have fruits,boxes and random
+    else if(RequestedFruits.Num() != 0 && Boxes.Num() != 0 && RandomSpawn == true){
         for (int i = 0; i < RequestedFruits.Num(); i++) {
             for (int j = 0; j < children.Num(); j++) {
-                FString Box = "Box";
-                if (children[j]->GetName() == Box.Append(FString::FromInt(i + 1))) {
+                if (children[j]->GetName() == Boxes[i]) {
                     CreateFruit(children[j], TypeAndPath.FindRef(RequestedFruits[i]), RequestedFruits[i]);
 
-                    children.RemoveAt(j, 1); 
+                    children.RemoveAt(j, 1);
                 }
             }
             int32 Index = 0;
             FruitType.Find(RequestedFruits[i], Index);
             AllFruits.Add(FruitPath[Index], 1);
         }
-        for (int l = 0; l < children.Num(); l++) {
-            RandomFruitGeneration(children.Num());
-            CreateFruit(children[l], RandomFruitPath, RandomFruitType);
+        if (RandomSpawn == true) {
+            for (int l = 0; l < children.Num(); l++) {
+                RandomFruitGeneration(children.Num());
+                CreateFruit(children[l], RandomFruitPath, RandomFruitType);
+            }
         }
     }
-
+    //If we have fruit and boxes
+    else if (RequestedFruits.Num() != 0 && Boxes.Num() != 0 && RandomSpawn == false) {
+        for (int i = 0; i < RequestedFruits.Num(); i++) {
+            for (int j = 0; j < children.Num(); j++) {
+                    CreateFruit(children[j], TypeAndPath.FindRef(RequestedFruits[i]), RequestedFruits[i]);
+                    children.RemoveAt(j, 1);
+            }
+            int32 Index = 0;
+            FruitType.Find(RequestedFruits[i], Index);
+            AllFruits.Add(FruitPath[Index], 1);
+        }
+    }
     if (World) {
         World->GetTimerManager().SetTimer(FuzeTimerHandle, this, &AFruitController::DestroyFallenFruits, 5.0f, false);
     }   

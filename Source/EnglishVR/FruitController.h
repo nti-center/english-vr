@@ -63,7 +63,7 @@ public:
     AActor* MarketActor;
 
     UFUNCTION(BlueprintCallable)
-    void SpawnFruits(TArray<FString> RequestedFruits);
+    void SpawnFruits(TArray<FString> RequestedFruits, TArray<FString> Boxes, bool RandomSpawn);
 
     UFUNCTION(BlueprintCallable)
     void CreateFruit(UStaticMeshComponent* Box, FString Path, FString Type);
