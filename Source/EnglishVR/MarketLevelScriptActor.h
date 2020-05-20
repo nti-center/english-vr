@@ -42,6 +42,9 @@ public:
     UPROPERTY(EditDefaultsOnly)
     TArray<FString> RequestedFruits;
 
+    UPROPERTY(EditDefaultsOnly)
+    TArray<FString> Boxes;
+
     UPROPERTY(BlueprintReadWrite)
     FTimerHandle FuzeTimerHandle;
 

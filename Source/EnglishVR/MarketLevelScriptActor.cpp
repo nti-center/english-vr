@@ -45,7 +45,14 @@ void AMarketLevelScriptActor::BeginPlay() {
         UE_LOG(LogTemp, Warning, TEXT("Speech recognizer type is not initilized"));
     }
 
-    FruitController->SpawnFruits(RequestedFruits);
+    //RequestedFruits.Add("Apple");
+   // RequestedFruits.Add("Pear");
+   // RequestedFruits.Add("Potato");
+
+    //Boxes.Add("Box5");
+    //Boxes.Add("Box2");
+
+    FruitController->SpawnFruits(RequestedFruits,Boxes,true);
     
     if (VRPawn) {
         VRPawn->OnAudioRecorded.AddDynamic(this, &AMarketLevelScriptActor::OnAudioRecorded);
