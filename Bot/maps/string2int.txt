@@ -10,4 +10,5 @@ Nine:9
 Ten:10
 Eleven:11
 Twelve:12
-Thirteen:13
+a_Dozen:12
+a_Couple_of:2

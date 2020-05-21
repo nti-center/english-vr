@@ -16,7 +16,7 @@
         <pattern>cmdReachedMarket</pattern>
         <template>
             <think><srai>generateRandomGreeting</srai></think>
-			<think><set name="conditionAwaiting">None</set></think>
+			
             {
                "VoicePhrases": "<get name="phraseGreeting"></get>"
             }
@@ -42,16 +42,48 @@
             <srai>generatePhraseType</srai>
         </template>
     </category>
-    
+    <category>
+		<pattern>addingRequest</pattern>
+		<template>
+			<srai>generateRandomAddRequest</srai>
+			<srai>generateRandomFruitCount</srai>
+			<srai>generatePhraseType</srai>
+		</template>
+	</category>
+	<category>
+		<pattern>generateRandomAddRequest</pattern>
+		<template>
+			<set name="addRequest">
+				<random>
+					<li>Could_you_also_add</li>
+					<li>I_would_like</li>
+					<li>I_think_I_need</li>
+				</random>
+			</set>
+		</template>
+	</category>
     <category>
         <pattern>generateRandomFruitType</pattern>
         <template>
             <set name="fruitType">
                 <random>
                     <li>Apple</li>
-                    <li>Potato</li>
-                </random>
+					<li>Potato</li>
+					<!--><li>Banana</li>
+					<li>Peach</li>
+					<li>Watermelon</li>
+					<li>Carrot</li>
+					<li>Tomato</li></-->
+				</random>
             </set>
+			<condition name="fruitType">
+				<li name="questionSubject"><value><get name="questionSubject"></get></value>
+					<think><srai>generateRandomFruitType</srai></think>
+				</li>
+				<li>
+					<set name="questionSubject"><get name="fruitType"></get></set>
+				</li>
+			</condition>
         </template>
     </category>
     
@@ -63,22 +95,30 @@
                     <li>One</li>
                     <li>Two</li>
                     <li>Three</li>
-                    <li>Four</li>
+                    <!--><li>Four</li>
                     <li>Five</li>
-		    <li>Some</li>
-		    <li>a_Couple_of</li>
+                    <li>Six</li>
+                    <li>Seven</li>
+                    <li>Eight</li>
+                    <li>Nine</li>
+                    <li>Ten</li>
+                    <li>Eleven</li>
+                    <li>Tweleve</li>
+                    <li>a_Dozen</li></-->
+					<li>Some</li>
+					<li>a_Couple_of</li>
                 </random>
+			</set>	
+			<set name="fruitCountPhrase">
+			 <get name="fruitCount"></get>
 			</set>
-				<set name="fruitCountPhrase">
-                 <get name="fruitCount"></get>
-				</set>
             <condition name="fruitCount">
                <li value="Some">
                     <set name="fruitCount">
                         <random>
                             <li>Three</li>
-                            <li>Four</li>
-                            <li>Five</li>
+							<li>Four</li>
+							<li>Five</li>	
                         </random>
                     </set>
                </li>
@@ -111,13 +151,14 @@
 			<think><srai>generateRandomFruitType</srai></think>
 			<think><srai>generateQuestionPhraseType</srai></think>
 			<think><srai>generateQuestion</srai></think>
+			
 		</template>
     </category>
 	
 	<category>
 		<pattern>generateQuestion</pattern>
 		<template>
-				<set name="QuestionType">
+			<set name="QuestionType">
                 <random>
                     <li>Do_you_have</li>
                     <li>Have_you_got_any</li>
@@ -150,10 +191,10 @@
         
 		<pattern>cmdSpeechRecognized $Yes</pattern>
         <template>
-			<condition name="conditionAwaiting">
+			<condition name="topic">
 				<li value="AvailabiltyCheck">
 					<think><srai>generateRandomRequest</srai></think>
-					<think><set name="conditionAwaiting">None</set></think>
+					<think><set name="topic">none</set></think>
 					{
 						"Actions": "SetRequest",
 						"Params": ["<map name="string2int"><get name="fruitCount"></get></map>", "<get name="fruitType"></get>"],
@@ -167,27 +208,28 @@
 	<category>
         <pattern>cmdSpeechRecognized $No</pattern>
         <template>
-			<condition name="conditionAwaiting">
+			<condition name="topic">
 				<li value="AvailabiltyCheck">
 					<think><srai>generateRandomQuestion</srai></think>
-					<think><set name="conditionAwaiting">AvailabiltyCheck</set></think>
+					<think><set name="topic">AvailabiltyCheck</set></think>
+					<think><set name="questionSubject"><get name="fruitType"></get></set></think>
 					{
 						"VoicePhrases": "what_a_pity. <get name="QuestionType"></get><get name="questionPhraseType"></get>"
 					}
                 </li>
 			</condition>
-				
-        </template>
+		</template>
     </category>
 	
     <category>
         <pattern>cmdSpeechRecognized $Hello</pattern>
         <template>
 			<think><srai>generateRandomQuestion</srai></think>
-			<think><set name="conditionAwaiting">AvailabiltyCheck</set></think>
+			<think><set name="topic">AvailabiltyCheck</set></think>
+			<think><set name="questionSubject">none</set></think>
 			{
-                         "VoicePhrases": "<get name="QuestionType"></get><get name="questionPhraseType"></get>"
-                        }
+			 "VoicePhrases": "<get name="QuestionType"></get><get name="questionPhraseType"></get>"
+			}
 			
         </template>
     </category>
@@ -252,6 +294,32 @@
                             "VoicePhrases": "Thanks"
                         }
                     </li>
+					<li>
+						<think><srai>addingRequest</srai></think>
+						<condition name="addRequest">	
+							<li value="Could_you_also_add">
+								{
+									"Actions": "AddRequest",
+									"Params": ["<map name="string2int"><get name="fruitCount"></get></map>", "<get name="fruitType"></get>"],
+									"VoicePhrases": "<get name="addRequest"></get><get name="fruitCountPhrase"></get><get name="phraseType"></get>, please?"
+								}
+							</li>
+							<li value="I_would_like">
+								{
+									"Actions": "AddRequest",
+									"Params": ["<map name="string2int"><get name="fruitCount"></get></map>", "<get name="fruitType"></get>"],
+									"VoicePhrases": "<get name="addRequest"></get><get name="fruitCountPhrase"></get><get name="phraseType"></get> too"
+								}
+							</li>
+							<li value="I_think_I_need">
+								{
+									"Actions": "AddRequest",
+									"Params": ["<map name="string2int"><get name="fruitCount"></get></map>", "<get name="fruitType"></get>"],
+									"VoicePhrases": "<get name="addRequest"></get><get name="fruitCountPhrase"></get> more <get name="phraseType"></get>"
+								}
+							</li>
+						</condition>	
+					</li>
                 </random>
             </template>
         </category>
