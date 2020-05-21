@@ -16,26 +16,59 @@ public:
     virtual void NativeConstruct() override;
 
     UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-    class UTextBlock* Button1Text = nullptr;
+    class UCanvasPanel* Panel1 = nullptr;
 
     UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-    class UTextBlock* Button2Text = nullptr;
+    class UButton* Button0_1 = nullptr;
 
     UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-    class UButton* Button1 = nullptr;
+    class UTextBlock* Button0Text_1 = nullptr;
 
     UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-    class UButton* Button2 = nullptr;
+    class UButton* Button0_2 = nullptr;
+
+    UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+    class UTextBlock* Button0Text_2 = nullptr;
+
+    UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+    class UCanvasPanel* Panel2 = nullptr;
+
+    UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+    class UButton* Button1_1 = nullptr;
+
+    UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+    class UTextBlock* Button1Text_1 = nullptr;
+
+    UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+    class UButton* Button1_2 = nullptr;
+
+    UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+    class UTextBlock* Button1Text_2 = nullptr;
+
+    UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+    class UButton* Button1_3 = nullptr;
+
+    UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+    class UTextBlock* Button1Text_3 = nullptr;
 
 
     UFUNCTION(BlueprintCallable)
-    void Button1Clicked();
+    void Button0_1Clicked();
 
     UFUNCTION(BlueprintCallable)
-    void Button2Clicked();
+    void Button0_2Clicked();
+
+    UFUNCTION(BlueprintCallable)
+    void Button1_1Clicked();
+
+    UFUNCTION(BlueprintCallable)
+    void Button1_3Clicked();
 
     UFUNCTION(BlueprintCallable)
     void LoadLevel(FString LevelName);
+
+    UFUNCTION(BlueprintCallable)
+    void ChangeCanvas(UCanvasPanel* A, UCanvasPanel* B);
 
 protected:
     virtual bool Initialize();

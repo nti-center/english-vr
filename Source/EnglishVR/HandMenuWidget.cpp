@@ -15,15 +15,15 @@ bool UHandMenuWidget::Initialize() {
     bool success = Super::Initialize();
     if (!success)  return false;
 
-    if (!ensure(Button1 != nullptr)) return false;
-    Button1->OnClicked.AddDynamic(this, &UHandMenuWidget::Button1Clicked);
+   // if (!ensure(Button1 != nullptr)) return false;
+   // Button1->OnClicked.AddDynamic(this, &UHandMenuWidget::Button1Clicked);
 
     if (!ensure(Button2 != nullptr)) return false;
     Button2->OnClicked.AddDynamic(this, &UHandMenuWidget::Button2Clicked);
 
     if (!ensure(Button3 != nullptr)) return false;
     Button3->OnClicked.AddDynamic(this, &UHandMenuWidget::Button3Clicked);
-
+  
     if (!ensure(Button4 != nullptr)) return false;
     Button4->OnClicked.AddDynamic(this, &UHandMenuWidget::Button4Clicked);
 
@@ -48,14 +48,17 @@ void UHandMenuWidget::Button4Clicked() {
 
 void UHandMenuWidget::ChangeCanvas(UCanvasPanel* A, UCanvasPanel* B) {
     A->SetRenderOpacity(0);
+    A->SetVisibility(ESlateVisibility::Hidden);
+
     B->SetRenderOpacity(1);
+    B->SetVisibility(ESlateVisibility::Visible);
 }
 
 void UHandMenuWidget::LoadLevel(FString LevelName) {
     FString CurrentLevel = UGameplayStatics::GetCurrentLevelName(GetWorld());
     if (LevelName == CurrentLevel)
         return;
-    &IXRLoadingScreen::ShowLoadingScreen;
+    //&IXRLoadingScreen::ShowLoadingScreen;
     UGameplayStatics::OpenLevel(GetWorld(), FName(*LevelName), true);
 
 }
