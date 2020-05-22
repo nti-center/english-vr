@@ -37,8 +37,28 @@ public:
     UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
     class UTextBlock* Button3Text = nullptr;
 
+
+
     UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
     class UCanvasPanel* CanvasPanel2 = nullptr;
+
+    UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+    class UButton* AnswerButton1 = nullptr;
+
+    UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+    class UTextBlock* AnswerButton1Text = nullptr;
+
+    UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+    class UButton* AnswerButton2 = nullptr;
+
+    UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+    class UTextBlock* AnswerButton2Text = nullptr;
+
+    UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+    class UButton* AnswerButton3 = nullptr;
+
+    UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+    class UTextBlock* AnswerButton3Text = nullptr;
 
     UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
     class UButton* Button4 = nullptr;
@@ -46,6 +66,8 @@ public:
     UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
     class UTextBlock* Button4Text = nullptr;
 
+   
+    
     UFUNCTION(BlueprintCallable)
     void Button1Clicked();
 
