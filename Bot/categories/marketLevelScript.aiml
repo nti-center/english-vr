@@ -16,21 +16,79 @@
     </category>
     
     <category>
+        <pattern>clearProductCounts</pattern>
+        <template>
+            <set var="tuples">
+                <select>
+                    <vars>?name ?price</vars>
+                    <q><subj>?name</subj><pred>price</pred><obj>?price</obj></q>
+                </select>
+            </set>
+            <condition var="tuples">
+                <li value="NIL"/>
+                <li>
+                    <think>
+                        <set var="head"><first><get var="tuples"/></first></set>
+                        <set var="tuples"><rest><get var="tuples"/></rest></set>
+                    </think>
+                    <deletetriple>
+                        <subj><get var="?name"><tuple><get var="head"/></tuple></get></subj><pred>count</pred><obj></obj>
+                    </deletetriple>
+                    <addtriple>
+                        <subj><get var="?name"><tuple><get var="head"/></tuple></get></subj><pred>count</pred><obj>0</obj>
+                    </addtriple>
+                    <loop/>
+                </li>
+            </condition>
+        </template>
+    </category>
+    
+    <category>
+        <pattern>addProductCount * *</pattern>
+        <template>
+            <set var="tuples">
+                <select>
+                    <vars>?count</vars>
+                    <q><subj><star index="1"/></subj><pred>count</pred><obj>?count</obj></q>
+                </select>
+            </set>
+            <set var="head"><first><get var="tuples"/></first></set>
+            <set var="curCount"><get var="?count"><tuple><get var="head"/></tuple></get></set>
+            <deletetriple>
+                <subj><star index="1"/></subj><pred>count</pred><obj><get var="curCount"/></obj>
+            </deletetriple>
+            <addtriple>
+                <subj><star index="1"/></subj><pred>count</pred><obj><srai><get var="curCount"/> plus <star index="2"/></srai></obj>
+            </addtriple>
+        </template>
+    </category>
+    
+    <category>
+        <pattern>* plus *</pattern>
+        <template>
+            <system>set /a <star index="1"/> + <star index="2"/></system>
+        </template>
+    </category>
+    
+    <category>
         <pattern>cmdNewCharacterSpawned</pattern>
         <template>
             <think><set name="state">none</set></think>
             <think><set name="topic">none</set></think>
+            <think><srai>clearProductCounts</srai></think>
             {
                 "Actions": "GoToMarket"
             }
         </template>
     </category>
-
+    
     <category>
         <pattern>cmdReachedMarket</pattern>
         <template>
             <think><srai>generateRandomRequest</srai></think>
             <think><srai>generateRandomGreeting</srai></think>
+            <think><srai>clearProductCounts</srai></think>
+            <think><srai>addProductCount <get name="fruitType"> <map name="string2int"><get name="fruitCount"></get></map></get></srai></think>
             {
                 "Actions": "SetRequest",
                 "Params": ["<map name="string2int"><get name="fruitCount"></get></map>", "<get name="fruitType"></get>"],
@@ -221,6 +279,7 @@
                 <random>
                     <li>
                         <think><srai>generateRandomRequest</srai></think>
+                        <think><srai>addProductCount <get name="fruitType"> <map name="string2int"><get name="fruitCount"></get></map></get></srai></think>
                         {
                             "Actions": "AddRequest",
                             "Params": ["<map name="string2int"><get name="fruitCount"></get></map>", "<get name="fruitType"></get>"],
