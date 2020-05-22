@@ -39,11 +39,14 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     AFruitController* FruitController;
 
-    UPROPERTY(EditDefaultsOnly)
+    UPROPERTY(EditAnywhere)
     TArray<FString> RequestedFruits;
 
-    UPROPERTY(EditDefaultsOnly)
+    UPROPERTY(EditAnywhere)
     TArray<FString> Boxes;
+
+    UPROPERTY(EditAnywhere)
+    bool RandomGeneration = true;
 
     UPROPERTY(BlueprintReadWrite)
     FTimerHandle FuzeTimerHandle;

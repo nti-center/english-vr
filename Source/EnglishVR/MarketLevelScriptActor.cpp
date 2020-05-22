@@ -52,7 +52,7 @@ void AMarketLevelScriptActor::BeginPlay() {
     //Boxes.Add("Box5");
     //Boxes.Add("Box2");
 
-    FruitController->SpawnFruits(RequestedFruits,Boxes,true);
+    FruitController->SpawnFruits(RequestedFruits,Boxes, RandomGeneration);
     
     if (VRPawn) {
         VRPawn->OnAudioRecorded.AddDynamic(this, &AMarketLevelScriptActor::OnAudioRecorded);
