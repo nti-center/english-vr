@@ -92,9 +92,6 @@ public:
     bool IsCorrectFruitsCount();
 
     UFUNCTION()
-    TArray<FString> ParsePhrasesString(const FString& PhrasesString);
-
-    UFUNCTION()
     void OnBotResponseReceived(FString ResponseString);
 
     UFUNCTION()
@@ -127,6 +124,8 @@ public:
     void OnAudioRecorded(FString File);
 
 private:
+    TArray<FString> ParsePhrasesString(const FString& PhrasesString);
+    void SetProductPrices(TArray<TSharedPtr<FJsonValue>> ParamArray);
     void PlayAction(EAction Action, TArray<TSharedPtr<FJsonValue>> ParamArray);
     void PlayAudio(TArray<FString> PhraseArray, UWidgetComponent* TextWidget);
 
