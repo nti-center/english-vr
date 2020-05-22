@@ -60,6 +60,8 @@ void AMarketLevelScriptActor::BeginPlay() {
     else {
         UE_LOG(LogTemp, Warning, TEXT("Market point is not initilized"));
     }
+
+    BotRequest->Request(ECommand::MarketLevelStarted);
 }
 
 void AMarketLevelScriptActor::Tick(float DeltaTime) {
