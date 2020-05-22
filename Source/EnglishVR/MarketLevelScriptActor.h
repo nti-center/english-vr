@@ -92,7 +92,10 @@ public:
     bool IsCorrectFruitsCount();
 
     UFUNCTION()
-    void OnBotResponseReceived(EAction Action, TArray<FString> ParamArray, TArray<FString> PhraseArray);
+    TArray<FString> ParsePhrasesString(const FString& PhrasesString);
+
+    UFUNCTION()
+    void OnBotResponseReceived(FString ResponseString);
 
     UFUNCTION()
     void OnTargetPointOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
@@ -124,7 +127,7 @@ public:
     void OnAudioRecorded(FString File);
 
 private:
-    void PlayAction(EAction Action, TArray<FString> ParamArray);
+    void PlayAction(EAction Action, TArray<TSharedPtr<FJsonValue>> ParamArray);
     void PlayAudio(TArray<FString> PhraseArray, UWidgetComponent* TextWidget);
 
 protected:

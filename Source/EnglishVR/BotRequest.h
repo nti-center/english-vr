@@ -84,7 +84,7 @@ const TMap<FString, EAction> Actions = {
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class ENGLISHVR_API UBotRequest : public USceneComponent {
     GENERATED_BODY()
-    DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FResponseReceivedDelegate, EAction, Action, TArray<FString>, ParamArray, TArray<FString>, PhraseArray);
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FResponseReceivedDelegate, FString, ResponseString);
 
 public:
     UBotRequest();
@@ -98,7 +98,6 @@ public:
 private:
     FHttpModule* Http;
 
-    TArray<FString> ParsePhrasesString(const FString& PhrasesString);
     void Request(FString RequestString);
 
 protected:
