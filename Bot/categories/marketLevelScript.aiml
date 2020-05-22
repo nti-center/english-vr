@@ -16,8 +16,40 @@
     </category>
     
     <category>
+        <pattern>Test</pattern>
+        <template> 
+            <select>
+                <vars>?product ?price ?count</vars>
+                <q><subj>?product</subj><pred>price</pred><obj>?price</obj></q>
+                <q><subj>?product</subj><pred>count</pred><obj>?count</obj></q>
+            </select>
+        </template>
+    </category>
+    
+    <category>
         <pattern>clearProductCounts</pattern>
         <template>
+            <set var="tuples">
+                <select>
+                    <vars>?name ?count</vars>
+                    <q><subj>?name</subj><pred>count</pred><obj>?count</obj></q>
+                </select>
+            </set>
+            <condition var="tuples">
+                <li value="NIL"/>
+                <li>
+                    <think>
+                        <set var="head"><first><get var="tuples"/></first></set>
+                        <set var="tuples"><rest><get var="tuples"/></rest></set>
+                    </think>
+                    <deletetriple>
+                        <subj><get var="?name"><tuple><get var="head"/></tuple></get></subj>
+                        <pred>count</pred>
+                        <obj><get var="?count"><tuple><get var="head"/></tuple></get></obj>
+                    </deletetriple>
+                    <loop/>
+                </li>
+            </condition>
             <set var="tuples">
                 <select>
                     <vars>?name ?price</vars>
