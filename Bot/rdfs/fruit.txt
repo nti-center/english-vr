@@ -1,0 +1,16 @@
+APPLE:price:1
+APPLE:isa:Fruit
+BANANA:price:3
+BANANA:isa:Fruit
+LEMON:price:4
+LEMON:isa:Fruit
+MELON:price:5
+MELON:isa:Fruit
+PEAR:price:6
+PEAR:isa:Fruit
+PEACH:price:7
+PEACH:isa:Fruit
+WATERMELON:price:8
+WATERMELON:isa:Fruit
+PLUM:price:11
+PLUM:isa:Fruit
