@@ -4,6 +4,14 @@
     <category>
         <pattern>cmdMarketLevelStarted</pattern>
         <template>
+            {
+                "Actions": "SetProductPrices",
+                "Params": 
+                <select>
+                    <vars>?product ?price</vars>
+                    <q><subj>?product</subj><pred>price</pred><obj>?price</obj></q>
+                </select>
+            }
         </template>
     </category>
     

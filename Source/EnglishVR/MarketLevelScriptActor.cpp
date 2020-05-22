@@ -238,6 +238,15 @@ TArray<FString> AMarketLevelScriptActor::ParsePhrasesString(const FString& Phras
     return PhraseArray;
 }
 
+void AMarketLevelScriptActor::SetProductPrices(TArray<TSharedPtr<FJsonValue>> ParamArray) {
+    ProductPrices.Empty();
+    for (auto& Value : ParamArray) {
+        FString Product = Value.Get()->AsArray()[0].Get()->AsArray()[1].Get()->AsString();
+        int32 Price = FCString::Atoi(*Value.Get()->AsArray()[1].Get()->AsArray()[1].Get()->AsString());
+        ProductPrices.Add(Product, Price);
+    }
+}
+
 void AMarketLevelScriptActor::PlayAction(EAction Action, TArray<TSharedPtr<FJsonValue>> ParamArray) {
     switch (Action) {
     case EAction::GoToMarket: {
@@ -287,6 +296,10 @@ void AMarketLevelScriptActor::PlayAction(EAction Action, TArray<TSharedPtr<FJson
     case EAction::GoToHome: {
         Character->SetPath(OutPath);
         Character->Go();
+        break;
+    }
+    case EAction::SetProductPrices: {
+        SetProductPrices(ParamArray);
         break;
     }
     default: {

@@ -69,6 +69,8 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     UBotRequest* BotRequest;
 
+    UPROPERTY(EditDefaultsOnly)
+    TMap<FString, int32> ProductPrices;
 
     UPROPERTY(EditAnywhere)
     UWidgetComponent* Widget;
