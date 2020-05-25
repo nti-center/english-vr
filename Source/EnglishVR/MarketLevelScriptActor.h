@@ -69,6 +69,8 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     UBotRequest* BotRequest;
 
+    UPROPERTY(EditDefaultsOnly)
+    TMap<FString, int32> ProductPrices;
 
     UPROPERTY(EditAnywhere)
     UWidgetComponent* Widget;
@@ -92,7 +94,7 @@ public:
     bool IsCorrectFruitsCount();
 
     UFUNCTION()
-    void OnBotResponseReceived(EAction Action, TArray<FString> ParamArray, TArray<FString> PhraseArray);
+    void OnBotResponseReceived(FString ResponseString);
 
     UFUNCTION()
     void OnTargetPointOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
@@ -124,7 +126,9 @@ public:
     void OnAudioRecorded(FString File);
 
 private:
-    void PlayAction(EAction Action, TArray<FString> ParamArray);
+    TArray<FString> ParsePhrasesString(const FString& PhrasesString);
+    void SetProductPrices(TArray<TSharedPtr<FJsonValue>> ParamArray);
+    void PlayAction(EAction Action, TArray<TSharedPtr<FJsonValue>> ParamArray);
     void PlayAudio(TArray<FString> PhraseArray, UWidgetComponent* TextWidget);
 
 protected:

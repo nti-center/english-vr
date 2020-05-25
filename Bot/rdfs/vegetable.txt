@@ -1,0 +1,10 @@
+POTATO:price:2
+POTATO:isa:Vegetable
+CARROT:price:9
+CARROT:isa:Vegetable
+TOMATO:price:10
+TOMATO:isa:Vegetable
+BELL_PEPPER:price:12
+BELL_PEPPER:isa:Vegetable
+CHILI_PEPPER:price:13
+CHILI_PEPPER:isa:Vegetable

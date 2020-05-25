@@ -18,10 +18,10 @@ enum class ECommand : uint8 {
     CanTakeBasket               UMETA(DisplayName = "CanTakeBasket"),
     CorrectFruitsCount          UMETA(DisplayName = "CorrectFruitsCount"),
     IncorrectFruitsCount        UMETA(DisplayName = "IncorrectFruitsCount"),
+    MarketLevelStarted          UMETA(DisplayName = "MarketLevelStarted"),
     NewCharacterSpawned         UMETA(DisplayName = "NewCharacterSpawned"),
     ReachedMarket               UMETA(DisplayName = "ReachedMarket"),
     SpeechRecognized            UMETA(DisplayName = "SpeechRecognized"),
-    Start                       UMETA(DisplayName = "Start"),
     Hit                         UMETA(DisplayName = "Hit"),
 };
 
@@ -39,6 +39,7 @@ enum class EAction : uint8 {
     GoToHome               UMETA(DisplayName = "GoToHome"),
     GoToMarket             UMETA(DisplayName = "GoToMarket"),
     None                   UMETA(DisplayName = "None"),
+    SetProductPrices       UMETA(DisplayName = "SetProductPrices"),
     SetRequest             UMETA(DisplayName = "SetRequest"),
     StartDisappointing     UMETA(DisplayName = "StartDisappointing"),
     StopTryingToTakeBasket UMETA(DisplayName = "StopTryingToTakeBasket"),
@@ -55,10 +56,10 @@ const TMap<ECommand, FString> Commands = {
     { ECommand::CanTakeBasket,               "cmdCanTakeBasket" },
     { ECommand::CorrectFruitsCount,          "cmdCorrectFruitsCount" },
     { ECommand::IncorrectFruitsCount,        "cmdIncorrectFruitsCount" },
+    { ECommand::MarketLevelStarted,          "cmdMarketLevelStarted" },
     { ECommand::NewCharacterSpawned,         "cmdNewCharacterSpawned" },
     { ECommand::ReachedMarket,               "cmdReachedMarket" },
     { ECommand::SpeechRecognized,            "cmdSpeechRecognized" },
-    { ECommand::Start,                       "cmdStart" },
     { ECommand::Hit,                         "cmdHit" },
 };
 
@@ -72,6 +73,7 @@ const TMap<FString, EAction> Actions = {
     { "CheckFruitsCount",       EAction::CheckFruitsCount },
     { "GoToHome",               EAction::GoToHome },
     { "GoToMarket",             EAction::GoToMarket },
+    { "SetProductPrices",       EAction::SetProductPrices },
     { "SetRequest",             EAction::SetRequest },
     { "StartDisappointing",     EAction::StartDisappointing },
     { "StopTryingToTakeBasket", EAction::StopTryingToTakeBasket },
@@ -84,7 +86,7 @@ const TMap<FString, EAction> Actions = {
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class ENGLISHVR_API UBotRequest : public USceneComponent {
     GENERATED_BODY()
-    DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FResponseReceivedDelegate, EAction, Action, TArray<FString>, ParamArray, TArray<FString>, PhraseArray);
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FResponseReceivedDelegate, FString, ResponseString);
 
 public:
     UBotRequest();
@@ -98,7 +100,6 @@ public:
 private:
     FHttpModule* Http;
 
-    TArray<FString> ParsePhrasesString(const FString& PhrasesString);
     void Request(FString RequestString);
 
 protected:

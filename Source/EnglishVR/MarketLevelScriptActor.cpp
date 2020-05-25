@@ -60,6 +60,8 @@ void AMarketLevelScriptActor::BeginPlay() {
     else {
         UE_LOG(LogTemp, Warning, TEXT("Market point is not initilized"));
     }
+
+    BotRequest->Request(ECommand::MarketLevelStarted);
 }
 
 void AMarketLevelScriptActor::Tick(float DeltaTime) {
@@ -189,12 +191,63 @@ void AMarketLevelScriptActor::OnCharacterCanTakeBasket() {
     BotRequest->Request(ECommand::CanTakeBasket);
 }
 
-void AMarketLevelScriptActor::OnBotResponseReceived(EAction Action, TArray<FString> ParamArray, TArray<FString> PhraseArray) {
-    PlayAction(Action, ParamArray);
-    PlayAudio(PhraseArray, Widget);
+void AMarketLevelScriptActor::OnBotResponseReceived(FString ResponseString) {
+    TSharedPtr<FJsonObject> JsonObject;
+    TSharedRef<TJsonReader<TCHAR>> Reader = TJsonReaderFactory<TCHAR>::Create(ResponseString);
+
+    if (FJsonSerializer::Deserialize(Reader, JsonObject)) {
+        TSharedPtr<FJsonObject> Response = JsonObject->GetObjectField("response");
+        UE_LOG(LogTemp, Warning, TEXT("Bot answer is: %s"), *Response->GetStringField("text"));
+        FString TextString = Response->GetStringField("text");
+        TextString.RemoveFromEnd(".");
+        Reader = TJsonReaderFactory<TCHAR>::Create(TextString);
+        if (FJsonSerializer::Deserialize(Reader, JsonObject)) {
+            UE_LOG(LogTemp, Warning, TEXT("Actions is: %s"), *JsonObject->GetStringField("Actions"));
+            UE_LOG(LogTemp, Warning, TEXT("VoicePhrases is: %s"), *JsonObject->GetStringField("VoicePhrases"));
+
+            EAction Action = Action = EAction::None;
+            if (Actions.Contains(JsonObject->GetStringField("Actions"))) {
+                Action = Actions[JsonObject->GetStringField("Actions")];
+            }
+            else {
+                UE_LOG(LogTemp, Warning, TEXT("Undefine action: %s"), *JsonObject->GetStringField("Actions"));
+            }
+
+            TArray<TSharedPtr<FJsonValue>> Params;
+            if (JsonObject->HasField("Params"))
+                Params = TArray<TSharedPtr<FJsonValue>>(JsonObject->GetArrayField("Params"));
+
+            if (Action != EAction::None)
+                PlayAction(Action, Params);
+
+            if (Character != nullptr)
+                PlayAudio(ParsePhrasesString(JsonObject->GetStringField("VoicePhrases")), Widget);
+        }
+        else {
+            UE_LOG(LogTemp, Warning, TEXT("Cant deserialize text"));
+        }
+    }
+    else {
+        UE_LOG(LogTemp, Warning, TEXT("Cant deserialize response"));
+    }
 }
 
-void AMarketLevelScriptActor::PlayAction(EAction Action, TArray<FString> ParamArray) {
+TArray<FString> AMarketLevelScriptActor::ParsePhrasesString(const FString& PhrasesString) {
+    TArray<FString> PhraseArray;
+    PhrasesString.ParseIntoArray(PhraseArray, TEXT(" "), true);
+    return PhraseArray;
+}
+
+void AMarketLevelScriptActor::SetProductPrices(TArray<TSharedPtr<FJsonValue>> ParamArray) {
+    ProductPrices.Empty();
+    for (auto& Value : ParamArray) {
+        FString Product = Value.Get()->AsArray()[0].Get()->AsArray()[1].Get()->AsString();
+        int32 Price = FCString::Atoi(*Value.Get()->AsArray()[1].Get()->AsArray()[1].Get()->AsString());
+        ProductPrices.Add(Product, Price);
+    }
+}
+
+void AMarketLevelScriptActor::PlayAction(EAction Action, TArray<TSharedPtr<FJsonValue>> ParamArray) {
     switch (Action) {
     case EAction::GoToMarket: {
         Character->SetPath(ToPath);
@@ -204,7 +257,7 @@ void AMarketLevelScriptActor::PlayAction(EAction Action, TArray<FString> ParamAr
     case EAction::SetRequest: {
         Character->ClearFruitRequests();
         for (int i = 0; i < ParamArray.Num(); i += 2)
-            Character->AddFruitRequest(ParamArray[i + 1], FCString::Atoi(*ParamArray[i]));
+            Character->AddFruitRequest(ParamArray[i + 1].Get()->AsString(), FCString::Atoi(*ParamArray[i].Get()->AsString()));
         break;
     }
     case EAction::Hide: {
@@ -213,7 +266,7 @@ void AMarketLevelScriptActor::PlayAction(EAction Action, TArray<FString> ParamAr
     }
     case EAction::AddRequest: {
         for (int i = 0; i < ParamArray.Num(); i += 2)
-            Character->AddFruitRequest(ParamArray[i + 1], FCString::Atoi(*ParamArray[i]));
+            Character->AddFruitRequest(ParamArray[i + 1].Get()->AsString(), FCString::Atoi(*ParamArray[i].Get()->AsString()));
         break;
     }
     case EAction::TryToTakeBasket: {
@@ -243,6 +296,10 @@ void AMarketLevelScriptActor::PlayAction(EAction Action, TArray<FString> ParamAr
     case EAction::GoToHome: {
         Character->SetPath(OutPath);
         Character->Go();
+        break;
+    }
+    case EAction::SetProductPrices: {
+        SetProductPrices(ParamArray);
         break;
     }
     default: {
