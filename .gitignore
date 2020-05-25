@@ -12,3 +12,4 @@ Saved
 *.suo
 *.xcodeproj
 *.xcworkspace
+SpeechRecognition/DeepSpeech/deepspeech-0.7.0-models*
