@@ -16,12 +16,8 @@ class ENGLISHVR_API ASpeechRecognizerMCSS : public ASpeechRecognizer {
 public:
     ASpeechRecognizerMCSS();
 
-    UFUNCTION(BlueprintCallable)
-    void StopRecognition();
-
-    UFUNCTION(BlueprintCallable)
-    void StartRecognition();
-
+    virtual void StartRecognition() override;
+    virtual void StopRecognition() override;
     virtual void Recognize(const FString& File) override;
 
 protected:

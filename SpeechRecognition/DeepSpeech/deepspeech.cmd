@@ -1,3 +1,3 @@
 @echo off
 
-python client.py
+python deepspeech-server.py

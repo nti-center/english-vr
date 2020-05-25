@@ -20,6 +20,8 @@ public:
     FRecognizedDelegate OnRecognized;
 
     virtual void Recognize(const FString& File) PURE_VIRTUAL(ASpeechRecognizer::Recognize, return;);
+    virtual void StopRecognition() PURE_VIRTUAL(ASpeechRecognizer::Recognize, return;);
+    virtual void StartRecognition() PURE_VIRTUAL(ASpeechRecognizer::Recognize, return;);
 
 protected:
     virtual void BeginPlay() override;

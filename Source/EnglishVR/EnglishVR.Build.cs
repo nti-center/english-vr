@@ -5,8 +5,11 @@ using UnrealBuildTool;
 public class EnglishVR : ModuleRules {
     public EnglishVR(ReadOnlyTargetRules Target) : base(Target) {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-        
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "AIModule", "Http", "Json", "JsonUtilities", "AudioCapture", "AudioMixer" });
+
+        bEnableExceptions = true;
+
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "AIModule", "Http", "Json", "JsonUtilities",
+            "AudioCapture", "AudioMixer", "Networking", "Sockets" });
     
         PrivateDependencyModuleNames.AddRange(new string[] {  });
 
@@ -18,7 +21,9 @@ public class EnglishVR : ModuleRules {
 
         // To include OnlineSubsystemSteam, add it to the plugins section in your uproject file with the Enabled attribute set to true
 
-        bEnableExceptions = true;
+        RuntimeDependencies.Add("$(BinaryOutputDir)/portaudio_x64.dll", "$(ProjectDir)/SpeechRecognition/DeepSpeech/Portaudio/lib/portaudio_x64.dll");
+        PublicAdditionalLibraries.Add("$(ProjectDir)/SpeechRecognition/DeepSpeech/Portaudio/lib/portaudio_x64.lib");
+        PublicIncludePaths.Add("../SpeechRecognition/DeepSpeech/Portaudio/include");
 
         RuntimeDependencies.Add("$(BinaryOutputDir)/Microsoft.CognitiveServices.Speech.core.dll", "$(ProjectDir)/SpeechRecognition/MicrosoftCognitiveServicesSpeech/lib/Microsoft.CognitiveServices.Speech.core.dll");
         RuntimeDependencies.Add("$(BinaryOutputDir)/Microsoft.CognitiveServices.Speech.extension.codec.dll", "$(ProjectDir)/SpeechRecognition/MicrosoftCognitiveServicesSpeech/lib/Microsoft.CognitiveServices.Speech.extension.codec.dll");

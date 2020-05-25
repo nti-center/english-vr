@@ -6,6 +6,10 @@
 #include "SpeechRecognizer.h"
 #include "Runtime/Online/HTTP/Public/Http.h"
 #include "Json.h"
+#include "Networking.h"
+#include "Interfaces/IPv4/IPv4Address.h"
+#include "SocketSubsystem.h"
+#include "portaudio.h"  
 #include "SpeechRecognizerDeepSpeech.generated.h"
 
 
@@ -16,13 +20,24 @@ class ENGLISHVR_API ASpeechRecognizerDeepSpeech : public ASpeechRecognizer {
 public:
     ASpeechRecognizerDeepSpeech();
     virtual void Recognize(const FString& File) override;
+    virtual void StartRecognition() override;
+    virtual void StopRecognition() override;
     void ResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 
 private:
     FHttpModule* Http;
+    FSocket* Socket;
+    TSharedPtr<FInternetAddr> Address;
+    PaStream* Stream;
+    FTimerHandle RecieveTimer;
+
+    void RecieveData();
+    void InitSocket();
+    void InitAudioStream();
 
 protected:
     virtual void BeginPlay() override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:
     virtual void Tick(float DeltaTime) override;
